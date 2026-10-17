@@ -1,11 +1,28 @@
 {
+  "name": "derazone",
+  "version": "1.0.0",
+  "description": "DERA ZONE — E-commerce Platform",
+  "main": "backend/server.js",
   "scripts": {
-    "install": "cd backend && npm install",
-    "start": "cd backend && node server.js"
+    "start": "node backend/server.js",
+    "build": "cd backend && npm install",
+    "postinstall": "cd backend && npm install"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.10.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.2.0",
     "glob": "^13.0.6",
     "jimp": "^1.6.1",
-    "resend": "^6.14.0"
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.14",
+    "pdfkit": "^0.19.1",
+    "resend": "^6.14.0",
+    "svg-to-pdfkit": "^0.1.8",
+    "uuid": "^10.0.0"
   }
 }
