@@ -43,26 +43,37 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.cart-count').forEach(el => {
       el.textContent = count; el.style.display = count ? 'flex' : 'none';
     });
+    document.querySelectorAll('.cart-drawer-count').forEach(el => {
+      el.textContent = `(${count})`;
+    });
     const itemsEl = document.getElementById('cart-items');
-    const totalEl = document.getElementById('cart-total-val');
+    const totalEl = document.getElementById('cart-total-val') || document.getElementById('cart-subtotal');
     if (!itemsEl) return;
     if (cart.length === 0) {
-      itemsEl.innerHTML = '<div class="cart-empty">Your bag is empty.</div>';
+      itemsEl.innerHTML = `
+        <div class="cart-empty">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <p>Your shopping bag is empty.</p>
+          <a href="shop.html" class="btn-primary" onclick="if(window.closeCart) window.closeCart();">
+            <i class="fa-solid fa-arrow-right"></i> Start Shopping
+          </a>
+        </div>
+      `;
       if (totalEl) totalEl.textContent = 'PKR 0';
       return;
     }
     itemsEl.innerHTML = cart.map((item, idx) => `
       <div class="cart-item">
-        <div class="cart-item-img" style="${item.image ? 'padding:0;' : ''}">${item.image ? `<img src="${item.image}" alt="${item.name.replace(/"/g, '&quot;')}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">` : (item.emoji || '👗')}</div>
+        <div class="cart-item-img" style="${item.image ? 'padding:0;' : ''}">${item.image ? `<img src="${item.image}" alt="${item.name.replace(/"/g, '&quot;')}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">` : (item.emoji || '🛍️')}</div>
         <div class="cart-item-details">
           <div class="cart-item-name">${item.name}</div>
           <div class="cart-item-variant">${item.variant || 'Standard'}</div>
           <div class="cart-item-row">
             <span class="cart-item-price">PKR ${(item.price * item.qty).toLocaleString()}</span>
             <div class="qty-ctrl">
-              <button onclick="changeQty(${idx},-1)">−</button>
+              <button onclick="changeQty(${idx},-1)" aria-label="Decrease quantity">−</button>
               <span>${item.qty}</span>
-              <button onclick="changeQty(${idx},1)">+</button>
+              <button onclick="changeQty(${idx},1)" aria-label="Increase quantity">+</button>
             </div>
           </div>
         </div>
@@ -97,14 +108,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const buyNowCart = [{ name, price, emoji: emoji || '🛍️', variant: variant || 'Standard', image: image || null, qty: 1 }];
     localStorage.setItem('derazone_cart', JSON.stringify(buyNowCart));
-    window.location.href = 'checkout';
+    window.location.href = 'checkout.html';
   };
 
   /* ── Buy It Now: restore stashed bag if the customer left checkout
      without completing the order (i.e. they're on any page other
      than checkout.html and a stash exists) ── */
   const stashedCart = localStorage.getItem('derazone_cart_stashed');
-  if (stashedCart && !window.location.pathname.endsWith('checkout')) {
+  if (stashedCart && !window.location.pathname.endsWith('checkout') && !window.location.pathname.endsWith('checkout.html')) {
     localStorage.setItem('derazone_cart', stashedCart);
     localStorage.removeItem('derazone_cart_stashed');
     cart = JSON.parse(stashedCart);
@@ -112,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ── Cart Drawer ── */
   const drawer  = document.getElementById('cart-drawer');
-  const overlay = document.getElementById('overlay');
+  const overlay = document.getElementById('cart-drawer-overlay') || document.getElementById('overlay');
   const openCart  = () => { drawer?.classList.add('open'); overlay?.classList.add('active'); };
   const closeCart = () => { drawer?.classList.remove('open'); overlay?.classList.remove('active'); };
   window.openCart  = openCart;
