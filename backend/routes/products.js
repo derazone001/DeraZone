@@ -29,6 +29,22 @@ async function seedFirestore(db) {
   } catch (e) { console.warn('Seed failed:', e.message); }
 }
 
+/* ── GET /api/products/categories ── */
+router.get('/categories', (req, res) => {
+  res.json({
+    categories: [
+      { id: 'accessories', name: 'Accessories' },
+      { id: 'gadgets', name: 'Gadgets' },
+      { id: 'wireless-earbuds-audio', name: 'Wireless Earbuds & Audio' },
+      { id: 'jewellery', name: 'Jewellery' },
+      { id: 'fashion-lifestyle', name: 'Fashion & Lifestyle' },
+      { id: 'footwear', name: 'Footwear' },
+      { id: 'clothing-apparel', name: 'Clothing & Apparel' },
+      { id: 'winter-collection', name: 'Winter Collection' }
+    ]
+  });
+});
+
 /* ── GET /api/products ── */
 router.get('/', async (req, res) => {
   try {
@@ -263,3 +279,4 @@ router.delete('/:id', requireRole('super_admin', 'admin'), async (req, res) => {
 });
 
 module.exports = router;
+

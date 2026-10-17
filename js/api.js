@@ -1,9 +1,9 @@
 /* ============================================================
-   ZARINEHUSN — Shared API Helper
+   derazone — Shared API Helper
    Used by all frontend pages to talk to the backend.
    ============================================================ */
 
-const ZARINEHUSN_API = (function() {
+const derazone_API = (function() {
   const origin = window.location.origin || '';
   if (origin.includes('localhost') || origin.includes('127.0.0.1') || origin === 'null' || origin.startsWith('file')) {
     return 'http://localhost:3001/api';
@@ -13,7 +13,7 @@ const ZARINEHUSN_API = (function() {
 
 /* ── Get stored JWT token ── */
 function getToken() {
-  return localStorage.getItem('zarinehusn_token');
+  return localStorage.getItem('derazone_token');
 }
 
 /* ── Auth headers ── */
@@ -26,7 +26,7 @@ function apiHeaders(includeAuth = true) {
 
 /* ── Generic GET ── */
 async function apiGet(endpoint) {
-  const res = await fetch(`${ZARINEHUSN_API}${endpoint}`, {
+  const res = await fetch(`${derazone_API}${endpoint}`, {
     headers: apiHeaders(),
   });
   return res.json();
@@ -39,7 +39,7 @@ async function apiGet(endpoint) {
 async function apiPost(endpoint, data, requireAuth = false) {
   let res;
   try {
-    res = await fetch(`${ZARINEHUSN_API}${endpoint}`, {
+    res = await fetch(`${derazone_API}${endpoint}`, {
       method: 'POST',
       headers: apiHeaders(requireAuth),
       body: JSON.stringify(data),
@@ -62,7 +62,7 @@ async function apiPost(endpoint, data, requireAuth = false) {
 
 /* ── Generic PATCH ── */
 async function apiPatch(endpoint, data) {
-  const res = await fetch(`${ZARINEHUSN_API}${endpoint}`, {
+  const res = await fetch(`${derazone_API}${endpoint}`, {
     method: 'PATCH',
     headers: apiHeaders(),
     body: JSON.stringify(data),
@@ -82,20 +82,20 @@ async function apiLogin({ email, password }) {
 
 /* ── Save auth session ── */
 function saveSession(token, user) {
-  localStorage.setItem('zarinehusn_token', token);
-  localStorage.setItem('zarinehusn_user', JSON.stringify(user));
+  localStorage.setItem('derazone_token', token);
+  localStorage.setItem('derazone_user', JSON.stringify(user));
 }
 
 /* ── Clear auth session ── */
 function clearSession() {
-  localStorage.removeItem('zarinehusn_token');
-  localStorage.removeItem('zarinehusn_user');
+  localStorage.removeItem('derazone_token');
+  localStorage.removeItem('derazone_user');
 }
 
 /* ── Get current user from localStorage ── */
 function getCurrentUser() {
   try {
-    return JSON.parse(localStorage.getItem('zarinehusn_user') || 'null');
+    return JSON.parse(localStorage.getItem('derazone_user') || 'null');
   } catch { return null; }
 }
 
@@ -127,7 +127,7 @@ async function apiSendContact({ name, email, phone, subject, message }) {
 /* ── Check if backend is reachable ── */
 async function checkBackend() {
   try {
-    const res = await fetch(`${ZARINEHUSN_API}/health`, { signal: AbortSignal.timeout(3000) });
+    const res = await fetch(`${derazone_API}/health`, { signal: AbortSignal.timeout(3000) });
     return res.ok;
   } catch {
     return false;
@@ -144,22 +144,27 @@ async function apiGetReviews() {
   return apiGet('/reviews');
 }
 
+/* ── Get categories ── */
+async function apiGetCategories() {
+  return apiGet('/products/categories');
+}
+
 /* ══════════════════════════════════════════════
    LIVE VISITOR TRACKING
    Har page load par automatically start hota hai.
    ══════════════════════════════════════════════ */
 (function initVisitorTracking() {
   /* Generate a unique session ID for this browser tab */
-  let sessionId = sessionStorage.getItem('zarinehusn_sid');
+  let sessionId = sessionStorage.getItem('derazone_sid');
   if (!sessionId) {
     sessionId = 'v-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
-    sessionStorage.setItem('zarinehusn_sid', sessionId);
+    sessionStorage.setItem('derazone_sid', sessionId);
   }
 
   const page = window.location.pathname.replace(/.*\//, '/') || '/';
 
   function ping() {
-    fetch(`${ZARINEHUSN_API}/visitors/ping`, {
+    fetch(`${derazone_API}/visitors/ping`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId, page }),
@@ -176,8 +181,9 @@ async function apiGetReviews() {
   window.addEventListener('beforeunload', () => {
     clearInterval(interval);
     navigator.sendBeacon(
-      `${ZARINEHUSN_API}/visitors/leave`,
+      `${derazone_API}/visitors/leave`,
       JSON.stringify({ sessionId })
     );
   });
 })();
+

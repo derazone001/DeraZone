@@ -183,3 +183,4 @@ router.delete('/:id', requireRole('super_admin', 'admin'), async (req, res) => {
 });
 
 module.exports = router;
+

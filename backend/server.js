@@ -1,5 +1,5 @@
 /* ============================================================
-   ZARIN-E-HUSN — Express Backend Server v2
+   DERA ZONE — Express Backend Server v2
    ============================================================ */
 require('dotenv').config();
 
@@ -40,8 +40,8 @@ app.use(cors({
     'http://127.0.0.1:3001',
     'http://localhost:5500',
     'http://127.0.0.1:5500',
-    'https://zarinehusn.com',
-    'https://www.zarinehusn.com',
+    'https://derazone.com',
+    'https://www.derazone.com',
     'null',   /* file:// protocol */
   ],
   credentials: true,
@@ -100,7 +100,7 @@ Disallow: /backend/
 Disallow: /checkout
 Disallow: /account
 
-Sitemap: https://zarinehusn.com/sitemap.xml`);
+Sitemap: https://derazone.com/sitemap.xml`);
 });
 
 /* ── GET /sitemap.xml — Dynamic sitemap including all live products ── */
@@ -108,7 +108,7 @@ app.get('/sitemap.xml', async (req, res) => {
   const { getDB } = require('./utils/firebase');
   const today = new Date().toISOString().slice(0, 10);
 
-  const DOMAIN = 'https://zarinehusn.com';
+  const DOMAIN = 'https://derazone.com';
   const staticUrls = [
     { loc: `${DOMAIN}/`,                  priority: '1.0', changefreq: 'weekly'  },
     { loc: `${DOMAIN}/shop`,              priority: '0.9', changefreq: 'daily'   },
@@ -121,16 +121,7 @@ app.get('/sitemap.xml', async (req, res) => {
     { loc: `${DOMAIN}/reseller`,          priority: '0.6', changefreq: 'monthly' },
   ];
 
-  const categories = [
-    // Hair accessories
-    'scrunchies','clips','hair-bands','pins','ponies','fancy','gift-items',
-    // Jewelry
-    'bracelets','rings','earrings','necklace',
-    // Clothing
-    'winter-collection','daily-pret','unstitched','g-prints','new-arrivals','trending-now',
-    // Shop
-    'sale'
-  ];
+  const categories = ['accessories', 'gadgets', 'wireless-earbuds-audio', 'jewellery', 'fashion-lifestyle', 'footwear', 'clothing-apparel', 'winter-collection'];
   const catUrls = categories.map(c => ({
     loc: `${DOMAIN}/shop?cat=${c}`, priority: '0.8', changefreq: 'weekly'
   }));
@@ -180,8 +171,8 @@ ${urlTags}
 
 
 /* Hostinger Persistent Uploads Fix */
-const hostingerPersistentDir = '/home/u480756160/domains/zarinehusn.com/persistent_uploads';
-if (fs.existsSync('/home/u480756160/domains/zarinehusn.com')) {
+const hostingerPersistentDir = '/home/u480756160/domains/derazone.com/persistent_uploads';
+if (fs.existsSync('/home/u480756160/domains/derazone.com')) {
   if (!fs.existsSync(hostingerPersistentDir)) fs.mkdirSync(hostingerPersistentDir, { recursive: true });
   app.use('/images/products', express.static(hostingerPersistentDir));
 }
@@ -491,7 +482,7 @@ app.get('/api/health', (req, res) => {
   try { firebaseStatus = getDB() ? 'connected' : 'demo'; } catch { firebaseStatus = 'demo'; }
   res.json({
     status:    'ok',
-    service:   'Zarin-e-Husn Backend',
+    service:   'DERA ZONE Backend',
     version:   '2.0.0',
     firebase:  firebaseStatus,
     demoMode:  firebaseStatus === 'demo',
@@ -584,7 +575,7 @@ app.use((err, req, res, next) => {
 
   app.listen(PORT, () => {
     console.log('\n╔════════════════════════════════════════════════╗');
-    console.log('║       ZARIN-E-HUSN BACKEND v2.0                ║');
+    console.log('║       DERA ZONE BACKEND v2.0                ║');
     console.log('╠════════════════════════════════════════════════╣');
     console.log(`║  Website:  http://localhost:${PORT}               ║`);
     console.log(`║  Admin:    http://localhost:${PORT}/admin          ║`);
@@ -594,3 +585,5 @@ app.use((err, req, res, next) => {
 })();
 
 module.exports = app;
+
+

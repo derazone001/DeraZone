@@ -357,3 +357,18 @@
 @media (max-width: 768px) {
   .product-gallery-main img, .product-gallery-main video { max-height: 450px; }
 }
+
+
+
+
+/* DERA ZONE OVERRIDES FOR PAGES - LIGHT THEME */
+.shop-sidebar { background: #fdfcff; border-right: 1px solid var(--border); }
+.sidebar-block h3 { color: var(--text); font-weight: bold; }
+.sidebar-link { color: var(--text-mid); }
+.sidebar-link:hover, .sidebar-link.active { color: var(--gold); background: rgba(112, 0, 255, 0.08); font-weight: bold; }
+.product-detail-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; }
+.pd-title { color: var(--text); font-family: var(--font-display); font-weight: 900; }
+.pd-price { color: var(--gold); font-size: 2rem; font-weight: bold; }
+.checkout-form, .checkout-summary, .account-card, .contact-card { background: var(--card); border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.form-group input, .form-group select, .form-group textarea { background: #ffffff; border: 1px solid #cccccc; color: var(--text); border-radius: 6px; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--gold); box-shadow: 0 0 8px rgba(112, 0, 255, 0.2); }

@@ -43,8 +43,8 @@ async function buildPdf(pdfPath, invId, snapshot, liveOrder, company) {
 
     // Colors (Elegant Black & Gold theme for PDF)
     const C_BLACK = '#1a1a1a';
-    const C_GOLD = '#d4af37';
-    const C_CREAM = '#fcf8f2';
+    const C_GOLD = '#7000ff';
+    const C_CREAM = '#ffffff';
     const C_TEXT = '#333333';
     const C_MUTED = '#888888';
     const C_BORDER = '#eaeaea';
@@ -69,10 +69,10 @@ async function buildPdf(pdfPath, invId, snapshot, liveOrder, company) {
 
     // Company Details (under logo)
     doc.fontSize(8).fillColor(C_MUTED).font('Helvetica');
-    const fWeb = company.website || 'zarinehusn.com';
-    const fEmail = company.email || 'zarinehusn@gmail.com';
+    const fWeb = company.website || 'derazone.com';
+    const fEmail = company.email || 'derazone@gmail.com';
     const fPhone = company.phone || '+92 301 4617844';
-    const fInsta = company.instagram || 'zarin_e_husn';
+    const fInsta = company.instagram || 'derazone01';
     const fAddr = company.address || 'Lahore, Punjab, Pakistan';
 
     const logoYOffset = startY + 60; // Shift down to make room for logo
@@ -246,7 +246,7 @@ async function buildPdf(pdfPath, invId, snapshot, liveOrder, company) {
 
     doc.rect(0, 780, 600, 65).fillAndStroke(C_BLACK, C_BLACK);
     doc.fillColor(C_GOLD).fontSize(9).font('Helvetica-Bold');
-    doc.text(`Thank you for shopping with Zarin-e-Husn!`, 0, 795, { align: 'center', width: 600 });
+    doc.text(`Thank you for shopping with DERA ZONE!`, 0, 795, { align: 'center', width: 600 });
     doc.fillColor('#dddddd').fontSize(8).font('Helvetica');
     doc.text(`${fWeb}   |   ${fEmail}   |   ${fPhone}`, 0, 810, { align: 'center', width: 600 });
 
@@ -259,3 +259,5 @@ async function buildPdf(pdfPath, invId, snapshot, liveOrder, company) {
 }
 
 module.exports = { buildPdf };
+
+

@@ -1,5 +1,5 @@
 /* ============================================================
-   ZARIN-E-HUSN — Upload Routes
+   DERA ZONE — Upload Routes
    Uploads to Cloudinary (persistent) → Firebase Storage → Local disk
    ============================================================ */
 const express = require('express');
@@ -14,8 +14,8 @@ const router = express.Router();
 
 
 let uploadDir = path.join(__dirname, '..', '..', 'images', 'products');
-const hostingerPersistentDir = '/home/u480756160/domains/zarinehusn.com/persistent_uploads';
-if (fs.existsSync('/home/u480756160/domains/zarinehusn.com')) {
+const hostingerPersistentDir = '/home/u480756160/domains/derazone.com/persistent_uploads';
+if (fs.existsSync('/home/u480756160/domains/derazone.com')) {
   uploadDir = hostingerPersistentDir;
 }
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
@@ -56,7 +56,7 @@ router.post('/', requireRole('super_admin', 'admin'), (req, res) => {
 
         const result = await new Promise((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
-            { public_id: uniqueName, resource_type: resourceType, folder: 'zarin-e-husn/products' },
+            { public_id: uniqueName, resource_type: resourceType, folder: 'DERA ZONE/products' },
             (error, result) => error ? reject(error) : resolve(result)
           );
           stream.end(req.file.buffer);
@@ -105,3 +105,4 @@ router.post('/', requireRole('super_admin', 'admin'), (req, res) => {
 });
 
 module.exports = router;
+

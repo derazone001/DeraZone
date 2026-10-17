@@ -1,8 +1,8 @@
 /* ============================================================
-   ZARIN-E-HUSN - Search System
+   DERA ZONE - Search System
    Searches all products, pages, categories, keywords
    ============================================================ */
-const ZARINEHUSN_STATIC_SEARCH_INDEX = [
+const derazone_STATIC_SEARCH_INDEX = [
   /* Categories */
   { type: 'category', title: 'All Collections',   keywords: 'all shop products catalog browse', url: 'shop.html',     badge: 'Category' },
   { type: 'category', title: 'Jewelry',            keywords: 'jewelry rings bracelets necklaces earrings bangles sets gold silver', url: 'jewelry.html', badge: 'Category' },
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!q || q.length < 2) { results.innerHTML = ''; return; }
     
     // Search Static Index
-    const staticMatches = ZARINEHUSN_STATIC_SEARCH_INDEX.filter(item =>
+    const staticMatches = derazone_STATIC_SEARCH_INDEX.filter(item =>
       item.title.toLowerCase().includes(q) ||
       item.keywords.toLowerCase().includes(q)
     );
@@ -142,3 +142,5 @@ function highlight(text, query) {
 window.closeSearchOverlay = function() {
   document.getElementById('search-overlay')?.classList.remove('active');
 }
+
+

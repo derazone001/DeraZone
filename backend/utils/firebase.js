@@ -1,5 +1,5 @@
 /* ============================================================
-   ZARIN-E-HUSN — Firebase Admin SDK Initialization
+   DERA ZONE — Firebase Admin SDK Initialization
    Returns null safely when credentials are not configured.
    All routes check getDB() === null to use in-memory fallback.
    ============================================================ */
@@ -87,3 +87,4 @@ function getDB() {
 }
 
 module.exports = { initFirebase, getDB, admin };
+

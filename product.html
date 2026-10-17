@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Product — Zarin-e-Husn | skincare & Jewelry Pakistan</title>
-  <meta name="description" content="Shop premium skincare and jewelry at Zarin-e-Husn Pakistan. Cash on Delivery available. serums, clips, toners, necklaces, earrings & more." />
-  <link rel="icon" type="image/png" href="/images/logo.png?v=3" />
+  <title>DERA ZONE - Shop Smart. Live Better.</title>
+  <meta name="description" content="Shop premium skincare and jewelry at DERA ZONE Pakistan. Cash on Delivery available. serums, clips, toners, necklaces, earrings & more." />
+  <link rel="icon" type="image/png" href="images/logo-square.png" />
   <link rel="stylesheet" href="css/style.css?v=1790277302184" />
   <link rel="stylesheet" href="css/pages.css?v=3" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
@@ -15,45 +15,34 @@
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
 </head>
-<body>
+<body >
 
-<nav style="background: #fff; padding: 25px 0 15px 0;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 0 40px; width: 100%; box-sizing: border-box;">
-      
-      <!-- LEFT: Search -->
-      <div class="nav-left" style="width: 33.33%; display: flex; justify-content: flex-start; align-items: center;">
-        <button id="search-toggle" aria-label="Search" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #111; padding: 0;">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
-        <button class="hamburger" aria-label="Menu" style="background: none; border: none; cursor: pointer; display: none;">
-          <span style="background: #111;"></span><span style="background: #111;"></span><span style="background: #111;"></span>
-        </button>
+<nav class="dz-nav">
+    <div class="nav-container">
+      <div class="nav-left">
+        <button id="search-toggle" aria-label="Search" class="icon-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
       </div>
-
-      <!-- CENTER: Urdu Text Logo -->
-      <div class="nav-center" style="width: 33.33%; text-align: center;">
-        <a href="/" style="text-decoration: none; color: #111; font-family: 'Cairo', sans-serif; font-size: 3.2rem; font-weight: 900; line-height: 1; display: inline-block; white-space: nowrap; letter-spacing: 2px;">
-          &#1586;&#1614;&#1585;&#1616;&#1740;&#1606; &#1581;&#1587;&#1606;
-        </a>
+      <div class="nav-center">
+        <a href="/" class="brand-logo">DERA ZONE</a>
       </div>
-
-      <!-- RIGHT: User & Cart -->
-      <div class="nav-right" style="width: 33.33%; display: flex; justify-content: flex-end; align-items: center; gap: 25px;">
-        <a href="account" aria-label="Account" style="color: #111; font-size: 1.5rem;"><i class="fa-regular fa-user"></i></a>
-        <button data-open-cart aria-label="Bag" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #111; position: relative; padding: 0;">
-          <i class="fa-solid fa-bag-shopping"></i>
-          <span class="cart-count" style="display:none">0</span>
+      <div class="nav-right">
+        <a href="account" aria-label="Account" class="icon-btn"><i class="fa-regular fa-user"></i></a>
+        <button data-open-cart aria-label="Bag" class="icon-btn cart-btn">
+          <i class="fa-solid fa-bag-shopping"></i><span class="cart-count" style="display:none">0</span>
         </button>
       </div>
     </div>
-    
-    <!-- BOTTOM LINKS -->
-    <ul class="nav-links" style="display: flex; justify-content: center; gap: 40px; list-style: none; margin: 0; padding: 0; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 2px;">
-      <li><a href="jewelry.html" style="text-decoration: none; color: #111; font-weight: 600;">JEWELRY</a></li>
-      <li style="color: #ddd; user-select: none;">&#183;</li>
-      <li><a href="cosmetics.html" style="text-decoration: none; color: #111; font-weight: 600;">COSMETICS</a></li>
-      <li style="color: #ddd; user-select: none;">&#183;</li>
-      <li><a href="shop.html?cat=deals" style="text-decoration: none; color: #111; font-weight: 600;">DEALS</a></li>
+    <ul class="nav-links">
+      <li><a href="shop.html?cat=accessories">ACCESSORIES</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=gadgets">GADGETS</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=wireless-earbuds-audio">AUDIO</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=jewellery">JEWELLERY</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=clothing-apparel">CLOTHING</a></li>
     </ul>
   </nav>
 <!-- SEARCH OVERLAY -->
@@ -134,15 +123,15 @@
       <div class="footer-col get-in-touch-col">
           <h4>Get In Touch</h4>
           <ul class="get-in-touch-list">
-            <li><i class="fa-regular fa-envelope" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-zarinehusn="email">zarinehusn@gmail.com</span></li>
-            <li><i class="fa-brands fa-whatsapp" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-zarinehusn="phone">+92 315 0727131</span></li>
-            <li><i class="fa-solid fa-location-dot" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-zarinehusn="location">Lahore, Pakistan</span></li>
-            <li><i class="fa-regular fa-clock" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-zarinehusn="hours">Mon-Sat: 10am - 7pm</span></li>
+            <li><i class="fa-regular fa-envelope" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-derazone="email">derazone@gmail.com</span></li>
+            <li><i class="fa-brands fa-whatsapp" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-derazone="phone">+92 315 0727131</span></li>
+            <li><i class="fa-solid fa-location-dot" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-derazone="location">Lahore, Pakistan</span></li>
+            <li><i class="fa-regular fa-clock" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-derazone="hours">Mon-Sat: 10am - 7pm</span></li>
           </ul>
         </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2026 <span class="gold-text">Zarin-e-Husn</span>. All rights reserved.</p>
+      <p>© 2026 <span class="gold-text">DERA ZONE</span>. All rights reserved.</p>
       <div class="footer-pay">
         <span class="pay-badge">COD</span>
         <span class="pay-badge">Bank Deposit</span>
@@ -200,15 +189,15 @@
   }
 
 
-  document.title = `${product.name} — Zarin-e-Husn`;
+  document.title = `${product.name} — DERA ZONE`;
 
   /* ── Dynamic OG meta update ── */
   const metaDesc = document.querySelector('meta[name="description"]');
   if (metaDesc) metaDesc.setAttribute('content',
-    `${product.name} — Buy online in Pakistan. PKR ${Number(product.price).toLocaleString()}. ${product.description ? product.description.slice(0,100) + '…' : 'Shop at Zarin-e-Husn.'}`
+    `${product.name} — Buy online in Pakistan. PKR ${Number(product.price).toLocaleString()}. ${product.description ? product.description.slice(0,100) + '…' : 'Shop at DERA ZONE.'}`
   );
   const ogTitle = document.querySelector('meta[property="og:title"]');
-  if (ogTitle) ogTitle.setAttribute('content', `${product.name} — Zarin-e-Husn Pakistan`);
+  if (ogTitle) ogTitle.setAttribute('content', `${product.name} — DERA ZONE Pakistan`);
   const ogDesc = document.querySelector('meta[property="og:description"]');
   if (ogDesc) ogDesc.setAttribute('content',
     `${product.name} — PKR ${Number(product.price).toLocaleString()}. ${product.description ? product.description.slice(0,120) + '…' : 'Shop skincare & jewelry online in Pakistan.'}`
@@ -216,7 +205,7 @@
   const ogImg = document.querySelector('meta[property="og:image"]');
   if (ogImg && product.images && product.images[0]) ogImg.setAttribute('content', product.images[0]);
   const twTitle = document.querySelector('meta[name="twitter:title"]');
-  if (twTitle) twTitle.setAttribute('content', `${product.name} — Zarin-e-Husn Pakistan`);
+  if (twTitle) twTitle.setAttribute('content', `${product.name} — DERA ZONE Pakistan`);
   const twImg = document.querySelector('meta[name="twitter:image"]');
   if (twImg && product.images && product.images[0]) twImg.setAttribute('content', product.images[0]);
 
@@ -235,12 +224,12 @@
     "@context": "https://schema.org",
     "@type": "Product",
     "name": product.name,
-    "description": product.description || `${product.name} — shop online at Zarin-e-Husn Pakistan.`,
+    "description": product.description || `${product.name} — shop online at DERA ZONE Pakistan.`,
     "image": (product.images && product.images.length) ? product.images : [`${DOMAIN}/images/categories/necklace.jpg`],
     "sku": product.id || (product.name ? product.name.replace(/\s+/g, '-').toLowerCase() : 'product'),
     "brand": {
       "@type": "Brand",
-      "name": "Zarin-e-Husn"
+      "name": "DERA ZONE"
     },
     "category": product.category || "Jewelry",
     "url": productUrl,
@@ -253,7 +242,7 @@
       "itemCondition": "https://schema.org/NewCondition",
       "seller": {
         "@type": "Organization",
-        "name": "Zarin-e-Husn"
+        "name": "DERA ZONE"
       }
     }
   });
@@ -319,8 +308,8 @@
   const totalMediaCount = images.length + (hasVideo ? 1 : 0);
   const galleryThumbsHTML = (totalMediaCount > 1)
     ? `<div class="product-gallery-thumbs" id="pd-thumbs">
-        ${images.map((url, i) => `<div class="gallery-thumb${(i===0 && hasImages) ? ' active' : ''}" data-idx="${i}" onclick="golnisaSwitchGalleryImage(${i})"><img src="${url}" style="width:100%;" onerror="this.parentElement.style.display='none'"/></div>`).join('')}
-        ${hasVideo ? `<div class="gallery-thumb${!hasImages ? ' active' : ''}" data-idx="video" onclick="golnisaSwitchGalleryImage('video')"><i class="fa-solid fa-circle-play" style="font-size:1.3rem;"></i></div>` : ''}
+        ${images.map((url, i) => `<div class="gallery-thumb${(i===0 && hasImages) ? ' active' : ''}" data-idx="${i}" onclick="derazoneSwitchGalleryImage(${i})"><img src="${url}" style="width:100%;" onerror="this.parentElement.style.display='none'"/></div>`).join('')}
+        ${hasVideo ? `<div class="gallery-thumb${!hasImages ? ' active' : ''}" data-idx="video" onclick="derazoneSwitchGalleryImage('video')"><i class="fa-solid fa-circle-play" style="font-size:1.3rem;"></i></div>` : ''}
       </div>`
     : '';
 
@@ -360,14 +349,14 @@
     </div>`;
 
   /* Gallery image/video switching */
-  window.golnisaGalleryImages = images || [];
-  window.golnisaGalleryVideo = product.video || null;
-  window.golnisaSwitchGalleryImage = function (idx) {
+  window.derazoneGalleryImages = images || [];
+  window.derazoneGalleryVideo = product.video || null;
+  window.derazoneSwitchGalleryImage = function (idx) {
     const main = document.getElementById('pd-gallery-main');
-    if (idx === 'video' && window.golnisaGalleryVideo) {
-      main.innerHTML = `<video src="${window.golnisaGalleryVideo}" controls autoplay muted style="width:100%;"></video>`;
-    } else if (typeof idx === 'number' && window.golnisaGalleryImages[idx]) {
-      main.innerHTML = `<img src="${window.golnisaGalleryImages[idx]}" style="width:100%;" onerror="window.zhHandleImageError(this, '${emoji}', 'product-main')"/>`;
+    if (idx === 'video' && window.derazoneGalleryVideo) {
+      main.innerHTML = `<video src="${window.derazoneGalleryVideo}" controls autoplay muted style="width:100%;"></video>`;
+    } else if (typeof idx === 'number' && window.derazoneGalleryImages[idx]) {
+      main.innerHTML = `<img src="${window.derazoneGalleryImages[idx]}" style="width:100%;" onerror="window.zhHandleImageError(this, '${emoji}', 'product-main')"/>`;
     }
     document.querySelectorAll('#pd-thumbs .gallery-thumb').forEach(t => t.classList.remove('active'));
     document.querySelector(`#pd-thumbs .gallery-thumb[data-idx="${idx}"]`)?.classList.add('active');
@@ -437,7 +426,7 @@
       msg += ` ${itemLink}`;
       
       // Use whatsapp number from global WHATSAPP_NUMBER if defined, or a fallback
-      const waNum = window.ZARINEHUSN_CONFIG?.whatsapp?.number || '923150727131';
+      const waNum = window.derazone_CONFIG?.whatsapp?.number || '923150727131';
       const url = `https://wa.me/${waNum.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`;
       window.open(url, '_blank');
     });
@@ -488,8 +477,8 @@
     if (related.length) {
       document.getElementById('pd-related').style.display = '';
       const grid = document.getElementById('pd-related-grid');
-      grid.innerHTML = related.map(zarinehusnProductCardHTML).join('');
-      zarinehusnReInitCards(grid);
+      grid.innerHTML = related.map(derazoneProductCardHTML).join('');
+      derazoneReInitCards(grid);
     }
   } catch (err) {
     console.error('Failed to load related products:', err);
@@ -497,7 +486,7 @@
 })();
 
 /* Simple named-color to CSS color mapping for the color swatches */
-function golnisaColorSwatch(name) {
+function derazoneColorSwatch(name) {
   const map = {
     ivory: '#f5f0e8', blush: '#e8c4c4', gold: '#c9a84c', 'rose gold': '#e0bfb8',
     black: '#1a1a1a', 'obsidian black': '#1a1a1a', champagne: '#d9c8a8',
@@ -511,4 +500,5 @@ function golnisaColorSwatch(name) {
 
 </body>
 </html>
+
 

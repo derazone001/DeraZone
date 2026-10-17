@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Zarin-e-Husn Admin Panel</title>
+<title>DERA ZONE Admin Panel</title>
 <link rel="icon" type="image/png" href="/images/logo.png?v=3" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet"/>
 <!-- SheetJS for Excel export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
-  --font-display: "Playfair Display", serif;
-  --font-body: "Lato", sans-serif;
-  --bg:#faf8f5; --card:#ffffff; --card2:#fdfbf8; --border:rgba(201,168,76,0.20);
-  --gold:#c9a84c; --gold2:#e8d48b; --text:#2c2824; --muted:#9a928a;
-  --green:#22c55e; --red:#ef4444; --blue:#3b82f6; --orange:#f59e0b;
-  --sidebar:240px;
+  --font-display: "Orbitron", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --bg: #f8f9fa; --card: #ffffff; --card2: #ffffff; --border: rgba(112,0,255,0.15);
+  --gold: #7000ff; --gold2: #9d4edd; --text: #1a1a1a; --muted: #888888;
+  --green: #22c55e; --red: #ef4444; --blue: #3b82f6; --orange: #f59e0b;
+  --sidebar: 240px;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); font-weight: 600; }
@@ -25,7 +25,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);display
 /* ── Login Screen ── */
 #login-screen{
   position:fixed;inset:0;z-index:9999;
-  background:linear-gradient(135deg,#faf8f5 60%,#f2ede6);
+  background:linear-gradient(135deg,#ffffff 60%,#f0f0f0);
   display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;
 }
 #login-screen.hidden{display:none!important;}
@@ -289,7 +289,7 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
 <!-- ═══════════════════════════════════════════ LOGIN SCREEN ═══ -->
 <div id="login-screen">
   <div class="login-box">
-    <h1>Zarin-e-Husn <span style="font-weight:300;color:var(--muted)">Admin</span></h1>
+    <h1>DERA ZONE <span style="font-weight:300;color:var(--muted)">Admin</span></h1>
     <p>Sign in to manage your store</p>
     <div id="login-error" class="login-error"></div>
     <input type="text"     id="login-username" placeholder="Username" autocomplete="username"/>
@@ -1037,7 +1037,7 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
       </div>
       <div>
         <label style="font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:6px;">Promo Code <span style="opacity:.5">(optional)</span></label>
-        <input type="text" id="promo-code" placeholder="e.g. Zarin-e-Husn20"
+        <input type="text" id="promo-code" placeholder="e.g. DERA ZONE20"
           style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 14px;font-family:inherit;font-size:.85rem;border-radius:6px;outline:none;box-sizing:border-box;text-transform:uppercase;">
       </div>
     </div>
@@ -1246,7 +1246,7 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
     <div id="company-msg" style="display:none;padding:10px;border-radius:7px;font-size:0.85rem;margin-bottom:14px;"></div>
     
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div class="form-group"><label>Company Name</label><input type="text" id="cs-name" placeholder="e.g. Zarin-e-Husn"/></div>
+      <div class="form-group"><label>Company Name</label><input type="text" id="cs-name" placeholder="e.g. DERA ZONE"/></div>
       <div class="form-group">
           <label>Company Logo</label>
           <div style="display:flex; gap:10px;">
@@ -1284,7 +1284,7 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
 
   <div class="settings-section" id="launch-date-section">
     <h3><i class="fa-solid fa-flag" style="color:var(--gold);margin-right:8px"></i>Site Launch Date</h3>
-    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:14px;">Monthly &amp; lifetime profit statements only count sales from this date onward. Set it to the day Zarin-e-Husn actually went live.</p>
+    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:14px;">Monthly &amp; lifetime profit statements only count sales from this date onward. Set it to the day DERA ZONE actually went live.</p>
     <div id="launch-date-msg" style="display:none;padding:10px;border-radius:7px;font-size:0.85rem;margin-bottom:14px;"></div>
     <div class="form-group" style="max-width:240px;"><label>Launch Date</label><input type="date" id="launch-date-input"/></div>
     <button class="btn btn-gold" onclick="saveLaunchDate()">Save Launch Date</button>
@@ -1518,31 +1518,14 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
           <select id="p-category">
 
         <option value="">Select category</option>
-        <optgroup label="Jewelry">
-          <option value="bracelets">Bracelets</option>
-          <option value="rings">Rings</option>
-          <option value="earrings">Earrings</option>
-          <option value="necklace">Necklace</option>
-          <option value="bangles">Bangles</option>
-          <option value="jewelry-sets">Jewelry Sets</option>
-        </optgroup>
-        <optgroup label="Cosmetics">
-          <option value="face-cosmetics">Face Cosmetics</option>
-          <option value="eye-makeup">Eye Makeup</option>
-          <option value="lip-makeup">Lip Makeup</option>
-          <option value="nail-cosmetics">Nail Cosmetics</option>
-          <option value="skin-care">Skin Care</option>
-          <option value="hand-foot-care">Hand & Foot Care</option>
-          <option value="makeup-tools">Makeup Tools & Brushes</option>
-          <option value="makeup-accessories">Makeup Accessories</option>
-        </optgroup>
-        <optgroup label="Deals">
-          <option value="deals">Deals</option>
-        </optgroup>
-        <optgroup label="Add-on Boxes">
-          <option value="ring-boxes">Ring Boxes</option>
-          <option value="jewelry-boxes">Jewelry Boxes</option>
-        </optgroup>
+        <option value="accessories">Accessories</option>
+        <option value="gadgets">Gadgets</option>
+        <option value="wireless-earbuds-audio">Wireless Earbuds & Audio</option>
+        <option value="jewellery">Jewellery</option>
+        <option value="fashion-lifestyle">Fashion & Lifestyle</option>
+        <option value="footwear">Footwear</option>
+        <option value="clothing-apparel">Clothing & Apparel</option>
+        <option value="winter-collection">Winter Collection</option>
 
           </select>
         </div>
@@ -1852,8 +1835,8 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
 <!-- ════════════════════════════ JAVASCRIPT ═════════════════════ -->
 <script>
 const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
-const API = IS_LOCAL ? 'http://localhost:3001/api' : 'https://zarinehusn.com/api';
-let adminToken  = localStorage.getItem('zarinehusn_admin_token') || null;
+const API = IS_LOCAL ? 'http://localhost:3001/api' : 'https://derazone.com/api';
+let adminToken  = localStorage.getItem('derazone_admin_token') || null;
 let currentUser = null;
 let notifications = [];
 let sseSource    = null;
@@ -1937,7 +1920,7 @@ async function doLogin() {
 
     adminToken  = data.token;
     currentUser = data.user;
-    localStorage.setItem('zarinehusn_admin_token', adminToken);
+    localStorage.setItem('derazone_admin_token', adminToken);
 
     /* ← THE FIX: hide login screen BEFORE calling initDashboard */
     hideLogin();
@@ -2081,7 +2064,7 @@ function logout() {
 function clearSession() {
   adminToken  = null;
   currentUser = null;
-  localStorage.removeItem('zarinehusn_admin_token');
+  localStorage.removeItem('derazone_admin_token');
   if (sseSource) { sseSource.close(); sseSource = null; }
 }
 
@@ -2602,7 +2585,7 @@ function exportDailyStatementsExcel() {
       XLSX.utils.book_append_sheet(wb, wsLifetime, 'Lifetime Snapshot');
     }
 
-    XLSX.writeFile(wb, `Zarin-e-Husn - Daily Statement - ${today()}.xlsx`);
+    XLSX.writeFile(wb, `DERA ZONE - Daily Statement - ${today()}.xlsx`);
     toast('30-day statement exported ✓', 'success');
   } catch (err) {
     toast('Export failed: ' + err.message, 'error');
@@ -2695,7 +2678,7 @@ function exportMonthlyStatementsExcel() {
     wsLines['!cols'] = [{wch:10},{wch:14},{wch:13},{wch:24},{wch:6},{wch:18},{wch:15},{wch:14},{wch:12},{wch:13}];
     XLSX.utils.book_append_sheet(wb, wsLines, 'Itemised Sales');
 
-    XLSX.writeFile(wb, `Zarin-e-Husn - Monthly Statement - ${today()}.xlsx`);
+    XLSX.writeFile(wb, `DERA ZONE - Monthly Statement - ${today()}.xlsx`);
     toast('Monthly statement exported ✓', 'success');
   } catch (err) {
     toast('Export failed: ' + err.message, 'error');
@@ -2788,7 +2771,7 @@ async function exportSingleMonthExcel(monthStr, monthLabel) {
     wsSummary['!cols'] = [{wch:16},{wch:16},{wch:14},{wch:18},{wch:16},{wch:16}];
     XLSX.utils.book_append_sheet(wb, wsSummary, 'Month Summary');
 
-    XLSX.writeFile(wb, `Zarin-e-Husn - ${monthLabel} Statement.xlsx`);
+    XLSX.writeFile(wb, `DERA ZONE - ${monthLabel} Statement.xlsx`);
     toast(`${monthLabel} statement exported ✓`, 'success');
   } catch (err) {
     toast('Export failed: ' + err.message, 'error');
@@ -4186,7 +4169,7 @@ function exportProductsExcel() {
   });
 
   const dateStr = new Date().toISOString().slice(0, 10);
-  XLSX.writeFile(wb, `Zarin-e-Husn_Products_${dateStr}.xlsx`);
+  XLSX.writeFile(wb, `DERA ZONE_Products_${dateStr}.xlsx`);
   toast('Beautiful Excel file downloaded! ✓', 'success');
 }
 
@@ -5284,12 +5267,12 @@ async function exportExcel(type) {
 
     if (type === 'subscribers') {
       rows = allSubscribers.length ? allSubscribers : (await (await apiFetch('/newsletter')).json()).subscribers || [];
-      filename  = `Zarin-e-Husn - Subscribers - ${today()}.xlsx`;
+      filename  = `DERA ZONE - Subscribers - ${today()}.xlsx`;
       sheetName = 'Subscribers';
       rows = rows.map((s, i) => ({ '#': i+1, Email: s.email, 'Subscribed At': fmtDate(s.subscribedAt), Status: 'Active' }));
     } else if (type === 'orders') {
       rows = allOrders.length ? allOrders : (await (await apiFetch('/orders')).json()).orders || [];
-      filename  = `Zarin-e-Husn - Orders - ${today()}.xlsx`;
+      filename  = `DERA ZONE - Orders - ${today()}.xlsx`;
       sheetName = 'Orders';
       rows = rows.map(o => ({
         'Order Ref':    o.id,
@@ -5307,7 +5290,7 @@ async function exportExcel(type) {
       }));
     } else if (type === 'messages') {
       rows = allMessages.length ? allMessages : (await (await apiFetch('/contact')).json()).messages || [];
-      filename  = `Zarin-e-Husn - Messages - ${today()}.xlsx`;
+      filename  = `DERA ZONE - Messages - ${today()}.xlsx`;
       sheetName = 'Messages';
       rows = rows.map(m => ({
         Name:    m.name,
@@ -5422,7 +5405,7 @@ function renderAbandoned(list) {
       ? '<span style="background:rgba(34,197,94,0.15);color:#22c55e;padding:3px 10px;border-radius:20px;font-size:0.68rem;font-weight:600">✅ Resolved</span>'
       : '<span style="background:rgba(249,115,22,0.15);color:#f97316;padding:3px 10px;border-radius:20px;font-size:0.68rem;font-weight:600">🛒 Abandoned</span>';
     const waLink = d.phone
-      ? `<a href="https://wa.me/${d.phone.replace(/\D/g,'')}?text=Hi+${encodeURIComponent(d.fname||'')}%2C+you+left+something+in+your+cart+at+Zarin-e-Husn+Jewelry%21+Complete+your+order+here%3A+https%3A%2F%2Fzarinehusn.com%2Fcheckout.html" target="_blank" class="btn btn-outline" style="font-size:0.7rem;padding:5px 10px;color:#25d366;border-color:rgba(37,211,102,0.4)"><i class="fa-brands fa-whatsapp"></i> Recover</a>`
+      ? `<a href="https://wa.me/${d.phone.replace(/\D/g,'')}?text=Hi+${encodeURIComponent(d.fname||'')}%2C+you+left+something+in+your+cart+at+DERA ZONE+Jewelry%21+Complete+your+order+here%3A+https%3A%2F%2Fderazone.com%2Fcheckout.html" target="_blank" class="btn btn-outline" style="font-size:0.7rem;padding:5px 10px;color:#25d366;border-color:rgba(37,211,102,0.4)"><i class="fa-brands fa-whatsapp"></i> Recover</a>`
       : '';
     return `<tr>
       <td>${i + 1}</td>
@@ -5461,10 +5444,10 @@ async function convertAbandonedToOrder(id) {
 function showConfirmModal({ icon, title, message, confirmText, cancelText, confirmColor }) {
   return new Promise(resolve => {
     /* Remove any existing */
-    document.getElementById('zarinehusn-confirm-modal')?.remove();
+    document.getElementById('derazone-confirm-modal')?.remove();
 
     const overlay = document.createElement('div');
-    overlay.id = 'zarinehusn-confirm-modal';
+    overlay.id = 'derazone-confirm-modal';
     overlay.style.cssText = `
       position:fixed;inset:0;z-index:99999;
       background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);
@@ -5527,7 +5510,7 @@ function exportAbandonedExcel() {
   const ws = XLSX.utils.json_to_sheet(rows);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Abandoned');
-  XLSX.writeFile(wb, 'zarinehusn-abandoned-orders.xlsx');
+  XLSX.writeFile(wb, 'derazone-abandoned-orders.xlsx');
 }
 
 function updateVisitorCount(count) {
@@ -5615,13 +5598,13 @@ function renderVisitors(visitors) {
 </script>
 
 <!-- ── Custom Confirm Modal ── -->
-<div id="zarinehusn-confirm-overlay" style="
+<div id="derazone-confirm-overlay" style="
   position:fixed;inset:0;z-index:9999;
   background:rgba(0,0,0,0);
   display:none;align-items:center;justify-content:center;
   backdrop-filter:blur(0px);
   transition:all .25s ease;">
-  <div id="zarinehusn-confirm-box" style="
+  <div id="derazone-confirm-box" style="
     background:linear-gradient(145deg,#1a1a1a,#111);
     border:1px solid rgba(184,136,58,0.3);
     border-radius:20px;
@@ -5636,21 +5619,21 @@ function renderVisitors(visitors) {
     <div style="height:3px;background:linear-gradient(90deg,transparent,#b8883a,transparent);"></div>
     <!-- Icon + Content -->
     <div style="padding:32px 32px 24px;text-align:center;">
-      <div id="zarinehusn-confirm-icon" style="
+      <div id="derazone-confirm-icon" style="
         width:64px;height:64px;border-radius:50%;
         background:rgba(217,106,106,0.12);
         border:1px solid rgba(217,106,106,0.25);
         display:flex;align-items:center;justify-content:center;
         margin:0 auto 20px;font-size:1.6rem;">🗑️</div>
-      <h3 id="zarinehusn-confirm-title" style="
+      <h3 id="derazone-confirm-title" style="
         color:#fff;font-size:1.15rem;font-weight:700;
         margin:0 0 10px;letter-spacing:0.01em;"></h3>
-      <p id="zarinehusn-confirm-msg" style="
+      <p id="derazone-confirm-msg" style="
         color:#888;font-size:0.875rem;line-height:1.6;margin:0;"></p>
     </div>
     <!-- Buttons -->
     <div style="padding:0 24px 24px;display:flex;gap:10px;">
-      <button id="zarinehusn-confirm-cancel" style="
+      <button id="derazone-confirm-cancel" style="
         flex:1;padding:13px;border-radius:10px;
         background:rgba(255,255,255,0.05);
         border:1px solid rgba(255,255,255,0.1);
@@ -5658,7 +5641,7 @@ function renderVisitors(visitors) {
         cursor:pointer;transition:all .2s;letter-spacing:0.03em;">
         Cancel
       </button>
-      <button id="zarinehusn-confirm-ok" style="
+      <button id="derazone-confirm-ok" style="
         flex:1;padding:13px;border-radius:10px;
         background:linear-gradient(135deg,#d96a6a,#c0392b);
         border:none;color:#fff;font-size:0.875rem;font-weight:700;
@@ -5674,27 +5657,27 @@ function renderVisitors(visitors) {
 /* ── Custom Confirm Dialog ── */
 function bktConfirm({ title = 'Are you sure?', message = 'This action cannot be undone.', confirmText = 'Delete', icon = '🗑️', danger = true } = {}) {
   return new Promise(resolve => {
-    const overlay = document.getElementById('zarinehusn-confirm-overlay');
-    const box     = document.getElementById('zarinehusn-confirm-box');
-    const okBtn   = document.getElementById('zarinehusn-confirm-ok');
-    const cancelBtn = document.getElementById('zarinehusn-confirm-cancel');
+    const overlay = document.getElementById('derazone-confirm-overlay');
+    const box     = document.getElementById('derazone-confirm-box');
+    const okBtn   = document.getElementById('derazone-confirm-ok');
+    const cancelBtn = document.getElementById('derazone-confirm-cancel');
 
-    document.getElementById('zarinehusn-confirm-title').textContent = title;
-    document.getElementById('zarinehusn-confirm-msg').textContent   = message;
-    document.getElementById('zarinehusn-confirm-icon').textContent  = icon;
+    document.getElementById('derazone-confirm-title').textContent = title;
+    document.getElementById('derazone-confirm-msg').textContent   = message;
+    document.getElementById('derazone-confirm-icon').textContent  = icon;
     okBtn.textContent = confirmText;
 
     /* Danger vs neutral style */
     if (danger) {
       okBtn.style.background = 'linear-gradient(135deg,#d96a6a,#c0392b)';
       okBtn.style.boxShadow  = '0 4px 20px rgba(217,106,106,0.3)';
-      document.getElementById('zarinehusn-confirm-icon').style.background = 'rgba(217,106,106,0.12)';
-      document.getElementById('zarinehusn-confirm-icon').style.border = '1px solid rgba(217,106,106,0.25)';
+      document.getElementById('derazone-confirm-icon').style.background = 'rgba(217,106,106,0.12)';
+      document.getElementById('derazone-confirm-icon').style.border = '1px solid rgba(217,106,106,0.25)';
     } else {
       okBtn.style.background = 'linear-gradient(135deg,#b8883a,#a8873c)';
       okBtn.style.boxShadow  = '0 4px 20px rgba(184,136,58,0.3)';
-      document.getElementById('zarinehusn-confirm-icon').style.background = 'rgba(184,136,58,0.12)';
-      document.getElementById('zarinehusn-confirm-icon').style.border = '1px solid rgba(184,136,58,0.25)';
+      document.getElementById('derazone-confirm-icon').style.background = 'rgba(184,136,58,0.12)';
+      document.getElementById('derazone-confirm-icon').style.border = '1px solid rgba(184,136,58,0.25)';
     }
 
     /* Show */
@@ -5797,7 +5780,7 @@ async function approveReview(id, approve) {
   try {
     const res = await fetch(`${API}/reviews/${id}/approve`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('zarinehusn_admin_token')}` },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('derazone_admin_token')}` },
       body: JSON.stringify({ approved: approve }),
     });
     if (res.ok) { toast(approve ? 'Review approved — now visible on homepage ✓' : 'Review hidden.', 'success'); loadReviews(); }
@@ -6155,6 +6138,7 @@ async function deleteReviewImage(id) {
 </script>
 </body>
 </html>
+
 
 
 

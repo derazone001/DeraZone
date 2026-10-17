@@ -87,3 +87,4 @@ router.post('/verify', async (req, res) => {
    Payment methods are now: Cash on Delivery (COD) and Bank Deposit. ── */
 
 module.exports = router;
+

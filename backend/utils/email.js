@@ -1,5 +1,5 @@
 /* ============================================================
-   ZARIN-E-HUSN — Email Utility (Resend)
+   DERA ZONE — Email Utility (Resend)
    ============================================================ */
 const { Resend } = require('resend');
 
@@ -7,7 +7,7 @@ function getResend() {
   return new Resend(process.env.RESEND_API_KEY);
 }
 
-const FROM = 'Zarin-e-Husn <orders@zarinehusn.com>';
+const FROM = 'DERA ZONE <orders@derazone.com>';
 const TO   = process.env.EMAIL_TO;
 
 /* ── Order Confirmation Email (to customer) ── */
@@ -23,25 +23,25 @@ async function sendOrderConfirmation({ to, orderRef, items, delivery, total, pay
   await resend.emails.send({
     from: FROM,
     to,
-    subject: `Order Confirmed — ${orderRef} | Zarin-e-Husn`,
+    subject: `Order Confirmed — ${orderRef} | DERA ZONE`,
     html: `<!DOCTYPE html><html><body style="margin:0;padding:40px;background:#0a0a0a;font-family:Georgia,serif;color:#ccc;">
-      <h1 style="color:#c9a84c;">ZARIN-E-HUSN</h1>
+      <h1 style="color:#7000ff;">DERA ZONE</h1>
       <h2 style="color:#fff;">Order Confirmed ✓</h2>
-      <p>Thank you ${delivery.fname}! Your order <strong style="color:#c9a84c;">${orderRef}</strong> has been placed.</p>
+      <p>Thank you ${delivery.fname}! Your order <strong style="color:#7000ff;">${orderRef}</strong> has been placed.</p>
       <table width="100%" style="margin:24px 0;">${itemRows}</table>
-      <p><strong style="color:#c9a84c;">Total: PKR ${total.toLocaleString()}</strong></p>
+      <p><strong style="color:#7000ff;">Total: PKR ${total.toLocaleString()}</strong></p>
       <p style="color:#888;">Delivering to: ${delivery.address}, ${delivery.city}</p>
       <p style="color:#888;">Payment: ${paymentMethod === 'cod' ? 'Cash on Delivery' : paymentMethod === 'bank_deposit' ? 'Bank Deposit' : paymentMethod}</p>
       ${paymentMethod === 'bank_deposit' ? `
       <div style="margin:18px 0;padding:16px 20px;background:#161616;border:1px solid #2a2a2a;">
-        <p style="color:#c9a84c;margin:0 0 8px;font-weight:bold;">Bank Deposit Details</p>
+        <p style="color:#7000ff;margin:0 0 8px;font-weight:bold;">Bank Deposit Details</p>
         <p style="margin:2px 0;">Bank: Bank Alfalah</p>
         <p style="margin:2px 0;">Account Title: MUHAMMAD SUBHAN</p>
         <p style="margin:2px 0;">Account Number: 09601009896691</p>
         <p style="margin:2px 0;">IBAN: PK45ALFH0960001009896691</p>
         <p style="margin:10px 0 0;color:#aaa;">After placing your order, please send a screenshot of the payment to our WhatsApp.</p>
       </div>` : ''}
-      <p style="color:#555;font-size:.8rem;">Questions? Email zarinehusn@gmail.com</p>
+      <p style="color:#555;font-size:.8rem;">Questions? Email derazone@gmail.com</p>
     </body></html>`,
   });
 }
@@ -57,13 +57,13 @@ async function sendNewOrderNotification({ orderRef, items, delivery, total, paym
     to: TO,
     subject: `🛍️ New Order — ${orderRef} | PKR ${total.toLocaleString()}`,
     html: `<body style="font-family:sans-serif;background:#111;color:#ccc;padding:32px;">
-      <h2 style="color:#c9a84c;">🛍️ New Order — ${orderRef}</h2>
+      <h2 style="color:#7000ff;">🛍️ New Order — ${orderRef}</h2>
       <p><strong>Customer:</strong> ${delivery.fname} ${delivery.lname} (${delivery.email})</p>
       <p><strong>Phone:</strong> ${delivery.phone}</p>
       <p><strong>Address:</strong> ${delivery.address}, ${delivery.city}</p>
       <p><strong>Payment:</strong> ${paymentMethod === 'cod' ? 'Cash on Delivery' : paymentMethod === 'bank_deposit' ? 'Bank Deposit' : paymentMethod}</p>
       <ul>${itemList}</ul>
-      <p style="color:#c9a84c;font-size:1.2rem;"><strong>Total: PKR ${total.toLocaleString()}</strong></p>
+      <p style="color:#7000ff;font-size:1.2rem;"><strong>Total: PKR ${total.toLocaleString()}</strong></p>
     </body>`,
   });
 }
@@ -78,13 +78,13 @@ async function sendContactNotification({ name, email, phone, subject, message })
     to: TO,
     subject: `📬 Contact: ${subject || 'New Message'} — from ${name}`,
     html: `<body style="font-family:sans-serif;background:#111;color:#ccc;padding:32px;">
-      <h2 style="color:#c9a84c;">New Contact Message</h2>
+      <h2 style="color:#7000ff;">New Contact Message</h2>
       <p><strong>Name:</strong> ${name}</p>
       <p><strong>Email:</strong> ${email}</p>
       ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ''}
       ${subject ? `<p><strong>Subject:</strong> ${subject}</p>` : ''}
       <p><strong>Message:</strong></p>
-      <blockquote style="border-left:3px solid #c9a84c;padding:12px 20px;background:#1a1a2a;">${message}</blockquote>
+      <blockquote style="border-left:3px solid #7000ff;padding:12px 20px;background:#1a1a2a;">${message}</blockquote>
     </body>`,
   });
 }
@@ -96,12 +96,12 @@ async function sendNewsletterWelcome(email) {
   await resend.emails.send({
     from: FROM,
     to: email,
-    subject: '💛 Welcome to Zarin-e-Husn',
+    subject: '💛 Welcome to DERA ZONE',
     html: `<body style="margin:0;padding:40px;background:#0a0a0a;font-family:Georgia,serif;text-align:center;color:#ccc;">
-      <h1 style="color:#c9a84c;">ZARIN-E-HUSN</h1>
+      <h1 style="color:#7000ff;">DERA ZONE</h1>
       <h2 style="color:#fff;">Welcome to the Circle 💛</h2>
-      <p style="color:#888;">You're now part of Zarin-e-Husn's exclusive circle. You'll be the first to know about new arrivals, fresh collections, and special offers.</p>
-      <p style="color:#888;font-size:.85rem;margin-top:24px;">Questions? zarinehusn@gmail.com</p>
+      <p style="color:#888;">You're now part of DERA ZONE's exclusive circle. You'll be the first to know about new arrivals, fresh collections, and special offers.</p>
+      <p style="color:#888;font-size:.85rem;margin-top:24px;">Questions? derazone@gmail.com</p>
     </body>`,
   });
 }
@@ -114,9 +114,9 @@ async function sendReplyEmail({ to, customerName, originalMessage, replyText }) 
   await resend.emails.send({
     from: FROM,
     to,
-    subject: `Re: Your message to Zarin-e-Husn`,
+    subject: `Re: Your message to DERA ZONE`,
     html: `<!DOCTYPE html><html><body style="margin:0;padding:40px;background:#faf7f2;font-family:Georgia,serif;color:#2c1f14;">
-      <h2 style="color:#b8883a;">ZARIN-E-HUSN</h2>
+      <h2 style="color:#b8883a;">DERA ZONE</h2>
       <p>Dear ${customerName || 'Valued Customer'},</p>
       <p style="line-height:1.8;">${replyText.replace(/\n/g, '<br>')}</p>
       <hr style="border:none;border-top:1px solid #e8d5b0;margin:24px 0;"/>
@@ -125,7 +125,7 @@ async function sendReplyEmail({ to, customerName, originalMessage, replyText }) 
         ${originalMessage}
       </blockquote>
       <p style="color:#9a8070;font-size:.78rem;margin-top:24px;">
-        Zarin-e-Husn — zarinehusn@gmail.com
+        DERA ZONE — derazone@gmail.com
       </p>
     </body></html>`,
   });
@@ -143,7 +143,7 @@ async function sendBulkPromotion({ subscribers, subject, body, promoCode }) {
         to: email,
         subject,
         html: `<!DOCTYPE html><html><body style="margin:0;padding:40px;background:#faf7f2;font-family:Georgia,serif;color:#2c1f14;text-align:center;">
-          <h2 style="color:#b8883a;letter-spacing:.15em;">ZARIN-E-HUSN</h2>
+          <h2 style="color:#b8883a;letter-spacing:.15em;">DERA ZONE</h2>
           <hr style="border:none;border-top:1px solid #e8d5b0;margin:20px auto;width:80px;"/>
           <div style="max-width:520px;margin:0 auto;text-align:left;line-height:1.9;color:#5a4030;">
             ${body.replace(/\n/g, '<br>')}
@@ -154,8 +154,8 @@ async function sendBulkPromotion({ subscribers, subject, body, promoCode }) {
             <p style="font-family:monospace;font-size:1.6rem;color:#b8883a;font-weight:700;letter-spacing:.2em;margin:0;">${promoCode}</p>
           </div>` : ''}
           <p style="color:#9a8070;font-size:.72rem;margin-top:32px;">
-            You're receiving this because you subscribed to Zarin-e-Husn.<br/>
-            <a href="https://zarinehusn.com/api/newsletter/unsubscribe?email=${encodeURIComponent(email)}" 
+            You're receiving this because you subscribed to DERA ZONE.<br/>
+            <a href="https://derazone.com/api/newsletter/unsubscribe?email=${encodeURIComponent(email)}" 
                style="color:#b8883a;">Unsubscribe</a>
           </p>
         </body></html>`,
@@ -188,14 +188,14 @@ async function sendInvoiceEmail({ to, invoiceRef, customerName, pdfPath, liveOrd
   await resend.emails.send({
     from: FROM,
     to,
-    subject: `Invoice ${invoiceRef} | Zarin-e-Husn`,
+    subject: `Invoice ${invoiceRef} | DERA ZONE`,
     attachments,
     html: `<!DOCTYPE html><html><body style="margin:0;padding:40px;background:#faf7f2;font-family:Georgia,serif;color:#2c1f14;">
-      <h2 style="color:#b8883a;">ZARIN-E-HUSN</h2>
+      <h2 style="color:#b8883a;">DERA ZONE</h2>
       <p>Dear ${customerName || 'Customer'},</p>
-      <p>Thank you for shopping with Zarin-e-Husn. Please find attached the invoice for your order <strong>${invoiceRef}</strong>.</p>
+      <p>Thank you for shopping with DERA ZONE. Please find attached the invoice for your order <strong>${invoiceRef}</strong>.</p>
       <p style="color:#9a8070;font-size:.78rem;margin-top:24px;">
-        Zarin-e-Husn — zarinehusn@gmail.com
+        DERA ZONE — derazone@gmail.com
       </p>
     </body></html>`,
   });
@@ -210,3 +210,5 @@ module.exports = {
   sendBulkPromotion,
   sendInvoiceEmail,
 };
+
+
