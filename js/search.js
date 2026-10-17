@@ -4,18 +4,23 @@
    ============================================================ */
 const derazone_STATIC_SEARCH_INDEX = [
   /* Categories */
-  { type: 'category', title: 'All Collections',   keywords: 'all shop products catalog browse', url: 'shop.html',     badge: 'Category' },
-  { type: 'category', title: 'Jewelry',            keywords: 'jewelry rings bracelets necklaces earrings bangles sets gold silver', url: 'jewelry.html', badge: 'Category' },
-  { type: 'category', title: 'Cosmetics',          keywords: 'cosmetics beauty makeup lipstick blush foundation skincare', url: 'cosmetics.html', badge: 'Category' },
-  { type: 'category', title: 'Deals',              keywords: 'deals sale discount offer reduced price deal bundle', url: 'shop.html?cat=deals', badge: 'Sale' },
+  { type: 'category', title: 'All Collections',           keywords: 'all shop products catalog browse trending', url: 'shop.html', badge: 'Category' },
+  { type: 'category', title: 'Accessories',               keywords: 'accessories bags belts caps eyewear wallet daily', url: 'shop.html?cat=accessories', badge: 'Category' },
+  { type: 'category', title: 'Gadgets',                   keywords: 'gadgets smart gadgets smartwatch chargers tech devices', url: 'shop.html?cat=gadgets', badge: 'Category' },
+  { type: 'category', title: 'Wireless Earbuds & Audio',  keywords: 'wireless earbuds audio headphones airpods bluetooth sound speakers bass', url: 'shop.html?cat=wireless-earbuds-audio', badge: 'Category' },
+  { type: 'category', title: 'Jewellery',                 keywords: 'jewellery jewelry rings bracelets necklaces earrings bangles', url: 'shop.html?cat=jewellery', badge: 'Category' },
+  { type: 'category', title: 'Fashion & Lifestyle',       keywords: 'fashion lifestyle perfume scents styling trending', url: 'shop.html?cat=fashion-lifestyle', badge: 'Category' },
+  { type: 'category', title: 'Footwear',                  keywords: 'footwear shoes sneakers slides slippers boots', url: 'shop.html?cat=footwear', badge: 'Category' },
+  { type: 'category', title: 'Clothing & Apparel',        keywords: 'clothing apparel shirts hoodies jackets tshirts pants', url: 'shop.html?cat=clothing-apparel', badge: 'Category' },
+  { type: 'category', title: 'Winter Collection',         keywords: 'winter collection jackets fleece hoodies sweaters warm', url: 'shop.html?cat=winter-collection', badge: 'Category' },
   /* Pages */
-  { type: 'page', title: 'Our Story',        keywords: 'about zarin e husn story brand lahore founded history',   url: 'about.html',                  badge: 'Page' },
-  { type: 'page', title: 'Contact Us',       keywords: 'contact email phone whatsapp address location',           url: 'contact.html',                badge: 'Page' },
-  { type: 'page', title: 'Shipping Info',    keywords: 'shipping delivery days free standard',                    url: 'policy.html?page=shipping',   badge: 'Policy' },
-  { type: 'page', title: 'Returns Policy',   keywords: 'returns refund exchange 14 day policy',                   url: 'policy.html?page=returns',    badge: 'Policy' },
-  { type: 'page', title: 'FAQs',             keywords: 'faq questions answers help support',                      url: 'policy.html?page=faqs',       badge: 'Help'   },
-  { type: 'page', title: 'Track Your Order', keywords: 'track order tracking status delivery shipment',           url: 'policy.html?page=track',      badge: 'Tool'   },
-  { type: 'page', title: 'My Account',       keywords: 'account login signin signup register profile',            url: 'account',                badge: 'Account'},
+  { type: 'page', title: 'About DERA ZONE', keywords: 'about dera zone story brand pakistan online shopping audio tech lifestyle', url: 'about.html', badge: 'Page' },
+  { type: 'page', title: 'Contact Support', keywords: 'contact email phone whatsapp support customer care', url: 'contact.html', badge: 'Page' },
+  { type: 'page', title: 'Shipping Info',   keywords: 'shipping delivery days free standard 3 5 working days', url: 'policy.html?page=shipping', badge: 'Policy' },
+  { type: 'page', title: 'Returns & Exchange', keywords: 'returns refund exchange policy damage', url: 'policy.html?page=returns', badge: 'Policy' },
+  { type: 'page', title: 'FAQs',            keywords: 'faq questions answers help support ordering payment', url: 'policy.html?page=faqs', badge: 'Help' },
+  { type: 'page', title: 'Track Order',     keywords: 'track order tracking status delivery shipment courier', url: 'policy.html?page=track', badge: 'Tool' },
+  { type: 'page', title: 'My Account',      keywords: 'account login signin signup register profile orders', url: 'account.html', badge: 'Account' },
 ];
 
 let globalSearchProducts = [];

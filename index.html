@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DERA ZONE — SHOP SMART. LIVE BETTER.</title>
   <meta name="description" content="Shop Pakistan's finest wireless earbuds, smart watches, tech gadgets, accessories, and lifestyle essentials online at DERA ZONE." />
-  <link rel="icon" type="image/png" href="images/logo-square.png" />
+  <link rel="icon" type="image/png" href="images/logo-square-transparent.png" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/pages.css" />
   <!-- Font Awesome Icons -->
@@ -17,18 +17,13 @@
 </head>
 <body class="page-home">
 
-  <!-- TOP ANNOUNCEMENT BAR -->
-  <div class="dz-announcement">
-    <span class="badge">🔥 LAUNCH OFFER</span> Free Nationwide Express Delivery on all orders over PKR 2,500! <strong>Cash on Delivery Available.</strong>
-  </div>
-
-  <!-- MASTER NAVBAR -->
+  <!-- MASTER NAVBAR (White Logo Row + Dark Category Row) -->
   <nav class="dz-nav">
     <div class="nav-container">
       
       <!-- LEFT: Search & Hamburger -->
       <div class="nav-left">
-        <button id="search-toggle" aria-label="Search" class="icon-btn">
+        <button id="search-toggle" aria-label="Search" class="icon-btn" title="Search">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
         <button class="hamburger" aria-label="Menu">
@@ -36,14 +31,14 @@
         </button>
       </div>
 
-      <!-- CENTER: Logo -->
+      <!-- CENTER: Logo on WHITE background -->
       <div class="nav-center">
         <a href="/" class="brand-logo" aria-label="DERA ZONE">DERA ZONE</a>
       </div>
 
-      <!-- RIGHT: User & Cart -->
+      <!-- RIGHT: WhatsApp, User & Cart -->
       <div class="nav-right">
-        <a href="https://wa.me/923294551652?text=Hello%20DERA%20ZONE,%20I%20have%20an%20inquiry" target="_blank" class="icon-btn" aria-label="WhatsApp" style="color:#25D366 !important;" title="Chat on WhatsApp">
+        <a href="https://wa.me/923294551652?text=Hello%20DERA%20ZONE,%20I%20have%20an%20inquiry" target="_blank" class="icon-btn wa-icon-btn" aria-label="WhatsApp" title="Chat on WhatsApp">
           <i class="fa-brands fa-whatsapp"></i>
         </a>
         <a href="account" aria-label="Account" class="icon-btn" title="My Account">
@@ -56,19 +51,23 @@
       </div>
     </div>
     
-    <!-- CATEGORY BAR LINKS -->
+    <!-- CATEGORY BAR LINKS (Exact 8 Categories) -->
     <ul class="nav-links">
-      <li><a href="shop.html?cat=wireless-earbuds-audio"><i class="fa-solid fa-headphones-simple" style="font-size:0.75rem;margin-right:4px;color:#c084fc;"></i> AUDIO</a></li>
+      <li><a href="shop.html?cat=accessories">ACCESSORIES</a></li>
       <li class="separator">&#183;</li>
-      <li><a href="shop.html?cat=gadgets"><i class="fa-solid fa-clock" style="font-size:0.75rem;margin-right:4px;color:#c084fc;"></i> SMART WATCHES</a></li>
+      <li><a href="shop.html?cat=gadgets">GADGETS</a></li>
       <li class="separator">&#183;</li>
-      <li><a href="shop.html?cat=gadgets"><i class="fa-solid fa-bolt" style="font-size:0.75rem;margin-right:4px;color:#c084fc;"></i> GADGETS</a></li>
+      <li><a href="shop.html?cat=wireless-earbuds-audio">WIRELESS EARBUDS &amp; AUDIO</a></li>
       <li class="separator">&#183;</li>
-      <li><a href="shop.html?cat=accessories"><i class="fa-solid fa-mobile-screen-button" style="font-size:0.75rem;margin-right:4px;color:#c084fc;"></i> ACCESSORIES</a></li>
+      <li><a href="shop.html?cat=jewellery">JEWELLERY</a></li>
       <li class="separator">&#183;</li>
-      <li><a href="shop.html?cat=jewellery"><i class="fa-solid fa-gem" style="font-size:0.75rem;margin-right:4px;color:#c084fc;"></i> JEWELLERY</a></li>
+      <li><a href="shop.html?cat=fashion-lifestyle">FASHION &amp; LIFESTYLE</a></li>
       <li class="separator">&#183;</li>
-      <li><a href="shop.html?cat=clothing-apparel"><i class="fa-solid fa-shirt" style="font-size:0.75rem;margin-right:4px;color:#c084fc;"></i> CLOTHING</a></li>
+      <li><a href="shop.html?cat=footwear">FOOTWEAR</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=clothing-apparel">CLOTHING &amp; APPAREL</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=winter-collection">WINTER COLLECTION</a></li>
     </ul>
   </nav>
 
@@ -77,154 +76,123 @@
     <div class="search-box">
       <div class="search-inner">
         <span class="search-icon-big"><i class="fa-solid fa-magnifying-glass"></i></span>
-        <input type="text" id="search-input" placeholder="Search wireless earbuds, smart watches, gadgets…" autocomplete="off" />
+        <input type="text" id="search-input" placeholder="Search wireless audio, smart watches, accessories…" autocomplete="off" />
         <button id="search-close">&#10005;</button>
       </div>
       <div id="search-results"></div>
     </div>
   </div>
 
-  <!-- HERO SECTION -->
+  <!-- HERO SECTION (Single centered layout with integrated trust bar) -->
   <section id="hero" class="dz-hero">
-    <div class="container hero-grid">
+    <div class="container hero-container-single">
       
-      <!-- Left Column: Copy & Actions -->
-      <div class="hero-left">
-        <div class="hero-badge-pill">
-          <i class="fa-solid fa-bolt"></i> THE NEXT GENERATION OF SHOPPING
-        </div>
-        <h1 class="hero-headline">
-          SHOP SMART.<br><span class="neon-purple-text">LIVE BETTER.</span>
-        </h1>
-        <p class="hero-desc">
-          Upgrade your everyday routine with Pakistan's premier collection of active noise-cancelling earbuds, smart watches, futuristic tech gadgets, and luxury lifestyle accessories.
-        </p>
-        
-        <div class="hero-cta-group">
-          <a href="shop.html" class="btn-hero-primary">
-            Explore All Products <i class="fa-solid fa-arrow-right"></i>
-          </a>
-          <a href="https://wa.me/923294551652?text=Hello%20DERA%20ZONE,%20I%20want%20to%20order%20products" target="_blank" class="btn-hero-whatsapp">
-            <i class="fa-brands fa-whatsapp"></i> Quick WhatsApp Order
-          </a>
-        </div>
-
-        <div class="hero-highlights">
-          <span><i class="fa-solid fa-truck-fast"></i> 2-4 Days Shipping</span>
-          <span><i class="fa-solid fa-hand-holding-dollar"></i> Cash On Delivery</span>
-          <span><i class="fa-solid fa-shield-check"></i> 7 Days Warranty</span>
-        </div>
+      <div class="hero-badge-pill">
+        <i class="fa-solid fa-bolt"></i> THE NEXT GENERATION OF SHOPPING
+      </div>
+      <h1 class="hero-headline">
+        SHOP SMART.<br><span class="neon-purple-text">LIVE BETTER.</span>
+      </h1>
+      <p class="hero-desc">
+        Upgrade your everyday lifestyle with Pakistan's premier online collection of high-performance audio, smart gadgets, daily tech accessories, and trending essentials.
+      </p>
+      
+      <div class="hero-cta-group">
+        <a href="shop.html" class="btn-hero-primary">
+          Explore All Products <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <a href="https://wa.me/923294551652?text=Hello%20DERA%20ZONE,%20I%20want%20to%20order%20products" target="_blank" class="btn-hero-whatsapp">
+          <i class="fa-brands fa-whatsapp"></i> Quick WhatsApp Order
+        </a>
       </div>
 
-      <!-- Right Column: High Impact Showcase Card -->
-      <div class="hero-right">
-        <div class="hero-showcase-card">
-          <span class="hero-showcase-badge">🔥 TOP RATED</span>
-          <div class="hero-card-icon-wrap">
-            <i class="fa-solid fa-headphones"></i>
+      <!-- Integrated Trust Cards inside Hero -->
+      <div class="hero-trust-cards">
+        <div class="hero-trust-card">
+          <i class="fa-solid fa-truck-fast"></i>
+          <div>
+            <strong>Nationwide Delivery</strong>
+            <p>3-5 working days shipping time across Pakistan</p>
           </div>
-          <h3 class="hero-card-title">AirPods Pro 2 ANC Wireless</h3>
-          <div class="hero-card-meta">
-            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i> 4.9 (420+ Reviews)
+        </div>
+        <div class="hero-trust-card">
+          <i class="fa-solid fa-hand-holding-dollar"></i>
+          <div>
+            <strong>Cash On Delivery</strong>
+            <p>Pay cash comfortably when your parcel arrives</p>
           </div>
-          <div class="hero-card-price">
-            PKR 3,499 <del>PKR 4,999</del>
+        </div>
+        <div class="hero-trust-card">
+          <i class="fa-brands fa-whatsapp"></i>
+          <div>
+            <strong>24/7 WhatsApp Care</strong>
+            <p>Direct human assistance for inquiries & quick orders</p>
           </div>
-          <a href="shop.html?cat=wireless-earbuds-audio" class="hero-card-btn">
-            <i class="fa-solid fa-bag-shopping"></i> Shop Wireless Audio
-          </a>
         </div>
       </div>
 
     </div>
   </section>
 
-  <!-- TRUST FEATURES BAR -->
-  <div class="dz-features-bar">
-    <div class="dz-features-grid">
-      
-      <div class="dz-feature-item">
-        <div class="dz-feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
-        <div class="dz-feature-text">
-          <h4>Nationwide Delivery</h4>
-          <p>Fast dispatch across Lahore, Karachi, Islamabad & all Pakistan</p>
-        </div>
-      </div>
-
-      <div class="dz-feature-item">
-        <div class="dz-feature-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-        <div class="dz-feature-text">
-          <h4>Cash On Delivery</h4>
-          <p>Inspect your parcel and pay comfortably at your doorstep</p>
-        </div>
-      </div>
-
-      <div class="dz-feature-item">
-        <div class="dz-feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
-        <div class="dz-feature-text">
-          <h4>7-Day Warranty</h4>
-          <p>100% checking warranty and easy replacement support</p>
-        </div>
-      </div>
-
-      <div class="dz-feature-item">
-        <div class="dz-feature-icon"><i class="fa-brands fa-whatsapp"></i></div>
-        <div class="dz-feature-text">
-          <h4>24/7 WhatsApp Help</h4>
-          <p>Immediate human assistance for quick queries & orders</p>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- EXPLORE TOP CATEGORIES -->
+  <!-- EXPLORE ALL 8 CATEGORIES -->
   <section id="categories" class="dz-section">
     <div class="container">
       <div class="section-header-row">
         <div>
           <h2 class="section-title">Explore Categories</h2>
-          <p class="section-subtitle">Pick a collection to discover our trending gadgets & lifestyle gear</p>
+          <p class="section-subtitle">Browse all curated collections for modern tech &amp; lifestyle</p>
         </div>
         <a href="shop.html" class="see-all-link">Browse All <i class="fa-solid fa-arrow-right"></i></a>
       </div>
 
-      <div class="dz-categories-grid">
+      <div class="dz-categories-grid-8">
         
-        <a href="shop.html?cat=wireless-earbuds-audio" class="dz-cat-card">
-          <div class="dz-cat-icon"><i class="fa-solid fa-headphones-simple"></i></div>
-          <h4 class="dz-cat-title">Wireless Audio</h4>
-          <p class="dz-cat-desc">ANC Earbuds & Bass</p>
-        </a>
-
-        <a href="shop.html?cat=gadgets" class="dz-cat-card">
-          <div class="dz-cat-icon"><i class="fa-solid fa-clock"></i></div>
-          <h4 class="dz-cat-title">Smart Watches</h4>
-          <p class="dz-cat-desc">AMOLED & BT Calling</p>
+        <a href="shop.html?cat=accessories" class="dz-cat-card">
+          <div class="dz-cat-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+          <h4 class="dz-cat-title">Accessories</h4>
+          <p class="dz-cat-desc">Chargers, Cables &amp; Stands</p>
         </a>
 
         <a href="shop.html?cat=gadgets" class="dz-cat-card">
           <div class="dz-cat-icon"><i class="fa-solid fa-bolt"></i></div>
-          <h4 class="dz-cat-title">Tech Gadgets</h4>
-          <p class="dz-cat-desc">Power Banks & Desk Tech</p>
+          <h4 class="dz-cat-title">Gadgets</h4>
+          <p class="dz-cat-desc">Smart Tech &amp; Power Banks</p>
         </a>
 
-        <a href="shop.html?cat=accessories" class="dz-cat-card">
-          <div class="dz-cat-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
-          <h4 class="dz-cat-title">Accessories</h4>
-          <p class="dz-cat-desc">Fast Chargers & Stands</p>
+        <a href="shop.html?cat=wireless-earbuds-audio" class="dz-cat-card">
+          <div class="dz-cat-icon"><i class="fa-solid fa-headphones-simple"></i></div>
+          <h4 class="dz-cat-title">Wireless Audio</h4>
+          <p class="dz-cat-desc">ANC Earbuds &amp; Headsets</p>
         </a>
 
         <a href="shop.html?cat=jewellery" class="dz-cat-card">
           <div class="dz-cat-icon"><i class="fa-solid fa-gem"></i></div>
           <h4 class="dz-cat-title">Jewellery</h4>
-          <p class="dz-cat-desc">Minimal Chains & Rings</p>
+          <p class="dz-cat-desc">Minimal Chains &amp; Rings</p>
+        </a>
+
+        <a href="shop.html?cat=fashion-lifestyle" class="dz-cat-card">
+          <div class="dz-cat-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <h4 class="dz-cat-title">Fashion &amp; Lifestyle</h4>
+          <p class="dz-cat-desc">Trending Essentials</p>
+        </a>
+
+        <a href="shop.html?cat=footwear" class="dz-cat-card">
+          <div class="dz-cat-icon"><i class="fa-solid fa-shoe-prints"></i></div>
+          <h4 class="dz-cat-title">Footwear</h4>
+          <p class="dz-cat-desc">Sneakers &amp; Casual Shoes</p>
         </a>
 
         <a href="shop.html?cat=clothing-apparel" class="dz-cat-card">
           <div class="dz-cat-icon"><i class="fa-solid fa-shirt"></i></div>
-          <h4 class="dz-cat-title">Clothing</h4>
-          <p class="dz-cat-desc">Streetwear & Apparel</p>
+          <h4 class="dz-cat-title">Clothing &amp; Apparel</h4>
+          <p class="dz-cat-desc">Streetwear &amp; Daily Wear</p>
+        </a>
+
+        <a href="shop.html?cat=winter-collection" class="dz-cat-card">
+          <div class="dz-cat-icon"><i class="fa-solid fa-snowflake"></i></div>
+          <h4 class="dz-cat-title">Winter Collection</h4>
+          <p class="dz-cat-desc">Hoodies, Jackets &amp; Warmers</p>
         </a>
 
       </div>
@@ -237,111 +205,21 @@
       <div class="section-header-row">
         <div>
           <h2 class="section-title">New Arrivals</h2>
-          <p class="section-subtitle">Freshly dropped tech and premium accessories in stock</p>
+          <p class="section-subtitle">Freshly dropped products available now</p>
         </div>
-        <a href="shop.html?tag=new-arrival" class="see-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="shop.html" class="see-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
       </div>
 
       <div class="product-grid-4" id="new-arrivals-grid">
-        
-        <!-- Product Card 1 -->
-        <div class="product-card">
-          <div class="product-img-wrap">
-            <span class="product-badge">NEW</span>
-            <div style="font-size:4rem;color:#7000ff;"><i class="fa-solid fa-headphones"></i></div>
-          </div>
-          <div class="product-info">
-            <p class="product-cat">Wireless Audio</p>
-            <h3 class="product-name"><a href="shop.html?cat=wireless-earbuds-audio">Pro Wireless ANC Earbuds (Active Noise Cancelling)</a></h3>
-            <div class="product-rating">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              <span>(128)</span>
-            </div>
-            <div class="product-price">PKR 3,499 <span class="product-price-old">PKR 4,999</span></div>
-            <div class="product-action-row">
-              <a href="shop.html?cat=wireless-earbuds-audio" class="btn-card-add" style="text-align:center;text-decoration:none;">View Details</a>
-              <a href="https://wa.me/923294551652?text=I%20want%20to%20order%20Pro%20Wireless%20ANC%20Earbuds" target="_blank" class="btn-card-buy" style="text-align:center;text-decoration:none;"><i class="fa-brands fa-whatsapp"></i> Buy</a>
-            </div>
-          </div>
+        <div class="empty-products-placeholder">
+          <div class="empty-icon"><i class="fa-solid fa-box-open"></i></div>
+          <h3>Fresh Arrivals Dropping Soon</h3>
+          <p>We are adding fresh items to our catalog. Visit the shop or message our team on WhatsApp for available stock &amp; instant booking!</p>
+          <a href="https://wa.me/923294551652?text=Hello%20DERA%20ZONE,%20what%20new%20arrivals%20do%20you%20have?" target="_blank" class="btn-hero-whatsapp">
+            <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
+          </a>
         </div>
-
-        <!-- Product Card 2 -->
-        <div class="product-card">
-          <div class="product-img-wrap">
-            <span class="product-badge" style="background:#ef4444 !important;">HOT</span>
-            <div style="font-size:4rem;color:#7000ff;"><i class="fa-solid fa-clock"></i></div>
-          </div>
-          <div class="product-info">
-            <p class="product-cat">Smart Watches</p>
-            <h3 class="product-name"><a href="shop.html?cat=gadgets">Ultra 9 Smart Watch with AMOLED Calling</a></h3>
-            <div class="product-rating">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              <span>(94)</span>
-            </div>
-            <div class="product-price">PKR 4,299 <span class="product-price-old">PKR 6,499</span></div>
-            <div class="product-action-row">
-              <a href="shop.html?cat=gadgets" class="btn-card-add" style="text-align:center;text-decoration:none;">View Details</a>
-              <a href="https://wa.me/923294551652?text=I%20want%20to%20order%20Ultra%209%20Smart%20Watch" target="_blank" class="btn-card-buy" style="text-align:center;text-decoration:none;"><i class="fa-brands fa-whatsapp"></i> Buy</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product Card 3 -->
-        <div class="product-card">
-          <div class="product-img-wrap">
-            <span class="product-badge">FAST CHARGE</span>
-            <div style="font-size:4rem;color:#7000ff;"><i class="fa-solid fa-bolt"></i></div>
-          </div>
-          <div class="product-info">
-            <p class="product-cat">Accessories</p>
-            <h3 class="product-name"><a href="shop.html?cat=accessories">Magnetic 15W Fast Wireless Desktop Charger</a></h3>
-            <div class="product-rating">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              <span>(67)</span>
-            </div>
-            <div class="product-price">PKR 2,199 <span class="product-price-old">PKR 3,299</span></div>
-            <div class="product-action-row">
-              <a href="shop.html?cat=accessories" class="btn-card-add" style="text-align:center;text-decoration:none;">View Details</a>
-              <a href="https://wa.me/923294551652?text=I%20want%20to%20order%20Magnetic%20Wireless%20Charger" target="_blank" class="btn-card-buy" style="text-align:center;text-decoration:none;"><i class="fa-brands fa-whatsapp"></i> Buy</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product Card 4 -->
-        <div class="product-card">
-          <div class="product-img-wrap">
-            <span class="product-badge" style="background:#10b981 !important;">PREMIUM</span>
-            <div style="font-size:4rem;color:#7000ff;"><i class="fa-solid fa-gem"></i></div>
-          </div>
-          <div class="product-info">
-            <p class="product-cat">Jewellery</p>
-            <h3 class="product-name"><a href="shop.html?cat=jewellery">Titanium Series Minimalist Steel Bracelet</a></h3>
-            <div class="product-rating">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              <span>(115)</span>
-            </div>
-            <div class="product-price">PKR 1,799 <span class="product-price-old">PKR 2,599</span></div>
-            <div class="product-action-row">
-              <a href="shop.html?cat=jewellery" class="btn-card-add" style="text-align:center;text-decoration:none;">View Details</a>
-              <a href="https://wa.me/923294551652?text=I%20want%20to%20order%20Titanium%20Bracelet" target="_blank" class="btn-card-buy" style="text-align:center;text-decoration:none;"><i class="fa-brands fa-whatsapp"></i> Buy</a>
-            </div>
-          </div>
-        </div>
-
       </div>
-    </div>
-  </section>
-
-  <!-- FLASH SALE BANNER -->
-  <section class="container" style="padding:20px 20px 40px;">
-    <div class="dz-promo-banner">
-      <div class="dz-promo-content">
-        <h3>⚡ FLASH SALE: UP TO 40% OFF</h3>
-        <p>Grab top-performing earbuds, fast chargers & daily tech gear with Nationwide Cash On Delivery.</p>
-      </div>
-      <a href="shop.html" class="btn-hero-primary" style="font-size:1.05rem;padding:16px 32px;">
-        Shop Sale Deals Now <i class="fa-solid fa-arrow-right"></i>
-      </a>
     </div>
   </section>
 
@@ -351,108 +229,31 @@
       <div class="section-header-row">
         <div>
           <h2 class="section-title">Trending Now</h2>
-          <p class="section-subtitle">Top customer favorites selling fast this week</p>
+          <p class="section-subtitle">Customer favorite gadgets and essentials</p>
         </div>
-        <a href="shop.html?tag=trending" class="see-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="shop.html" class="see-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
       </div>
 
       <div class="product-grid-4" id="trending-now-grid">
-        
-        <!-- Product Card 5 -->
-        <div class="product-card">
-          <div class="product-img-wrap">
-            <span class="product-badge" style="background:#ef4444 !important;">BESTSELLER</span>
-            <div style="font-size:4rem;color:#7000ff;"><i class="fa-solid fa-volume-high"></i></div>
-          </div>
-          <div class="product-info">
-            <p class="product-cat">Audio & Sound</p>
-            <h3 class="product-name"><a href="shop.html?cat=wireless-earbuds-audio">Cyber RGB Bluetooth Desktop Soundbar</a></h3>
-            <div class="product-rating">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              <span>(82)</span>
-            </div>
-            <div class="product-price">PKR 3,899 <span class="product-price-old">PKR 5,299</span></div>
-            <div class="product-action-row">
-              <a href="shop.html?cat=wireless-earbuds-audio" class="btn-card-add" style="text-align:center;text-decoration:none;">View Details</a>
-              <a href="https://wa.me/923294551652?text=I%20want%20to%20order%20Cyber%20RGB%20Soundbar" target="_blank" class="btn-card-buy" style="text-align:center;text-decoration:none;"><i class="fa-brands fa-whatsapp"></i> Buy</a>
-            </div>
-          </div>
+        <div class="empty-products-placeholder">
+          <div class="empty-icon"><i class="fa-solid fa-fire"></i></div>
+          <h3>Trending Collection Coming Up</h3>
+          <p>Discover our best-selling gear. Order directly via WhatsApp or browse our full shop categories!</p>
+          <a href="shop.html" class="btn-hero-primary" style="margin-top:10px;">
+            Open Shop <i class="fa-solid fa-arrow-right"></i>
+          </a>
         </div>
-
-        <!-- Product Card 6 -->
-        <div class="product-card">
-          <div class="product-img-wrap">
-            <span class="product-badge">MAGSAFE</span>
-            <div style="font-size:4rem;color:#7000ff;"><i class="fa-solid fa-battery-full"></i></div>
-          </div>
-          <div class="product-info">
-            <p class="product-cat">Tech Gadgets</p>
-            <h3 class="product-name"><a href="shop.html?cat=gadgets">MagSafe 10,000mAh Transparent Power Bank</a></h3>
-            <div class="product-rating">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              <span>(143)</span>
-            </div>
-            <div class="product-price">PKR 3,799 <span class="product-price-old">PKR 5,000</span></div>
-            <div class="product-action-row">
-              <a href="shop.html?cat=gadgets" class="btn-card-add" style="text-align:center;text-decoration:none;">View Details</a>
-              <a href="https://wa.me/923294551652?text=I%20want%20to%20order%20MagSafe%20Power%20Bank" target="_blank" class="btn-card-buy" style="text-align:center;text-decoration:none;"><i class="fa-brands fa-whatsapp"></i> Buy</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product Card 7 -->
-        <div class="product-card">
-          <div class="product-img-wrap">
-            <span class="product-badge" style="background:#10b981 !important;">TRENDING</span>
-            <div style="font-size:4rem;color:#7000ff;"><i class="fa-solid fa-shield-virus"></i></div>
-          </div>
-          <div class="product-info">
-            <p class="product-cat">Accessories</p>
-            <h3 class="product-name"><a href="shop.html?cat=accessories">Waterproof Anti-Theft Urban Tech Backpack</a></h3>
-            <div class="product-rating">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              <span>(59)</span>
-            </div>
-            <div class="product-price">PKR 3,299 <span class="product-price-old">PKR 4,500</span></div>
-            <div class="product-action-row">
-              <a href="shop.html?cat=accessories" class="btn-card-add" style="text-align:center;text-decoration:none;">View Details</a>
-              <a href="https://wa.me/923294551652?text=I%20want%20to%20order%20Anti-Theft%20Backpack" target="_blank" class="btn-card-buy" style="text-align:center;text-decoration:none;"><i class="fa-brands fa-whatsapp"></i> Buy</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product Card 8 -->
-        <div class="product-card">
-          <div class="product-img-wrap">
-            <span class="product-badge">CLASSIC</span>
-            <div style="font-size:4rem;color:#7000ff;"><i class="fa-regular fa-clock"></i></div>
-          </div>
-          <div class="product-info">
-            <p class="product-cat">Smart Watches</p>
-            <h3 class="product-name"><a href="shop.html?cat=gadgets">Classic Stainless Steel Waterproof Chrono</a></h3>
-            <div class="product-rating">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              <span>(76)</span>
-            </div>
-            <div class="product-price">PKR 2,899 <span class="product-price-old">PKR 3,999</span></div>
-            <div class="product-action-row">
-              <a href="shop.html?cat=gadgets" class="btn-card-add" style="text-align:center;text-decoration:none;">View Details</a>
-              <a href="https://wa.me/923294551652?text=I%20want%20to%20order%20Classic%20Chrono%20Watch" target="_blank" class="btn-card-buy" style="text-align:center;text-decoration:none;"><i class="fa-brands fa-whatsapp"></i> Buy</a>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   </section>
 
-  <!-- CUSTOMER REVIEWS -->
+  <!-- CUSTOMER REVIEWS (Spaced out layout, no text congestion) -->
   <section class="dz-section section-gray">
     <div class="container">
       <div class="section-header-row" style="text-align:center;justify-content:center;">
         <div>
           <h2 class="section-title">Loved By Customers Across Pakistan</h2>
-          <p class="section-subtitle">Real experiences from verified shoppers</p>
+          <p class="section-subtitle">Real experiences from verified shoppers nationwide</p>
         </div>
       </div>
 
@@ -462,7 +263,7 @@
           <div class="dz-review-stars">
             <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
           </div>
-          <p class="dz-review-text">"Sound quality of the ANC earbuds is unbelievable for this price. Received parcel in Lahore in just 2 days. Highly recommended!"</p>
+          <p class="dz-review-text">"Sound quality of the earbuds is unbelievable for this price. Received parcel in Lahore in 3 working days. 100% recommended!"</p>
           <div class="dz-review-author">
             <strong>Hamza K. — Lahore</strong>
             <span class="dz-verified-badge"><i class="fa-solid fa-circle-check"></i> Verified Buyer</span>
@@ -473,7 +274,7 @@
           <div class="dz-review-stars">
             <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
           </div>
-          <p class="dz-review-text">"The Ultra watch build quality feels like a 20k watch. Cash on delivery was super smooth and parcel arrived well packaged."</p>
+          <p class="dz-review-text">"The smartwatch build quality is super premium. Cash on delivery was seamless and the packaging was completely intact."</p>
           <div class="dz-review-author">
             <strong>Usman A. — Islamabad</strong>
             <span class="dz-verified-badge"><i class="fa-solid fa-circle-check"></i> Verified Buyer</span>
@@ -484,7 +285,7 @@
           <div class="dz-review-stars">
             <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
           </div>
-          <p class="dz-review-text">"Loved the fast customer support on WhatsApp. They helped me choose the right accessories and dispatched the same day."</p>
+          <p class="dz-review-text">"Fast customer support on WhatsApp. They answered all my questions, confirmed my order, and delivered to Karachi within 4 days."</p>
           <div class="dz-review-author">
             <strong>Ayesha R. — Karachi</strong>
             <span class="dz-verified-badge"><i class="fa-solid fa-circle-check"></i> Verified Buyer</span>
@@ -499,19 +300,19 @@
   <section id="instagram-section" class="dz-section">
     <div class="container text-center" style="max-width:700px;margin:0 auto;text-align:center;">
       <h2 class="section-title">Join The <span class="neon-purple-text">Zone</span></h2>
-      <p class="section-subtitle">Follow us on Instagram & TikTok for daily product drops, unboxings, and exclusive discount codes.</p>
-      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
+      <p class="section-subtitle">Follow us on Instagram &amp; TikTok for daily drops, unboxings, and exclusive discount codes.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:24px;">
         <a href="https://www.instagram.com/derazone01?stkn=MXVnNnd3cTJyNHEydw==" target="_blank" class="btn-hero-primary" style="background:#E1306C !important;">
           <i class="fa-brands fa-instagram"></i> Follow @derazone01
         </a>
-        <a href="https://www.tiktok.com/@derazone001?_r=1&_t=ZS-99wDO848b7x" target="_blank" class="btn-hero-primary" style="background:#000000 !important;border:1px solid #7000ff;">
+        <a href="https://www.tiktok.com/@derazone001?_r=1&amp;_t=ZS-99wDO848b7x" target="_blank" class="btn-hero-primary" style="background:#000000 !important;border:1px solid #7000ff;">
           <i class="fa-brands fa-tiktok"></i> Follow on TikTok
         </a>
       </div>
     </div>
   </section>
 
-  <!-- MASTER FOOTER -->
+  <!-- MASTER FOOTER (No Bank Details) -->
   <footer class="dz-footer">
     <div class="container">
       <div class="footer-grid">
@@ -525,21 +326,23 @@
           <div class="footer-social" id="footer-social-links">
             <a href="https://www.instagram.com/derazone01?stkn=MXVnNnd3cTJyNHEydw==" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
             <a href="https://www.facebook.com/share/1KD2yz1GPn/" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
-            <a href="https://www.tiktok.com/@derazone001?_r=1&_t=ZS-99wDO848b7x" target="_blank" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="https://www.tiktok.com/@derazone001?_r=1&amp;_t=ZS-99wDO848b7x" target="_blank" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
             <a href="https://wa.me/923294551652" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
           </div>
         </div>
 
-        <!-- Col 2: Shop Links -->
+        <!-- Col 2: Shop Links (8 Categories) -->
         <div class="footer-col">
           <h4>Shop Categories</h4>
           <ul>
-            <li><a href="shop.html?cat=wireless-earbuds-audio">Wireless Audio</a></li>
-            <li><a href="shop.html?cat=gadgets">Smart Watches</a></li>
-            <li><a href="shop.html?cat=gadgets">Tech Gadgets</a></li>
-            <li><a href="shop.html?cat=accessories">Mobile Accessories</a></li>
-            <li><a href="shop.html?cat=jewellery">Jewellery & Rings</a></li>
-            <li><a href="shop.html?cat=clothing-apparel">Clothing & Streetwear</a></li>
+            <li><a href="shop.html?cat=accessories">Accessories</a></li>
+            <li><a href="shop.html?cat=gadgets">Gadgets</a></li>
+            <li><a href="shop.html?cat=wireless-earbuds-audio">Wireless Earbuds &amp; Audio</a></li>
+            <li><a href="shop.html?cat=jewellery">Jewellery</a></li>
+            <li><a href="shop.html?cat=fashion-lifestyle">Fashion &amp; Lifestyle</a></li>
+            <li><a href="shop.html?cat=footwear">Footwear</a></li>
+            <li><a href="shop.html?cat=clothing-apparel">Clothing &amp; Apparel</a></li>
+            <li><a href="shop.html?cat=winter-collection">Winter Collection</a></li>
           </ul>
         </div>
 
@@ -550,23 +353,20 @@
             <li><a href="about.html">About DERA ZONE</a></li>
             <li><a href="contact">Contact Support</a></li>
             <li><a href="policy?page=shipping">Shipping Information</a></li>
-            <li><a href="policy?page=returns">Returns & Replacement</a></li>
+            <li><a href="policy?page=returns">Returns &amp; Exchange</a></li>
             <li><a href="policy?page=track">Track Your Order</a></li>
             <li><a href="policy?page=privacy">Privacy Policy</a></li>
           </ul>
         </div>
 
-        <!-- Col 4: Contact & Bank Info -->
+        <!-- Col 4: Contact Info (No Bank details here!) -->
         <div class="footer-col get-in-touch-col">
           <h4>Get In Touch</h4>
           <ul class="get-in-touch-list">
             <li><i class="fa-regular fa-envelope"></i> <span>derazone001@gmail.com</span></li>
             <li><i class="fa-brands fa-whatsapp"></i> <span>+92 329 4551652</span></li>
-            <li><i class="fa-solid fa-location-dot"></i> <span>Lahore / Nationwide, Pakistan</span></li>
-            <li style="margin-top:14px;font-size:0.8rem;color:#9ca3af;line-height:1.4;">
-              <strong style="color:#ffffff;">Meezan Bank:</strong> DERA ZONE<br>
-              A/C: 02260116195736
-            </li>
+            <li><i class="fa-solid fa-location-dot"></i> <span>Nationwide Delivery, Pakistan</span></li>
+            <li><i class="fa-solid fa-clock"></i> <span>3-5 Working Days Delivery Time</span></li>
           </ul>
         </div>
 
@@ -577,7 +377,7 @@
         <p>&copy; 2026 <span style="color:#c084fc;font-weight:700;">DERA ZONE</span>. All rights reserved. Shop Smart. Live Better.</p>
         <div class="footer-pay">
           <span class="pay-badge">Cash on Delivery</span>
-          <span class="pay-badge">Meezan Bank Transfer</span>
+          <span class="pay-badge">Online Bank Transfer</span>
           <span class="pay-badge">Direct WhatsApp Order</span>
         </div>
       </div>

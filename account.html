@@ -3,207 +3,528 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DERA ZONE - Shop Smart. Live Better.</title>
-  <link rel="icon" type="image/png" href="images/logo-square.png" />
+  <title>My Account — DERA ZONE | Pakistan</title>
+  <meta name="description" content="Sign in or create your DERA ZONE account to manage your orders, delivery addresses, and reviews." />
+  <link rel="canonical" href="https://derazone.com/account.html" />
+  <link rel="icon" type="image/png" href="images/logo-square-transparent.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="css/style.css?v=3"/>
-  <link rel="stylesheet" href="css/pages.css?v=3"/>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=1790280000000"/>
+  <link rel="stylesheet" href="css/pages.css?v=4"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Orbitron:wght@500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .account-hero {
+      background: linear-gradient(180deg, #ffffff 0%, #f6f0ff 100%);
+      padding: 45px 0 25px;
+      text-align: center;
+      border-bottom: 1px solid rgba(112, 0, 255, 0.08);
+    }
+    .account-hero h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #0f0728;
+      margin-bottom: 6px;
+    }
+    .account-hero p {
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+    .account-main {
+      padding: 50px 0 90px;
+      background: #fbfbfe;
+    }
+    .account-card-wrap {
+      max-width: 520px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid rgba(112, 0, 255, 0.12);
+      box-shadow: 0 10px 40px rgba(112, 0, 255, 0.05);
+      padding: 40px 36px;
+    }
+    .account-tabs {
+      display: flex;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 28px;
+    }
+    .acc-tab {
+      flex: 1;
+      padding: 11px 16px;
+      border: none;
+      background: transparent;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #64748b;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .acc-tab.active {
+      background: #ffffff;
+      color: #7000ff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    .account-panel.hidden {
+      display: none !important;
+    }
+    .acc-panel-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #0f0728;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .acc-panel-title em {
+      font-style: normal;
+      color: #7000ff;
+    }
+    .acc-subtitle {
+      text-align: center;
+      font-size: 0.88rem;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+    .acc-form .form-group {
+      margin-bottom: 18px;
+    }
+    .acc-form label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .acc-form input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: #0f0728;
+      background: #ffffff;
+      box-sizing: border-box;
+      transition: all 0.25s ease;
+    }
+    .acc-form input:focus {
+      outline: none;
+      border-color: #7000ff;
+      box-shadow: 0 0 0 4px rgba(112, 0, 255, 0.1);
+    }
+    .password-field-wrap {
+      position: relative;
+    }
+    .password-toggle-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .password-toggle-btn:hover {
+      color: #7000ff;
+    }
+    .btn-acc-primary {
+      width: 100%;
+      padding: 15px;
+      font-size: 1rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #7000ff 0%, #9d4edd 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(112, 0, 255, 0.3);
+      transition: all 0.25s ease;
+    }
+    .btn-acc-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(112, 0, 255, 0.45);
+    }
+    .account-dashboard {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 24px;
+    }
+    .acc-dash-card {
+      background: #faf7ff;
+      border: 1px solid rgba(112, 0, 255, 0.12);
+      border-radius: 12px;
+      padding: 18px 16px;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s ease;
+    }
+    .acc-dash-card:hover {
+      border-color: #7000ff;
+      background: #f4ecff;
+      transform: translateY(-2px);
+    }
+    .acc-dash-card span.dash-icon {
+      font-size: 1.5rem;
+      display: block;
+      margin-bottom: 8px;
+      color: #7000ff;
+    }
+    .acc-dash-card strong {
+      display: block;
+      font-size: 0.95rem;
+      color: #0f0728;
+      margin-bottom: 2px;
+    }
+    .acc-dash-card span.dash-sub {
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+    @media (max-width: 600px) {
+      .account-card-wrap {
+        padding: 28px 20px;
+      }
+    }
+  </style>
 </head>
-<body >
-<canvas id="account-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.22"></canvas>
+<body>
+
+  <!-- MASTER NAVBAR (White Logo Row + 8 Categories) -->
   <nav class="dz-nav">
     <div class="nav-container">
+      
+      <!-- LEFT: Search Toggle + Mobile Hamburger -->
       <div class="nav-left">
-        <button id="search-toggle" aria-label="Search" class="icon-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
-        <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+        <button id="search-toggle" aria-label="Search" class="icon-btn" title="Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <button class="hamburger" aria-label="Menu" title="Menu">
+          <span></span><span></span><span></span>
+        </button>
       </div>
+
+      <!-- CENTER: Logo on WHITE background -->
       <div class="nav-center">
-        <a href="/" class="brand-logo">DERA ZONE</a>
+        <a href="/" class="brand-logo" aria-label="DERA ZONE">DERA ZONE</a>
       </div>
+
+      <!-- RIGHT: WhatsApp, User & Cart -->
       <div class="nav-right">
-        <a href="account" aria-label="Account" class="icon-btn"><i class="fa-regular fa-user"></i></a>
-        <button data-open-cart aria-label="Bag" class="icon-btn cart-btn">
-          <i class="fa-solid fa-bag-shopping"></i><span class="cart-count" style="display:none">0</span>
+        <a href="https://wa.me/923294551652?text=Hello%20DERA%20ZONE,%20I%20have%20an%20inquiry" target="_blank" class="icon-btn wa-icon-btn" aria-label="WhatsApp" title="Chat on WhatsApp">
+          <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <a href="account.html" aria-label="Account" class="icon-btn" title="My Account">
+          <i class="fa-regular fa-user"></i>
+        </a>
+        <button data-open-cart aria-label="Bag" class="icon-btn cart-btn" title="View Cart">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="cart-count" style="display:none">0</span>
         </button>
       </div>
     </div>
+    
+    <!-- CATEGORY BAR LINKS (Exact 8 Categories) -->
     <ul class="nav-links">
       <li><a href="shop.html?cat=accessories">ACCESSORIES</a></li>
       <li class="separator">&#183;</li>
       <li><a href="shop.html?cat=gadgets">GADGETS</a></li>
       <li class="separator">&#183;</li>
-      <li><a href="shop.html?cat=wireless-earbuds-audio">AUDIO</a></li>
+      <li><a href="shop.html?cat=wireless-earbuds-audio">WIRELESS EARBUDS &amp; AUDIO</a></li>
       <li class="separator">&#183;</li>
       <li><a href="shop.html?cat=jewellery">JEWELLERY</a></li>
       <li class="separator">&#183;</li>
-      <li><a href="shop.html?cat=clothing-apparel">CLOTHING</a></li>
+      <li><a href="shop.html?cat=fashion-lifestyle">FASHION &amp; LIFESTYLE</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=footwear">FOOTWEAR</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=clothing-apparel">CLOTHING &amp; APPAREL</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=winter-collection">WINTER COLLECTION</a></li>
     </ul>
   </nav>
-  <main class="account-main" style="position:relative;z-index:1">
-    <div class="account-card-wrap">
-      <!-- Tab toggle -->
-      <div class="account-tabs">
-        <button class="acc-tab active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
-        <button class="acc-tab"        id="tab-signup" onclick="switchTab('signup')">Create Account</button>
+
+  <!-- SEARCH OVERLAY -->
+  <div id="search-overlay">
+    <div class="search-box">
+      <div class="search-inner">
+        <span class="search-icon-big"><i class="fa-solid fa-magnifying-glass"></i></span>
+        <input type="text" id="search-input" placeholder="Search wireless audio, smart gadgets, accessories…" autocomplete="off" />
+        <button id="search-close">&#10005;</button>
       </div>
-      <!-- SIGN IN -->
-      <div class="account-panel" id="panel-signin">
-        <h1 class="ck-panel-title" style="text-align:center">Welcome <em>Back</em></h1>
-        <div class="gold-rule" style="margin:16px auto 28px"></div>
-        <form id="signin-form" class="ck-form">
-          <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" name="email" placeholder="you@email.com" required/>
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <div class="password-field-wrap">
-              <input type="password" name="password" id="signin-password" placeholder="••••••••" required/>
-              <button type="button" class="password-toggle-btn" onclick="toggleDERA ZONEPassword('signin-password', this)" aria-label="Show password">
-                <i class="fa-regular fa-eye"></i>
-              </button>
-            </div>
-          </div>
-          <div style="text-align:right;margin-top:-8px;margin-bottom:16px">
-            <a href="#" style="font-size:.7rem;color:var(--gold)">Forgot password?</a>
-          </div>
-          <button type="submit" class="btn-primary" style="width:100%;text-align:center;padding:16px">Sign In</button>
-        </form>
-        <p style="text-align:center;margin-top:20px;font-size:.78rem;color:var(--muted)">
-          New to DERA ZONE? <a href="#" onclick="switchTab('signup')" style="color:var(--gold)">Create an account</a>
-        </p>
-      </div>
-      <!-- SIGN UP -->
-      <div class="account-panel hidden" id="panel-signup">
-        <h1 class="ck-panel-title" style="text-align:center">Join <em>DERA ZONE</em></h1>
-        <div class="gold-rule" style="margin:16px auto 28px"></div>
-        <form id="signup-form" class="ck-form">
-          <div class="ck-row-2">
-            <div class="form-group">
-              <label>First Name</label>
-              <input type="text" name="fname" placeholder="First Name" required/>
-            </div>
-            <div class="form-group">
-              <label>Last Name</label>
-              <input type="text" name="lname" placeholder="Last Name" required/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" name="email" placeholder="you@email.com" required/>
-          </div>
-          <div class="form-group">
-            <label>Phone Number</label>
-            <input type="tel" name="phone" placeholder="+92 315 0727131"/>
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <div class="password-field-wrap">
-              <input type="password" name="password" id="signup-password" placeholder="Min 8 characters" minlength="8" required/>
-              <button type="button" class="password-toggle-btn" onclick="toggleDERA ZONEPassword('signup-password', this)" aria-label="Show password">
-                <i class="fa-regular fa-eye"></i>
-              </button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Confirm Password</label>
-            <div class="password-field-wrap">
-              <input type="password" name="confirm" id="signup-confirm" placeholder="Repeat password" required/>
-              <button type="button" class="password-toggle-btn" onclick="toggleDERA ZONEPassword('signup-confirm', this)" aria-label="Show password">
-                <i class="fa-regular fa-eye"></i>
-              </button>
-            </div>
-          </div>
-          <label style="display:flex;gap:10px;align-items:flex-start;font-size:.75rem;color:var(--muted);margin-bottom:20px;cursor:pointer">
-            <input type="checkbox" required style="margin-top:3px;accent-color:var(--gold)"/>
-            I agree to DERA ZONE's <a href="policy?page=terms" style="color:var(--gold);margin-left:4px">Terms & Privacy Policy</a>
-          </label>
-          <button type="submit" class="btn-primary" style="width:100%;text-align:center;padding:16px">Create Account</button>
-        </form>
-        <p style="text-align:center;margin-top:20px;font-size:.78rem;color:var(--muted)">
-          Already have an account? <a href="#" onclick="switchTab('signin')" style="color:var(--gold)">Sign in</a>
-        </p>
-      </div>
-      <!-- LOGGED IN STATE (shown after sign in) -->
-      <div class="account-panel hidden" id="panel-loggedin">
-        <div style="text-align:center">
-          <div style="font-size:3.5rem;margin-bottom:16px">&#128100;</div>
-          <h2 class="ck-panel-title" style="text-align:center">Hello, <em id="acc-name-disp">there</em></h2>
-          <div class="gold-rule" style="margin:16px auto 28px"></div>
-        </div>
-        <!-- ORDER HISTORY — shown above quick links -->
-        <div id="order-history-wrap" style="margin-bottom:24px;display:none">
-          <p class="section-label" style="margin-bottom:12px">Your Orders</p>
-          <div id="order-history-list"><p style="color:var(--muted);font-size:.8rem">Loading orders…</p></div>
-          <div class="gold-rule" style="margin-top:20px"></div>
-        </div>
-        <div class="account-dashboard">
-          <a href="shop" class="acc-dash-card">
-            <span>&#128717;</span>
-            <strong>Browse Shop</strong>
-            <span>Explore new arrivals</span>
-          </a>
-          <a href="policy?page=track" class="acc-dash-card">
-            <span>&#128230;</span>
-            <strong>Track Order</strong>
-            <span>Check delivery status</span>
-          </a>
-          <a href="policy?page=returns" class="acc-dash-card">
-            <span>&#8635;</span>
-            <strong>Returns</strong>
-            <span>Start a return</span>
-          </a>
-          <a href="contact" class="acc-dash-card">
-            <span>&#128172;</span>
-            <strong>Support</strong>
-            <span>Get help</span>
-          </a>
-        </div>
-        <button onclick="signOut()" class="btn-outline" style="width:100%;margin-top:24px;text-align:center;padding:14px">Sign Out</button>
-      </div>
-    </div>
-  </main>
-  <!-- REVIEW MODAL -->
-  <div id="review-modal" style="display:none;position:fixed;inset:0;z-index:2500;background:rgba(0,0,0,0.75);align-items:center;justify-content:center;padding:20px;">
-    <div style="background:var(--card,#111);border:1px solid var(--border,#2a2a2a);border-radius:16px;padding:32px;max-width:460px;width:100%;position:relative;">
-      <button onclick="closeReviewModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted,#888);font-size:1.2rem;cursor:pointer;">✕</button>
-      <p class="section-label" style="margin-bottom:4px">Order <span id="review-order-label"></span></p>
-      <h3 style="color:var(--gold,#c9a84c);margin:0 0 4px;font-size:1.1rem">Leave a Review</h3>
-      <p style="font-size:.75rem;color:var(--muted,#888);margin:0 0 20px" id="review-product-label"></p>
-      <!-- Stars -->
-      <div style="margin-bottom:16px;">
-        <p style="font-size:.78rem;color:var(--muted,#888);margin-bottom:8px;">Your Rating</p>
-        <div style="display:flex;gap:6px;">
-          <button class="star-btn" onclick="setReviewStars(1)" style="background:none;border:none;font-size:1.6rem;cursor:pointer;color:#c9a84c;padding:0;">★</button>
-          <button class="star-btn" onclick="setReviewStars(2)" style="background:none;border:none;font-size:1.6rem;cursor:pointer;color:#c9a84c;padding:0;">★</button>
-          <button class="star-btn" onclick="setReviewStars(3)" style="background:none;border:none;font-size:1.6rem;cursor:pointer;color:#c9a84c;padding:0;">★</button>
-          <button class="star-btn" onclick="setReviewStars(4)" style="background:none;border:none;font-size:1.6rem;cursor:pointer;color:#c9a84c;padding:0;">★</button>
-          <button class="star-btn" onclick="setReviewStars(5)" style="background:none;border:none;font-size:1.6rem;cursor:pointer;color:#c9a84c;padding:0;">★</button>
-        </div>
-      </div>
-      <!-- Review text -->
-      <div style="margin-bottom:14px;">
-        <label style="font-size:.78rem;color:var(--muted,#888);display:block;margin-bottom:6px;">Your Review</label>
-        <textarea id="review-text" rows="4" placeholder="Tell us about your experience with this product…"
-          style="width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border,#2a2a2a);border-radius:8px;color:var(--text,#f0f0f0);padding:12px;font-family:inherit;font-size:.82rem;resize:vertical;box-sizing:border-box;cursor:text;caret-color:var(--gold,#c9a84c);"></textarea>
-      </div>
-      <!-- City -->
-      <div style="margin-bottom:22px;">
-        <label style="font-size:.78rem;color:var(--muted,#888);display:block;margin-bottom:6px;">Your City <span style="opacity:.5">(optional)</span></label>
-        <input type="text" id="review-city" placeholder="e.g. Lahore"
-          style="width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border,#2a2a2a);border-radius:8px;color:var(--text,#f0f0f0);padding:10px 12px;font-family:inherit;font-size:.82rem;box-sizing:border-box;cursor:text;caret-color:var(--gold,#c9a84c);" />
-      </div>
-      <button id="review-submit-btn" class="btn-primary" style="width:100%;text-align:center;padding:14px;cursor:pointer;">Submit Review</button>
+      <div id="search-results"></div>
     </div>
   </div>
 
-  <div id="overlay"></div>
+  <!-- HERO -->
+  <header class="account-hero">
+    <div class="container">
+      <h1>DERA ZONE Account</h1>
+      <p>Sign in to view your orders, track shipments, and manage your profile.</p>
+    </div>
+  </header>
+
+  <!-- MAIN ACCOUNT WRAP -->
+  <main class="account-main">
+    <div class="container">
+      <div class="account-card-wrap">
+        
+        <!-- Tab Switcher -->
+        <div class="account-tabs">
+          <button class="acc-tab active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
+          <button class="acc-tab" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
+        </div>
+
+        <!-- SIGN IN PANEL -->
+        <div class="account-panel" id="panel-signin">
+          <h2 class="acc-panel-title">Welcome <em>Back</em></h2>
+          <p class="acc-subtitle">Enter your credentials to access your DERA ZONE account.</p>
+          
+          <form id="signin-form" class="acc-form">
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" name="email" placeholder="you@email.com" required/>
+            </div>
+
+            <div class="form-group">
+              <label>Password</label>
+              <div class="password-field-wrap">
+                <input type="password" name="password" id="signin-password" placeholder="••••••••" required/>
+                <button type="button" class="password-toggle-btn" onclick="togglePassword('signin-password', this)" aria-label="Show password">
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-acc-primary" style="margin-top:10px;">Sign In</button>
+          </form>
+
+          <p style="text-align:center;margin-top:22px;font-size:0.85rem;color:#64748b;">
+            New to DERA ZONE? <a href="#" onclick="switchTab('signup')" style="color:#7000ff;font-weight:700;">Create an account</a>
+          </p>
+        </div>
+
+        <!-- SIGN UP PANEL -->
+        <div class="account-panel hidden" id="panel-signup">
+          <h2 class="acc-panel-title">Join <em>DERA ZONE</em></h2>
+          <p class="acc-subtitle">Create an account for quick checkouts and order tracking.</p>
+          
+          <form id="signup-form" class="acc-form">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
+              <div class="form-group" style="margin:0;">
+                <label>First Name</label>
+                <input type="text" name="fname" placeholder="Muhammad" required/>
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label>Last Name</label>
+                <input type="text" name="lname" placeholder="Ali" required/>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" name="email" placeholder="you@email.com" required/>
+            </div>
+
+            <div class="form-group">
+              <label>WhatsApp / Phone</label>
+              <input type="tel" name="phone" placeholder="03XXXXXXXXX"/>
+            </div>
+
+            <div class="form-group">
+              <label>Create Password</label>
+              <div class="password-field-wrap">
+                <input type="password" name="password" id="signup-password" placeholder="Min 6 characters" minlength="6" required/>
+                <button type="button" class="password-toggle-btn" onclick="togglePassword('signup-password', this)" aria-label="Show password">
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Confirm Password</label>
+              <div class="password-field-wrap">
+                <input type="password" name="confirm" id="signup-confirm" placeholder="Repeat password" required/>
+                <button type="button" class="password-toggle-btn" onclick="togglePassword('signup-confirm', this)" aria-label="Show password">
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-acc-primary" style="margin-top:10px;">Create Account</button>
+          </form>
+
+          <p style="text-align:center;margin-top:22px;font-size:0.85rem;color:#64748b;">
+            Already have an account? <a href="#" onclick="switchTab('signin')" style="color:#7000ff;font-weight:700;">Sign in</a>
+          </p>
+        </div>
+
+        <!-- LOGGED IN PANEL -->
+        <div class="account-panel hidden" id="panel-loggedin">
+          <div style="text-align:center;margin-bottom:24px;">
+            <div style="width:64px;height:64px;border-radius:50%;background:#faf7ff;border:2px solid #c084fc;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.8rem;color:#7000ff;">
+              <i class="fa-regular fa-user"></i>
+            </div>
+            <h2 class="acc-panel-title">Hello, <em id="acc-name-disp">there</em>!</h2>
+            <p style="font-size:0.88rem;color:#64748b;">Welcome to your DERA ZONE control dashboard.</p>
+          </div>
+
+          <!-- Order history container -->
+          <div id="order-history-wrap" style="margin-bottom:24px;display:none">
+            <h3 style="font-size:1rem;font-weight:700;color:#0f0728;margin-bottom:12px;border-bottom:1px solid #f1f5f9;padding-bottom:8px;">
+              <i class="fa-solid fa-box" style="color:#7000ff;margin-right:6px;"></i> Your Orders
+            </h3>
+            <div id="order-history-list">
+              <p style="color:#64748b;font-size:0.85rem;">Loading orders…</p>
+            </div>
+          </div>
+
+          <!-- Quick shortcuts -->
+          <div class="account-dashboard">
+            <a href="shop.html" class="acc-dash-card">
+              <span class="dash-icon"><i class="fa-solid fa-bag-shopping"></i></span>
+              <strong>Shop Products</strong>
+              <span class="dash-sub">Browse catalog</span>
+            </a>
+            <a href="policy.html?page=track" class="acc-dash-card">
+              <span class="dash-icon"><i class="fa-solid fa-truck-fast"></i></span>
+              <strong>Track Parcel</strong>
+              <span class="dash-sub">Delivery status</span>
+            </a>
+            <a href="policy.html?page=returns" class="acc-dash-card">
+              <span class="dash-icon"><i class="fa-solid fa-arrow-rotate-left"></i></span>
+              <strong>Returns Policy</strong>
+              <span class="dash-sub">Exchange guidance</span>
+            </a>
+            <a href="contact.html" class="acc-dash-card">
+              <span class="dash-icon"><i class="fa-brands fa-whatsapp"></i></span>
+              <strong>Help &amp; Support</strong>
+              <span class="dash-sub">Chat on WhatsApp</span>
+            </a>
+          </div>
+
+          <button onclick="signOut()" class="btn-outline" style="width:100%;margin-top:24px;padding:12px;border:1.5px solid #e2e8f0;border-radius:10px;font-weight:700;cursor:pointer;color:#ef4444;background:#fff;">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- MASTER FOOTER -->
+  <footer class="dz-footer">
+    <div class="container">
+      <div class="footer-grid">
+        
+        <!-- Col 1: Brand Info -->
+        <div class="footer-brand">
+          <a href="/" class="brand-logo footer-logo" aria-label="DERA ZONE">DERA ZONE</a>
+          <p class="footer-tagline">
+            Shop Smart. Live Better. Pakistan's ultimate destination for wireless audio, smart gadgets, tech accessories, and trending lifestyle essentials.
+          </p>
+          <div class="footer-social" id="footer-social-links">
+            <a href="https://www.instagram.com/derazone01?stkn=MXVnNnd3cTJyNHEydw==" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.facebook.com/share/1KD2yz1GPn/" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://www.tiktok.com/@derazone001?_r=1&amp;_t=ZS-99wDO848b7x" target="_blank" rel="noopener" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="https://wa.me/923294551652" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          </div>
+        </div>
+
+        <!-- Col 2: Shop Links (8 Categories) -->
+        <div class="footer-col">
+          <h4>Shop Categories</h4>
+          <ul>
+            <li><a href="shop.html?cat=accessories">Accessories</a></li>
+            <li><a href="shop.html?cat=gadgets">Gadgets</a></li>
+            <li><a href="shop.html?cat=wireless-earbuds-audio">Wireless Earbuds &amp; Audio</a></li>
+            <li><a href="shop.html?cat=jewellery">Jewellery</a></li>
+            <li><a href="shop.html?cat=fashion-lifestyle">Fashion &amp; Lifestyle</a></li>
+            <li><a href="shop.html?cat=footwear">Footwear</a></li>
+            <li><a href="shop.html?cat=clothing-apparel">Clothing &amp; Apparel</a></li>
+            <li><a href="shop.html?cat=winter-collection">Winter Collection</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Help & Policies -->
+        <div class="footer-col">
+          <h4>Customer Care</h4>
+          <ul>
+            <li><a href="about.html">About DERA ZONE</a></li>
+            <li><a href="contact.html">Contact Support</a></li>
+            <li><a href="policy.html?page=shipping">Shipping Information</a></li>
+            <li><a href="policy.html?page=returns">Returns &amp; Exchange</a></li>
+            <li><a href="policy.html?page=track">Track Your Order</a></li>
+            <li><a href="policy.html?page=terms">Privacy Policy</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Contact Info (No Bank details here!) -->
+        <div class="footer-col get-in-touch-col">
+          <h4>Get In Touch</h4>
+          <ul class="get-in-touch-list">
+            <li><i class="fa-regular fa-envelope"></i> <span>derazone001@gmail.com</span></li>
+            <li><i class="fa-brands fa-whatsapp"></i> <span>+92 329 4551652</span></li>
+            <li><i class="fa-solid fa-location-dot"></i> <span>Nationwide Delivery, Pakistan</span></li>
+            <li><i class="fa-solid fa-clock"></i> <span>3-5 Working Days Delivery Time</span></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <p>&copy; 2026 <span style="color:#c084fc;font-weight:700;">DERA ZONE</span>. All rights reserved. Shop Smart. Live Better.</p>
+        <div class="footer-pay">
+          <span class="pay-badge">Cash on Delivery</span>
+          <span class="pay-badge">Online Bank Transfer</span>
+          <span class="pay-badge">Direct WhatsApp Order</span>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- CART SIDEBAR / DRAWER -->
+  <div id="cart-drawer-overlay"></div>
+  <aside id="cart-drawer">
+    <div class="cart-header">
+      <div class="cart-header-title">
+        <i class="fa-solid fa-bag-shopping"></i> Your Bag
+        <span class="cart-drawer-count">(0)</span>
+      </div>
+      <button id="cart-close" aria-label="Close cart">&#10005;</button>
+    </div>
+    <div id="cart-items" class="cart-body">
+      <div class="cart-empty">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <p>Your shopping bag is empty.</p>
+        <a href="shop.html" class="btn-primary" style="margin-top:12px;font-size:0.85rem;">Start Shopping</a>
+      </div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-subtotal-row">
+        <span>Subtotal</span>
+        <span id="cart-subtotal">PKR 0</span>
+      </div>
+      <p class="cart-shipping-note">Free Delivery across Pakistan on orders over PKR 2,500</p>
+      <a href="checkout.html" class="btn-primary cart-checkout-btn">Proceed to Checkout <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+  </aside>
+
   <div id="toast"></div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- SCRIPTS -->
   <script src="js/whatsapp-config.js"></script>
   <script src="js/api.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/search.js"></script>
   <script>
     /* ── Tab switcher ── */
     function switchTab(tab) {
@@ -230,233 +551,101 @@
       const list = document.getElementById('order-history-list');
       if (!wrap || !list) return;
       wrap.style.display = 'block';
-      list.innerHTML = '<p style="color:var(--muted);font-size:.8rem">Loading your orders…</p>';
+      list.innerHTML = '<p style="color:#64748b;font-size:.85rem;">Loading your orders…</p>';
       try {
         const data = await apiGetUserOrders(email);
         const orders = data.orders || [];
 
         if (!orders.length) {
           list.innerHTML = `
-            <div style="background:rgba(201,168,76,0.06);border:1px solid var(--border);border-radius:8px;padding:16px;">
-              <p style="color:var(--text);font-size:.82rem;margin:0 0 8px;font-weight:600;">No orders found</p>
-              <p style="color:var(--muted);font-size:.76rem;line-height:1.7;margin:0 0 10px;">
-                If you placed an order using a different email address, your orders will be linked to that email.
+            <div style="background:#faf7ff;border:1px solid rgba(112,0,255,0.1);border-radius:10px;padding:16px;">
+              <p style="color:#0f0728;font-size:0.85rem;margin:0 0 6px;font-weight:700;">No orders found yet</p>
+              <p style="color:#64748b;font-size:0.8rem;line-height:1.5;margin:0 0 10px;">
+                When you place orders using this email address, they will appear here.
               </p>
-              <a href="policy?page=track" style="color:var(--gold);font-size:.76rem;">Track your order by reference number →</a>
+              <a href="shop.html" style="color:#7000ff;font-size:0.82rem;font-weight:700;">Explore our collections →</a>
             </div>`;
           return;
         }
 
         list.innerHTML = orders.map(o => `
-          <div style="background:rgba(201,168,76,0.05);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;">
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px;box-shadow:0 2px 6px rgba(0,0,0,0.02);">
             <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-              <strong style="color:var(--gold);font-size:.82rem">${o.id}</strong>
-              <span style="font-size:.7rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-PK',{dateStyle:'medium'})}</span>
+              <strong style="color:#7000ff;font-size:0.88rem;">${o.id}</strong>
+              <span style="font-size:0.75rem;color:#64748b;">${new Date(o.createdAt).toLocaleDateString('en-PK',{dateStyle:'medium'})}</span>
             </div>
-            <div style="font-size:.78rem;color:var(--muted)">${o.items?.length || 0} item(s) — <strong style="color:var(--text)">PKR ${(o.total||0).toLocaleString()}</strong></div>
-            <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-              <span style="padding:2px 10px;border-radius:10px;font-weight:600;font-size:.72rem;
-                background:${o.status==='Delivered'?'rgba(76,175,130,.15)':o.status==='Shipped'?'rgba(201,168,76,.15)':'rgba(76,140,224,.15)'};
-                color:${o.status==='Delivered'?'#4caf82':o.status==='Shipped'?'#c9a84c':'#4c8ce0'}">
+            <div style="font-size:0.82rem;color:#475569;">
+              ${o.items?.length || 0} item(s) — <strong style="color:#0f0728;">PKR ${(o.total||0).toLocaleString()}</strong>
+            </div>
+            <div style="margin-top:8px;">
+              <span style="padding:3px 10px;border-radius:12px;font-weight:700;font-size:0.72rem;background:#faf7ff;color:#7000ff;border:1px solid #c084fc;">
                 ${o.status || 'Pending'}
               </span>
-              ${o.status === 'Delivered' ? (
-                isOrderReviewed(o.id)
-                ? `<span style="font-size:.72rem;color:#4caf82;padding:4px 12px;border:1px solid rgba(76,175,130,.4);border-radius:10px;">✓ Review Submitted</span>`
-                : `<button onclick="openReviewModal('${o.id}', '${(o.items?.map(i=>i.name)||[]).join(', ').replace(/'/g,"&#39;")}')"
-                style="background:transparent;border:1px solid var(--gold);color:var(--gold);font-size:.72rem;padding:4px 12px;border-radius:10px;cursor:pointer;font-family:inherit;transition:all .2s;"
-                onmouseover="this.style.background='var(--gold)';this.style.color='#000'"
-                onmouseout="this.style.background='transparent';this.style.color='var(--gold)'">
-                ✦ Leave a Review
-              </button>`
-              ) : ''}
             </div>
           </div>`).join('');
       } catch(err) {
-        list.innerHTML = `
-          <div style="background:rgba(201,168,76,0.06);border:1px solid var(--border);border-radius:8px;padding:16px;">
-            <p style="color:var(--text);font-size:.82rem;margin:0 0 8px;font-weight:600;">Could not load orders</p>
-            <p style="color:var(--muted);font-size:.76rem;line-height:1.7;margin:0 0 10px;">Please check your connection and try refreshing the page.</p>
-            <a href="policy?page=track" style="color:var(--gold);font-size:.76rem;">Track your order by reference number →</a>
-          </div>`;
+        list.innerHTML = `<p style="color:#ef4444;font-size:0.8rem;">Could not load orders right now.</p>`;
       }
     }
 
-    /* ── Review Modal ── */
-    let _reviewOrderId = null;
-
-    /* Track which orders the customer has already reviewed.
-       This is a client-side safety net so the button can never be
-       clicked twice in a row, even if the backend's own duplicate
-       check is slow to respond (e.g. server waking up). */
-    function getReviewedOrders() {
-      try { return JSON.parse(localStorage.getItem('derazone_reviewed_orders') || '[]'); }
-      catch { return []; }
-    }
-    function isOrderReviewed(orderId) {
-      return getReviewedOrders().includes(orderId);
-    }
-    function markOrderReviewed(orderId) {
-      const list = getReviewedOrders();
-      if (!list.includes(orderId)) {
-        list.push(orderId);
-        localStorage.setItem('derazone_reviewed_orders', JSON.stringify(list));
-      }
-    }
-
-    function openReviewModal(orderId, productNames) {
-      _reviewOrderId = orderId;
-      document.getElementById('review-order-label').textContent = orderId;
-      document.getElementById('review-product-label').textContent = productNames || '';
-      document.getElementById('review-text').value = '';
-      setReviewStars(5);
-      document.getElementById('review-city').value = '';
-      document.getElementById('review-modal').style.display = 'flex';
-    }
-
-    function closeReviewModal() {
-      document.getElementById('review-modal').style.display = 'none';
-      _reviewOrderId = null;
-    }
-
-    let _selectedStars = 5;
-    function setReviewStars(n) {
-      _selectedStars = n;
-      document.querySelectorAll('.star-btn').forEach((s, i) => {
-        s.style.color = i < n ? '#c9a84c' : 'var(--border)';
-      });
-    }
-
-    document.getElementById('review-submit-btn')?.addEventListener('click', async () => {
-      const text = document.getElementById('review-text').value.trim();
-      const city = document.getElementById('review-city').value.trim();
-      if (!text) { showToast('Please write your review.'); return; }
-      if (text.length < 10) { showToast('Review is too short. Tell us more!'); return; }
-
-      const user = getCurrentUser();
-      const btn = document.getElementById('review-submit-btn');
-      const orderIdAtSubmit = _reviewOrderId;
-      btn.disabled = true; btn.textContent = 'Submitting…';
-
-      /* Our server can take 30–60s to wake up if it's been idle.
-         Let the customer know instead of leaving them staring at silence. */
-      const slowNoticeTimer = setTimeout(() => {
-        showToast('Still connecting — server is waking up, please wait…');
-      }, 6000);
-
-      try {
-        const result = await apiSubmitReview({
-          orderId:      orderIdAtSubmit,
-          rating:       _selectedStars,
-          text,
-          city,
-          customerName: user ? `${user.fname} ${user.lname?.[0]||''}.`.trim() : 'Customer',
-          customerEmail: user?.email || '',
-        });
-        clearTimeout(slowNoticeTimer);
-        if (result.ok) {
-          markOrderReviewed(orderIdAtSubmit);
-          showToast('Thank you for your review! ✓');
-          closeReviewModal();
-          if (user?.email) loadOrderHistory(user.email); /* refresh so button becomes "Review Submitted" */
-        } else if (result.status === 409) {
-          markOrderReviewed(orderIdAtSubmit); /* backend confirms one already exists — sync local flag too */
-          showToast('You\'ve already reviewed this order.');
-          closeReviewModal();
-          if (user?.email) loadOrderHistory(user.email);
-        } else {
-          showToast(result.data?.error || 'Could not submit. Please try again.');
-        }
-      } catch (err) {
-        clearTimeout(slowNoticeTimer);
-        console.error('Review submit failed:', err);
-        showToast('Connection error — please check your internet and try again.');
-      } finally {
-        btn.disabled = false; btn.textContent = 'Submit Review';
-      }
-    });
-
-    /* ── Sign In (real backend with localStorage fallback) ── */
+    /* ── Sign In ── */
     document.getElementById('signin-form')?.addEventListener('submit', async e => {
       e.preventDefault();
-      const fd       = new FormData(e.target);
-      const email    = fd.get('email').trim().toLowerCase();
+      const fd = new FormData(e.target);
+      const email = fd.get('email');
       const password = fd.get('password');
-      const btn      = e.target.querySelector('button[type="submit"]');
+      const btn = e.target.querySelector('button[type="submit"]');
       if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
 
       try {
-        const backendAvailable = await checkBackend();
-        if (backendAvailable) {
+        if (typeof apiLogin === 'function') {
           const result = await apiLogin({ email, password });
           if (result.ok) {
-            saveSession(result.data.token, result.data.user);
-            clearSigninError();
-            showToast('Welcome back to DERA ZONE ✓');
-            setTimeout(() => location.reload(), 900);
+            showToast('Welcome back! ⚡');
+            setTimeout(() => location.reload(), 800);
           } else {
-            showSigninError(result.data.error || 'Sign in failed.');
+            showToast(result.data.error || 'Invalid email or password.');
             if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
           }
-        } else {
-          const stored = JSON.parse(localStorage.getItem('derazone_user') || 'null');
-          if (!stored) { showSigninError('No account found. Please create an account first.'); }
-          else if (stored.email?.toLowerCase() !== email) { showSigninError('No account found with that email address.'); }
-          else if (stored.password !== password) { showSigninError('Incorrect password. Please try again.'); }
-          else {
-            clearSigninError();
-            showToast('Welcome back to DERA ZONE ✓');
-            setTimeout(() => location.reload(), 900);
-          }
-          if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
         }
       } catch {
-        showSigninError('Connection error. Please try again.');
+        showToast('Connection error. Please try again.');
         if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
       }
     });
 
-    function showSigninError(msg) {
-      let err = document.getElementById('signin-error');
-      if (!err) {
-        err = document.createElement('p');
-        err.id = 'signin-error';
-        err.style.cssText = 'color:#e05c5c;font-size:.78rem;margin-bottom:12px;text-align:center;';
-        document.getElementById('signin-form').prepend(err);
-      }
-      err.textContent = msg;
-    }
-    function clearSigninError() { document.getElementById('signin-error')?.remove(); }
-
-    /* ── Sign Up (real backend with localStorage fallback) ── */
+    /* ── Sign Up ── */
     document.getElementById('signup-form')?.addEventListener('submit', async e => {
       e.preventDefault();
       const fd = new FormData(e.target);
-      if (fd.get('password') !== fd.get('confirm')) { showToast('Passwords do not match'); return; }
+      const password = fd.get('password');
+      const confirm = fd.get('confirm');
+      if (password !== confirm) {
+        showToast('Passwords do not match.');
+        return;
+      }
+
+      const payload = {
+        fname: fd.get('fname'),
+        lname: fd.get('lname'),
+        email: fd.get('email'),
+        phone: fd.get('phone'),
+        password: password,
+      };
+
       const btn = e.target.querySelector('button[type="submit"]');
       if (btn) { btn.disabled = true; btn.textContent = 'Creating account…'; }
 
-      const payload = {
-        fname: fd.get('fname'), lname: fd.get('lname'),
-        email: fd.get('email').trim().toLowerCase(),
-        phone: fd.get('phone') || '', password: fd.get('password'),
-      };
       try {
-        const backendAvailable = await checkBackend();
-        if (backendAvailable) {
+        if (typeof apiRegister === 'function') {
           const result = await apiRegister(payload);
           if (result.ok) {
-            saveSession(result.data.token, result.data.user);
-            showToast('Account created! Welcome to DERA ZONE 💛');
+            showToast('Account created! Welcome to DERA ZONE ⚡');
             setTimeout(() => location.reload(), 900);
           } else {
             showToast(result.data.error || 'Registration failed.');
             if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
           }
-        } else {
-          localStorage.setItem('derazone_user', JSON.stringify({ ...payload }));
-          showToast('Account created! Welcome to DERA ZONE 💛');
-          setTimeout(() => location.reload(), 900);
         }
       } catch {
         showToast('Connection error. Please try again.');
@@ -467,47 +656,9 @@
     /* ── Sign Out ── */
     function signOut() {
       clearSession();
-      showToast('Signed out. See you soon!');
-      setTimeout(() => location.reload(), 900);
+      showToast('Signed out successfully.');
+      setTimeout(() => location.reload(), 800);
     }
-
-    /* ── 3D Account Animation ── */
-    (function() {
-      const canvas = document.getElementById('account-canvas');
-      if (!canvas || typeof THREE === 'undefined') return;
-      const scene  = new THREE.Scene();
-      const cam    = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
-      cam.position.z = 6;
-      const ren = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-      ren.setPixelRatio(Math.min(devicePixelRatio, 2));
-      ren.setSize(innerWidth, innerHeight);
-      const ring1 = new THREE.Mesh(
-        new THREE.TorusGeometry(3, 0.025, 12, 90),
-        new THREE.MeshBasicMaterial({ color: 0xc9a84c, transparent: true, opacity: 0.35 })
-      );
-      ring1.rotation.x = 0.9; scene.add(ring1);
-      const ring2 = new THREE.Mesh(
-        new THREE.TorusGeometry(2, 0.018, 12, 80),
-        new THREE.MeshBasicMaterial({ color: 0xe2c97e, transparent: true, opacity: 0.2 })
-      );
-      ring2.rotation.x = 1.2; ring2.rotation.y = 0.5; scene.add(ring2);
-      const n = 140, p = new Float32Array(n*3);
-      for (let i=0;i<n;i++){
-        const r=3.5+Math.random()*2, t=Math.random()*Math.PI*2, phi=Math.acos(2*Math.random()-1);
-        p[i*3]=r*Math.sin(phi)*Math.cos(t); p[i*3+1]=r*Math.sin(phi)*Math.sin(t); p[i*3+2]=r*Math.cos(phi);
-      }
-      const pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.BufferAttribute(p,3));
-      const pm = new THREE.PointsMaterial({ color:0xc9a84c, size:0.03, transparent:true, opacity:0.5 });
-      scene.add(new THREE.Points(pg, pm));
-      const clock = new THREE.Clock();
-      (function animate() {
-        requestAnimationFrame(animate);
-        const t = clock.getElapsedTime();
-        ring1.rotation.z = t * 0.14; ring2.rotation.z = -t * 0.1;
-        ren.render(scene, cam);
-      })();
-    })();
   </script>
 </body>
 </html>
-

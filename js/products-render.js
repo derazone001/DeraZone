@@ -84,7 +84,16 @@ function derazoneProductCardHTML(p) {
 window.derazoneCreateProductCard = derazoneProductCardHTML;
 
 function derazoneEmptyState(msg) {
-  return `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;background:var(--card);border-radius:12px;border:1px solid var(--border);color:var(--muted);"><i class="fa-solid fa-box-open" style="font-size:2rem;color:var(--primary);margin-bottom:16px;"></i><p>${msg}</p></div>`;
+  return `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;background:#ffffff;border-radius:16px;border:1px solid rgba(112,0,255,0.1);box-shadow:0 6px 24px rgba(112,0,255,0.04);">
+    <div style="width:64px;height:64px;border-radius:50%;background:#faf7ff;color:#7000ff;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.8rem;border:1px solid #c084fc;">
+      <i class="fa-solid fa-box-open"></i>
+    </div>
+    <h3 style="font-size:1.2rem;font-weight:700;color:#0f0728;margin-bottom:8px;">${msg}</h3>
+    <p style="color:#64748b;font-size:0.9rem;max-width:440px;margin:0 auto 20px;">We are actively restocking our premier collection. Looking for a specific item or model? Reach out directly on WhatsApp!</p>
+    <a href="https://wa.me/923294551652?text=Hello%20DERA%20ZONE,%20I%20am%20looking%20for%20a%20product" target="_blank" class="btn-hero-whatsapp" style="display:inline-flex;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:700;">
+      <i class="fa-brands fa-whatsapp"></i> Inquire on WhatsApp
+    </a>
+  </div>`;
 }
 
 function derazoneReInitCards(container) {
@@ -196,6 +205,18 @@ function derazoneSetupShopFilters(products, grid) {
 
     if (window.updateShopHero) {
       window.updateShopHero(activeSub, activeBrand);
+    } else {
+      const titleEl = document.getElementById('shop-hero-title');
+      const descEl = document.getElementById('shop-hero-desc');
+      if (titleEl && descEl) {
+        if (activeSub && DERAZONE_CAT_LABELS[activeSub]) {
+          titleEl.textContent = DERAZONE_CAT_LABELS[activeSub].toUpperCase();
+          descEl.textContent = `Discover our premium ${DERAZONE_CAT_LABELS[activeSub]} collection curated for quality and performance.`;
+        } else {
+          titleEl.textContent = 'ALL COLLECTIONS';
+          descEl.textContent = 'Explore premium gadgets, wireless audio, lifestyle accessories & everyday essentials with nationwide Cash on Delivery.';
+        }
+      }
     }
     
     let urlStr = window.location.pathname;
@@ -228,19 +249,15 @@ async function derazoneRenderShopGrid() {
   const grid = document.querySelector('#shop-products-grid, .products-grid');
   if (!grid) return;
 
+  let products = [];
   try {
     const data = await apiGet('/products');
-    let products = data.products || [];
-
-    if (!products.length) {
-      grid.innerHTML = derazoneEmptyState('No products available right now. Please check back soon.');
-      return;
-    }
-
-    derazoneSetupShopFilters(products, grid);
+    products = data.products || [];
   } catch (err) {
-    grid.innerHTML = derazoneEmptyState('No products available');
+    console.warn('Backend unavailable, rendering shop filters with local state:', err);
   }
+
+  derazoneSetupShopFilters(products, grid);
 }
 
 async function derazoneRenderHomepageGrids() {

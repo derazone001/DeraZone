@@ -4,501 +4,679 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DERA ZONE - Shop Smart. Live Better.</title>
-  <meta name="description" content="Shop premium skincare and jewelry at DERA ZONE Pakistan. Cash on Delivery available. serums, clips, toners, necklaces, earrings & more." />
-  <link rel="icon" type="image/png" href="images/logo-square.png" />
-  <link rel="stylesheet" href="css/style.css?v=1790277302184" />
-  <link rel="stylesheet" href="css/pages.css?v=3" />
+  <meta name="description" content="Shop trending tech accessories, wireless audio, smart gadgets, and fashion essentials at DERA ZONE Pakistan. Cash on Delivery nationwide." />
+  <link rel="icon" type="image/png" href="images/logo-square-transparent.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
+  <link rel="stylesheet" href="css/style.css?v=1790280000000" />
+  <link rel="stylesheet" href="css/pages.css?v=4" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Orbitron:wght@500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .product-detail-section {
+      padding: 50px 0 90px;
+      background: #ffffff;
+    }
+    .product-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      align-items: start;
+    }
+    .product-gallery-main {
+      border-radius: 16px;
+      overflow: hidden;
+      background: #faf7ff;
+      border: 1px solid rgba(112, 0, 255, 0.08);
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .product-gallery-main img,
+    .product-gallery-main video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .product-gallery-thumbs {
+      display: flex;
+      gap: 12px;
+      margin-top: 14px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+    .gallery-thumb {
+      width: 72px;
+      height: 72px;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      overflow: hidden;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+    }
+    .gallery-thumb.active,
+    .gallery-thumb:hover {
+      border-color: #7000ff;
+      box-shadow: 0 0 0 3px rgba(112, 0, 255, 0.15);
+    }
+    .gallery-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .pd-breadcrumb {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 12px;
+    }
+    .pd-breadcrumb a {
+      color: #7000ff;
+      text-decoration: none;
+    }
+    .pd-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #0f0728;
+      margin-bottom: 14px;
+      line-height: 1.25;
+    }
+    .pd-price {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #7000ff;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .product-price-old {
+      font-size: 1.1rem;
+      color: #94a3b8;
+      text-decoration: line-through;
+      font-weight: 500;
+    }
+    .pd-desc {
+      font-size: 0.95rem;
+      color: #475569;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+    .pd-option-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+    .size-options,
+    .variant-options,
+    .color-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .size-opt,
+    .variant-opt,
+    .color-opt {
+      padding: 9px 16px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #334155;
+      background: #ffffff;
+      transition: all 0.2s ease;
+    }
+    .size-opt.active,
+    .variant-opt.active,
+    .color-opt.active,
+    .size-opt:hover,
+    .variant-opt:hover,
+    .color-opt:hover {
+      border-color: #7000ff;
+      color: #7000ff;
+      background: #faf7ff;
+    }
+    .pd-add-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .pd-add-row .btn-primary {
+      flex: 1.4;
+      padding: 16px 24px;
+      font-size: 1rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #7000ff 0%, #9d4edd 100%);
+      border: none;
+      border-radius: 10px;
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(112, 0, 255, 0.3);
+      transition: all 0.25s ease;
+    }
+    .pd-add-row .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(112, 0, 255, 0.45);
+    }
+    .pd-add-row .btn-outline {
+      flex: 1;
+      padding: 16px 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      border: 2px solid #7000ff;
+      background: transparent;
+      color: #7000ff;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pd-add-row .btn-outline:hover {
+      background: #7000ff;
+      color: #ffffff;
+    }
+    .pd-wishlist {
+      width: 52px;
+      height: 52px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pd-wishlist:hover {
+      border-color: #ef4444;
+      color: #ef4444;
+      background: #fef2f2;
+    }
+    .btn-pd-whatsapp {
+      width: 100%;
+      margin-top: 14px;
+      padding: 15px 24px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      background: #25D366;
+      border: none;
+      border-radius: 10px;
+      color: #ffffff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+      transition: all 0.25s ease;
+    }
+    .btn-pd-whatsapp:hover {
+      background: #1eb954;
+      transform: translateY(-2px);
+    }
+    .pd-trust-strip {
+      margin-top: 28px;
+      padding: 18px 20px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: #475569;
+    }
+    .pd-trust-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .pd-trust-item i {
+      color: #7000ff;
+      width: 18px;
+      text-align: center;
+    }
+    @media (max-width: 900px) {
+      .product-detail-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+      .pd-title {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
 </head>
-<body >
+<body>
 
-<nav class="dz-nav">
+  <!-- MASTER NAVBAR (White Logo Row + 8 Categories) -->
+  <nav class="dz-nav">
     <div class="nav-container">
+      
+      <!-- LEFT: Search Toggle + Mobile Hamburger -->
       <div class="nav-left">
-        <button id="search-toggle" aria-label="Search" class="icon-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
-        <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+        <button id="search-toggle" aria-label="Search" class="icon-btn" title="Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <button class="hamburger" aria-label="Menu" title="Menu">
+          <span></span><span></span><span></span>
+        </button>
       </div>
+
+      <!-- CENTER: Logo on WHITE background -->
       <div class="nav-center">
-        <a href="/" class="brand-logo">DERA ZONE</a>
+        <a href="/" class="brand-logo" aria-label="DERA ZONE">DERA ZONE</a>
       </div>
+
+      <!-- RIGHT: WhatsApp, User & Cart -->
       <div class="nav-right">
-        <a href="account" aria-label="Account" class="icon-btn"><i class="fa-regular fa-user"></i></a>
-        <button data-open-cart aria-label="Bag" class="icon-btn cart-btn">
-          <i class="fa-solid fa-bag-shopping"></i><span class="cart-count" style="display:none">0</span>
+        <a href="https://wa.me/923294551652?text=Hello%20DERA%20ZONE,%20I%20have%20an%20inquiry" target="_blank" class="icon-btn wa-icon-btn" aria-label="WhatsApp" title="Chat on WhatsApp">
+          <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <a href="account.html" aria-label="Account" class="icon-btn" title="My Account">
+          <i class="fa-regular fa-user"></i>
+        </a>
+        <button data-open-cart aria-label="Bag" class="icon-btn cart-btn" title="View Cart">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="cart-count" style="display:none">0</span>
         </button>
       </div>
     </div>
+    
+    <!-- CATEGORY BAR LINKS (Exact 8 Categories) -->
     <ul class="nav-links">
       <li><a href="shop.html?cat=accessories">ACCESSORIES</a></li>
       <li class="separator">&#183;</li>
       <li><a href="shop.html?cat=gadgets">GADGETS</a></li>
       <li class="separator">&#183;</li>
-      <li><a href="shop.html?cat=wireless-earbuds-audio">AUDIO</a></li>
+      <li><a href="shop.html?cat=wireless-earbuds-audio">WIRELESS EARBUDS &amp; AUDIO</a></li>
       <li class="separator">&#183;</li>
       <li><a href="shop.html?cat=jewellery">JEWELLERY</a></li>
       <li class="separator">&#183;</li>
-      <li><a href="shop.html?cat=clothing-apparel">CLOTHING</a></li>
+      <li><a href="shop.html?cat=fashion-lifestyle">FASHION &amp; LIFESTYLE</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=footwear">FOOTWEAR</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=clothing-apparel">CLOTHING &amp; APPAREL</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=winter-collection">WINTER COLLECTION</a></li>
     </ul>
   </nav>
-<!-- SEARCH OVERLAY -->
-<div id="search-overlay">
-  <div class="search-box">
-    <div class="search-inner">
-      <span class="search-icon-big"><i class="fa-solid fa-magnifying-glass"></i></span>
-      <input type="text" id="search-input" placeholder="Search skincare, serums, toners…" autocomplete="off" />
-      <button id="search-close">&#10005;</button>
+
+  <!-- SEARCH OVERLAY -->
+  <div id="search-overlay">
+    <div class="search-box">
+      <div class="search-inner">
+        <span class="search-icon-big"><i class="fa-solid fa-magnifying-glass"></i></span>
+        <input type="text" id="search-input" placeholder="Search wireless audio, smart gadgets, accessories…" autocomplete="off" />
+        <button id="search-close">&#10005;</button>
+      </div>
+      <div id="search-results"></div>
     </div>
-    <div id="search-results"></div>
   </div>
-</div>
 
-<section class="container">
-  <div id="pd-root">
-    <p style="padding:160px 0;text-align:center;opacity:0.6;">Loading product…</p>
-  </div>
-</section>
+  <!-- MAIN PRODUCT DETAIL -->
+  <main class="product-detail-section">
+    <div class="container">
+      <div id="pd-root">
+        <div style="padding:120px 0;text-align:center;color:#64748b;">
+          <i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;color:#7000ff;margin-bottom:12px;"></i>
+          <p>Loading product details…</p>
+        </div>
+      </div>
+    </div>
+  </main>
 
-<!-- You May Also Like -->
-<section id="pd-related" style="padding:60px 0 100px;display:none;">
-  <div class="container">
-    <div class="section-header reveal">
-      <div>
-        <p class="section-label">Complete The Look</p>
+  <!-- YOU MAY ALSO LIKE -->
+  <section id="pd-related" style="padding:60px 0 90px;background:#fbfbfe;border-top:1px solid #f1f5f9;display:none;">
+    <div class="container">
+      <div class="section-header" style="text-align:center;margin-bottom:36px;">
+        <p class="section-label" style="display:inline-block;margin-bottom:8px;">Recommendations</p>
         <h2 class="section-title">You May Also <em>Like</em></h2>
       </div>
+      <div class="products-grid" id="pd-related-grid"></div>
     </div>
-    <div class="products-grid" id="pd-related-grid"></div>
-  </div>
-</section>
+  </section>
 
-<!-- Newsletter -->
-<section id="newsletter" style="padding:80px 0;">
-  <div class="container">
-    <div class="newsletter-inner reveal">
-      <p class="section-label">Be First To Know</p>
-      <h2 class="section-title">New Arrivals <em>Weekly</em></h2>
-      <p>Subscribe and stay updated with our latest collections.</p>
-      <form class="newsletter-form" onsubmit="return false;">
-        <input type="email" placeholder="Your email address" required />
-        <button type="submit" class="btn-primary">Subscribe</button>
-      </form>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <a href="/" style="text-decoration: none; color: inherit; font-family: 'Cairo', sans-serif; font-size: 2.2rem; font-weight: 900; line-height: 1; display: inline-block; white-space: nowrap; letter-spacing: 2px;">&#1586;&#1614;&#1585;&#1616;&#1740;&#1606; &#1581;&#1587;&#1606;</a>
-        <p>Pakistan's premium fashion destination.</p>
-        <div class="footer-social" id="footer-social-links">
-          <a href="https://www.instagram.com/zarin_e_husn/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-          <a href="https://www.facebook.com/profile.php?id=61590913872614" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+  <!-- MASTER FOOTER -->
+  <footer class="dz-footer">
+    <div class="container">
+      <div class="footer-grid">
+        
+        <!-- Col 1: Brand Info -->
+        <div class="footer-brand">
+          <a href="/" class="brand-logo footer-logo" aria-label="DERA ZONE">DERA ZONE</a>
+          <p class="footer-tagline">
+            Shop Smart. Live Better. Pakistan's ultimate destination for wireless audio, smart gadgets, tech accessories, and trending lifestyle essentials.
+          </p>
+          <div class="footer-social" id="footer-social-links">
+            <a href="https://www.instagram.com/derazone01?stkn=MXVnNnd3cTJyNHEydw==" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.facebook.com/share/1KD2yz1GPn/" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://www.tiktok.com/@derazone001?_r=1&amp;_t=ZS-99wDO848b7x" target="_blank" rel="noopener" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="https://wa.me/923294551652" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          </div>
         </div>
-      </div>
-      <div class="footer-col">
-        <h4>Shop</h4>
+
+        <!-- Col 2: Shop Links (8 Categories) -->
+        <div class="footer-col">
+          <h4>Shop Categories</h4>
           <ul>
-            <li><a href="jewelry.html">Jewelry</a></li>
-            <li><a href="cosmetics.html">Cosmetics</a></li>
-          <li><a href="shop.html?cat=deals">Deals</a></li>
+            <li><a href="shop.html?cat=accessories">Accessories</a></li>
+            <li><a href="shop.html?cat=gadgets">Gadgets</a></li>
+            <li><a href="shop.html?cat=wireless-earbuds-audio">Wireless Earbuds &amp; Audio</a></li>
+            <li><a href="shop.html?cat=jewellery">Jewellery</a></li>
+            <li><a href="shop.html?cat=fashion-lifestyle">Fashion &amp; Lifestyle</a></li>
+            <li><a href="shop.html?cat=footwear">Footwear</a></li>
+            <li><a href="shop.html?cat=clothing-apparel">Clothing &amp; Apparel</a></li>
+            <li><a href="shop.html?cat=winter-collection">Winter Collection</a></li>
           </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Help</h4>
-        <ul>
-          <li><a href="about.html">About Us</a></li>
-              <li><a href="contact">Contact Us</a></li>
-          <li><a href="policy?page=returns">Returns</a></li>
-          <li><a href="policy?page=shipping">Shipping</a></li>
-        </ul>
-      </div>
-      <div class="footer-col get-in-touch-col">
+        </div>
+
+        <!-- Col 3: Help & Policies -->
+        <div class="footer-col">
+          <h4>Customer Care</h4>
+          <ul>
+            <li><a href="about.html">About DERA ZONE</a></li>
+            <li><a href="contact.html">Contact Support</a></li>
+            <li><a href="policy.html?page=shipping">Shipping Information</a></li>
+            <li><a href="policy.html?page=returns">Returns &amp; Exchange</a></li>
+            <li><a href="policy.html?page=track">Track Your Order</a></li>
+            <li><a href="policy.html?page=terms">Privacy Policy</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Contact Info (No Bank details here!) -->
+        <div class="footer-col get-in-touch-col">
           <h4>Get In Touch</h4>
           <ul class="get-in-touch-list">
-            <li><i class="fa-regular fa-envelope" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-derazone="email">derazone@gmail.com</span></li>
-            <li><i class="fa-brands fa-whatsapp" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-derazone="phone">+92 315 0727131</span></li>
-            <li><i class="fa-solid fa-location-dot" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-derazone="location">Lahore, Pakistan</span></li>
-            <li><i class="fa-regular fa-clock" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-derazone="hours">Mon-Sat: 10am - 7pm</span></li>
+            <li><i class="fa-regular fa-envelope"></i> <span>derazone001@gmail.com</span></li>
+            <li><i class="fa-brands fa-whatsapp"></i> <span>+92 329 4551652</span></li>
+            <li><i class="fa-solid fa-location-dot"></i> <span>Nationwide Delivery, Pakistan</span></li>
+            <li><i class="fa-solid fa-clock"></i> <span>3-5 Working Days Delivery Time</span></li>
           </ul>
         </div>
-    </div>
-    <div class="footer-bottom">
-      <p>© 2026 <span class="gold-text">DERA ZONE</span>. All rights reserved.</p>
-      <div class="footer-pay">
-        <span class="pay-badge">COD</span>
-        <span class="pay-badge">Bank Deposit</span>
+
       </div>
-    </div>
-  </div>
-</footer>
 
-<div id="cart-drawer">
-  <div class="cart-header">
-    <h3>Your Bag</h3>
-    <button id="cart-close" class="cart-close"><i class="fa-solid fa-xmark"></i></button>
-  </div>
-  <div class="cart-items" id="cart-items"><div class="cart-empty">Your bag is empty.</div></div>
-  <div class="cart-footer">
-    <div class="cart-total"><span>Total</span><span id="cart-total-val">PKR 0</span></div>
-    <button onclick="proceedToCheckout()" class="btn-primary cart-checkout" style="display:block;clip-path:none;text-align:center;padding:16px;width:100%;cursor:pointer;">Checkout</button>
-  </div>
-</div>
-
-<div id="overlay"></div>
-<div id="toast"></div>
-
-<script src="js/whatsapp-config.js"></script>
-<script src="js/api.js"></script>
-<script src="js/main.js"></script>
-<script src="js/search.js"></script>
-<script src="js/products-render.js"></script>
-<script>
-/* ============================================================
-   Product Detail Page — loads the product matching ?id= from
-   the backend and renders the detail layout dynamically.
-   ============================================================ */
-(async function () {
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get('id');
-  const root = document.getElementById('pd-root');
-
-  if (!id) {
-    root.innerHTML = `<p style="padding:160px 0;text-align:center;">No product specified. <a href="shop" style="color:var(--gold);">Browse the shop →</a></p>`;
-    return;
-  }
-
-  let product = null;
-  try {
-    const data = await apiGet(`/products/${encodeURIComponent(id)}`);
-    product = data.product;
-  } catch (err) {
-    console.error('Failed to load product:', err);
-  }
-
-  if (!product) {
-    root.innerHTML = `<p style="padding:160px 0;text-align:center;">Sorry, we couldn't find that product. <a href="shop" style="color:var(--gold);">Browse the shop →</a></p>`;
-    return;
-  }
-
-
-  document.title = `${product.name} — DERA ZONE`;
-
-  /* ── Dynamic OG meta update ── */
-  const metaDesc = document.querySelector('meta[name="description"]');
-  if (metaDesc) metaDesc.setAttribute('content',
-    `${product.name} — Buy online in Pakistan. PKR ${Number(product.price).toLocaleString()}. ${product.description ? product.description.slice(0,100) + '…' : 'Shop at DERA ZONE.'}`
-  );
-  const ogTitle = document.querySelector('meta[property="og:title"]');
-  if (ogTitle) ogTitle.setAttribute('content', `${product.name} — DERA ZONE Pakistan`);
-  const ogDesc = document.querySelector('meta[property="og:description"]');
-  if (ogDesc) ogDesc.setAttribute('content',
-    `${product.name} — PKR ${Number(product.price).toLocaleString()}. ${product.description ? product.description.slice(0,120) + '…' : 'Shop skincare & jewelry online in Pakistan.'}`
-  );
-  const ogImg = document.querySelector('meta[property="og:image"]');
-  if (ogImg && product.images && product.images[0]) ogImg.setAttribute('content', product.images[0]);
-  const twTitle = document.querySelector('meta[name="twitter:title"]');
-  if (twTitle) twTitle.setAttribute('content', `${product.name} — DERA ZONE Pakistan`);
-  const twImg = document.querySelector('meta[name="twitter:image"]');
-  if (twImg && product.images && product.images[0]) twImg.setAttribute('content', product.images[0]);
-
-  /* ── JSON-LD Product Schema ── */
-  const DOMAIN = window.location.origin;
-  const existingSchema = document.getElementById('product-schema-ld');
-  if (existingSchema) existingSchema.remove();
-  const schemaEl = document.createElement('script');
-  schemaEl.id   = 'product-schema-ld';
-  schemaEl.type = 'application/ld+json';
-  const availability = product.inStock === false
-    ? 'https://schema.org/OutOfStock'
-    : 'https://schema.org/InStock';
-  const productUrl = `${DOMAIN}/product?id=${encodeURIComponent(product.id || product.name)}`;
-  schemaEl.textContent = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": product.name,
-    "description": product.description || `${product.name} — shop online at DERA ZONE Pakistan.`,
-    "image": (product.images && product.images.length) ? product.images : [`${DOMAIN}/images/categories/necklace.jpg`],
-    "sku": product.id || (product.name ? product.name.replace(/\s+/g, '-').toLowerCase() : 'product'),
-    "brand": {
-      "@type": "Brand",
-      "name": "DERA ZONE"
-    },
-    "category": product.category || "Jewelry",
-    "url": productUrl,
-    "offers": {
-      "@type": "Offer",
-      "url": productUrl,
-      "priceCurrency": "PKR",
-      "price": product.price,
-      "availability": availability,
-      "itemCondition": "https://schema.org/NewCondition",
-      "seller": {
-        "@type": "Organization",
-        "name": "DERA ZONE"
-      }
-    }
-  });
-  document.head.appendChild(schemaEl);
-
-  /* ── BreadcrumbList Schema ── */
-  const breadcrumbEl = document.createElement('script');
-  breadcrumbEl.type = 'application/ld+json';
-  breadcrumbEl.textContent = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home",  "item": "${DOMAIN}/" },
-      { "@type": "ListItem", "position": 2, "name": "Shop",  "item": "${DOMAIN}/shop" },
-      { "@type": "ListItem", "position": 3, "name": product.category, "item": `${DOMAIN}/shop?cat=${product.category}` },
-      { "@type": "ListItem", "position": 4, "name": product.name, "item": productUrl }
-    ]
-  });
-  document.head.appendChild(breadcrumbEl);
-
-  const emoji = product.emoji || '🛍️';
-  const oldPriceHTML = product.priceOld
-    ? `<span class="product-price-old" style="font-size:1.1rem;margin-left:12px;">PKR ${Number(product.priceOld).toLocaleString()}</span>`
-    : '';
-
-  const pSizes = Array.isArray(product.sizes) ? product.sizes : (typeof product.sizes === 'string' ? product.sizes.split(',') : []);
-  const sizesHTML = (pSizes.length)
-    ? `<p class="pd-option-label">Size</p>
-       <div class="size-options">
-         ${pSizes.map((s, i) => `<div class="size-opt${i === 0 ? ' active' : ''}" data-size="${s}">${s}</div>`).join('')}
-       </div>`
-    : '';
-
-  const pVariants = Array.isArray(product.variants) ? product.variants : (typeof product.variants === 'string' ? product.variants.split(',') : []);
-  const variantsHTML = (pVariants.length)
-    ? `<p class="pd-option-label">Variant / Design</p>
-       <div class="variant-options">
-         ${pVariants.map((v, i) => `<div class="variant-opt${i === 0 ? ' active' : ''}" data-variant="${v}">${v}</div>`).join('')}
-       </div>`
-    : '';
-
-  const pColors = Array.isArray(product.colors) ? product.colors : (typeof product.colors === 'string' ? product.colors.split(',') : []);
-  const colorsHTML = (pColors.length)
-    ? `<p class="pd-option-label">Color</p>
-       <div class="color-options">
-         ${pColors.map((c, i) => {
-           const cName = (typeof c === 'string') ? c : c.name;
-           return `<div class="color-opt${i === 0 ? ' active' : ''}" data-color="${cName}">${cName}</div>`;
-         }).join('')}
-       </div>`
-    : '';
-
-  const stockHTML = product.inStock === false
-    ? `<p style="color:#d96a6a;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;">Out of Stock</p>`
-    : '';
-
-  const images = (product.images && product.images.length) ? product.images : [];
-  const hasVideo = !!product.video;
-  const hasImages = images.length > 0;
-
-  /* Build thumbnails: each image gets a thumb, plus one video thumb if video exists.
-     Only show the thumb strip at all if there's more than one media item total. */
-  const totalMediaCount = images.length + (hasVideo ? 1 : 0);
-  const galleryThumbsHTML = (totalMediaCount > 1)
-    ? `<div class="product-gallery-thumbs" id="pd-thumbs">
-        ${images.map((url, i) => `<div class="gallery-thumb${(i===0 && hasImages) ? ' active' : ''}" data-idx="${i}" onclick="derazoneSwitchGalleryImage(${i})"><img src="${url}" style="width:100%;" onerror="this.parentElement.style.display='none'"/></div>`).join('')}
-        ${hasVideo ? `<div class="gallery-thumb${!hasImages ? ' active' : ''}" data-idx="video" onclick="derazoneSwitchGalleryImage('video')"><i class="fa-solid fa-circle-play" style="font-size:1.3rem;"></i></div>` : ''}
-      </div>`
-    : '';
-
-  /* Main media: prefer first image; if there are no images at all but a video exists, show the video itself as the main media */
-  const mainMediaHTML = hasImages
-    ? `<img src="${images[0]}" id="pd-main-image" style="width:100%;" onerror="window.zhHandleImageError(this, '${emoji}', 'product-main')"/>`
-    : hasVideo
-      ? `<video src="${product.video}" id="pd-main-image" controls muted style="width:100%;" onerror="window.zhHandleImageError(this, '${emoji}', 'product-main')"></video>`
-      : `<div style="width:100%;aspect-ratio:4/5;background:#f9f9f9;display:flex;align-items:center;justify-content:center;font-size:5rem;">${emoji || '💎'}</div>`;
-
-  root.innerHTML = `
-    <div class="product-detail-grid">
-      <div>
-        <div class="product-gallery-main" id="pd-gallery-main">${mainMediaHTML}</div>
-        ${galleryThumbsHTML}
-      </div>
-      <div>
-        <p class="pd-breadcrumb"><a href="shop">Shop</a> / <a href="shop?cat=${product.category === 'catchers' ? 'clips' : product.category}">${velorCatLabel(product.subcategory || product.category)}</a> / ${product.name}</p>
-        <h1 class="pd-title">${product.name}</h1>
-        <div class="pd-price">PKR ${Number(product.price).toLocaleString()}${oldPriceHTML}</div>
-        ${stockHTML}
-        <p class="pd-desc">${product.description || ''}</p>
-        ${sizesHTML}
-        ${colorsHTML}
-        ${variantsHTML}
-        <div class="pd-add-row">
-          <button class="btn-primary" id="pd-add-btn" ${product.inStock === false ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
-            ${product.inStock === false ? 'Out of Stock' : 'Add to Bag'}
-          </button>
-          <button class="btn-outline" id="pd-buynow-btn" ${product.inStock === false ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
-            Buy It Now
-          </button>
-          <div class="pd-wishlist"><i class="fa-regular fa-heart"></i></div>
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <p>&copy; 2026 <span style="color:#c084fc;font-weight:700;">DERA ZONE</span>. All rights reserved. Shop Smart. Live Better.</p>
+        <div class="footer-pay">
+          <span class="pay-badge">Cash on Delivery</span>
+          <span class="pay-badge">Online Bank Transfer</span>
+          <span class="pay-badge">Direct WhatsApp Order</span>
         </div>
-        <button id="pd-whatsapp-btn" class="btn-primary" style="margin-top:15px; padding:12px 24px; font-size:0.9rem; background:#25D366; border:1px solid #25D366; color:#fff; width:100%;"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</button>
       </div>
-    </div>`;
 
-  /* Gallery image/video switching */
-  window.derazoneGalleryImages = images || [];
-  window.derazoneGalleryVideo = product.video || null;
-  window.derazoneSwitchGalleryImage = function (idx) {
-    const main = document.getElementById('pd-gallery-main');
-    if (idx === 'video' && window.derazoneGalleryVideo) {
-      main.innerHTML = `<video src="${window.derazoneGalleryVideo}" controls autoplay muted style="width:100%;"></video>`;
-    } else if (typeof idx === 'number' && window.derazoneGalleryImages[idx]) {
-      main.innerHTML = `<img src="${window.derazoneGalleryImages[idx]}" style="width:100%;" onerror="window.zhHandleImageError(this, '${emoji}', 'product-main')"/>`;
+    </div>
+  </footer>
+
+  <!-- CART SIDEBAR / DRAWER -->
+  <div id="cart-drawer-overlay"></div>
+  <aside id="cart-drawer">
+    <div class="cart-header">
+      <div class="cart-header-title">
+        <i class="fa-solid fa-bag-shopping"></i> Your Bag
+        <span class="cart-drawer-count">(0)</span>
+      </div>
+      <button id="cart-close" aria-label="Close cart">&#10005;</button>
+    </div>
+    <div id="cart-items" class="cart-body">
+      <div class="cart-empty">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <p>Your shopping bag is empty.</p>
+        <a href="shop.html" class="btn-primary" style="margin-top:12px;font-size:0.85rem;">Start Shopping</a>
+      </div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-subtotal-row">
+        <span>Subtotal</span>
+        <span id="cart-subtotal">PKR 0</span>
+      </div>
+      <p class="cart-shipping-note">Free Delivery across Pakistan on orders over PKR 2,500</p>
+      <a href="checkout.html" class="btn-primary cart-checkout-btn">Proceed to Checkout <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+  </aside>
+
+  <div id="toast"></div>
+
+  <!-- SCRIPTS -->
+  <script src="js/whatsapp-config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/products-render.js"></script>
+  <script>
+  /* ============================================================
+     Product Detail Page — loads product from backend by ?id=
+     ============================================================ */
+  (async function () {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const root = document.getElementById('pd-root');
+
+    if (!id) {
+      root.innerHTML = `<div style="padding:100px 0;text-align:center;"><h3>No product specified.</h3><a href="shop.html" class="btn-primary" style="display:inline-block;margin-top:16px;">Browse All Products →</a></div>`;
+      return;
     }
-    document.querySelectorAll('#pd-thumbs .gallery-thumb').forEach(t => t.classList.remove('active'));
-    document.querySelector(`#pd-thumbs .gallery-thumb[data-idx="${idx}"]`)?.classList.add('active');
-  };
 
-  /* Size / color selection */
-  root.querySelectorAll('.size-opt').forEach(opt => {
-    opt.addEventListener('click', () => {
-      root.querySelectorAll('.size-opt').forEach(o => o.classList.remove('active'));
-      opt.classList.add('active');
-    });
-  });
-  
-  root.querySelectorAll('.color-opt').forEach(opt => {
-    opt.addEventListener('click', () => {
-      root.querySelectorAll('.color-opt').forEach(o => o.classList.remove('active'));
-      opt.classList.add('active');
-    });
-  });
-
-  root.querySelectorAll('.variant-opt').forEach(opt => {
-    opt.addEventListener('click', () => {
-      root.querySelectorAll('.variant-opt').forEach(o => o.classList.remove('active'));
-      opt.classList.add('active');
-    });
-  });
-
-
-  /* Add to bag */
-  const addBtn = document.getElementById('pd-add-btn');
-  if (addBtn && product.inStock !== false) {
-    addBtn.addEventListener('click', () => {
-      const size = root.querySelector('.size-opt.active')?.dataset.size;
-      const color = root.querySelector('.color-opt.active')?.dataset.color;
-      const varOpt = root.querySelector('.variant-opt.active')?.dataset.variant;
-      const variant = [varOpt, size, color].filter(Boolean).join(' — ') || 'Standard';
-      window.addToCart(product.name, Number(product.price), emoji, variant, (product.images && product.images[0]) || '');
-    });
-  }
-
-  /* Buy it now — straight to checkout with just this item */
-  const buyNowBtn = document.getElementById('pd-buynow-btn');
-  if (buyNowBtn && product.inStock !== false) {
-    buyNowBtn.addEventListener('click', () => {
-      const size = root.querySelector('.size-opt.active')?.dataset.size;
-      const color = root.querySelector('.color-opt.active')?.dataset.color;
-      const varOpt = root.querySelector('.variant-opt.active')?.dataset.variant;
-      const variant = [varOpt, size, color].filter(Boolean).join(' — ') || 'Standard';
-      window.buyNow(product.name, Number(product.price), emoji, variant, (product.images && product.images[0]) || '');
-    });
-  }
-
-  /* Order on WhatsApp */
-  const waBtn = document.getElementById('pd-whatsapp-btn');
-  if (waBtn) {
-    waBtn.addEventListener('click', () => {
-      const size = root.querySelector('.size-opt.active')?.dataset.size;
-      const color = root.querySelector('.color-opt.active')?.dataset.color;
-      const pdVariant = root.querySelector('.variant-opt.active')?.dataset.variant;
-      const variant = [pdVariant, size, color].filter(Boolean).join(' — ');
-      
-      const itemName = product.name;
-      const itemLink = window.location.href;
-      
-      let msg = `Hello, I would like to buy this product: ${itemName}`;
-      if (variant) msg += ` - ${variant}`;
-      msg += ` ${itemLink}`;
-      
-      // Use whatsapp number from global WHATSAPP_NUMBER if defined, or a fallback
-      const waNum = window.derazone_CONFIG?.whatsapp?.number || '923150727131';
-      const url = `https://wa.me/${waNum.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`;
-      window.open(url, '_blank');
-    });
-  }
-
-  /* Add-on Boxes */
-  const hierarchy = window.CATEGORY_HIERARCHY || {};
-  const catToCheck = product.subcategory || product.category || '';
-  const isJewelry = hierarchy['jewelry'] && hierarchy['jewelry'].includes(catToCheck);
-  const isRing = catToCheck === 'rings';
-  
-  if (isJewelry) {
-    const boxCat = isRing ? 'ring-boxes' : 'jewelry-boxes';
+    let product = null;
     try {
-      const boxData = await apiGet(`/products?category=${boxCat}`);
-      const boxes = (boxData.products || []).filter(p => p.inStock !== false && !p.hidden);
-      
-      if (boxes.length > 0) {
-      let boxesHTML = '<h3 style="font-family:var(--font-heading);font-size:1.3rem;margin:30px 0 15px 0;">Premium Gift Boxes</h3>';
-      boxesHTML += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;">';
-      
-      boxes.forEach(box => {
-        boxesHTML += `<div style="border:1px solid #eee;border-radius:8px;padding:10px;text-align:center;">
-          <img src="${box.images?.[0] || 'images/placeholder.jpg'}" alt="${box.name}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px;margin-bottom:8px;"/>
-          <div style="font-size:0.8rem;font-weight:600;margin-bottom:4px;">${box.name}</div>
-          <div style="font-size:0.8rem;color:var(--gold);margin-bottom:8px;">PKR ${box.price}</div>
-          <button onclick="window.addToCart('${box.name.replace(/'/g, "\\'")}', ${Number(box.price)}, '${box.emoji||''}', 'Standard', '${(box.images&&box.images[0])||''}')" style="background:#000;color:#fff;border:none;border-radius:4px;padding:6px 12px;font-size:0.75rem;cursor:pointer;width:100%;">Add Box</button>
-        </div>`;
-      });
-      
-      boxesHTML += '</div>';
-      
-      // Insert after pd-add-row
-      const addRow = document.querySelector('.pd-add-row');
-      if (addRow) {
-        const boxContainer = document.createElement('div');
-        boxContainer.innerHTML = boxesHTML;
-        addRow.parentNode.insertBefore(boxContainer, addRow.nextSibling);
+      const data = await apiGet(`/products/${encodeURIComponent(id)}`);
+      product = data.product;
+    } catch (err) {
+      console.error('Failed to load product:', err);
+    }
+
+    if (!product) {
+      root.innerHTML = `<div style="padding:100px 0;text-align:center;"><h3>Product Not Found</h3><p style="color:#64748b;margin-top:8px;">Sorry, we couldn't find the requested item.</p><a href="shop.html" class="btn-primary" style="display:inline-block;margin-top:16px;">Back to Shop →</a></div>`;
+      return;
+    }
+
+    document.title = `${product.name} — DERA ZONE`;
+
+    /* Dynamic OG meta update */
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', `${product.name} — Buy online in Pakistan. PKR ${Number(product.price).toLocaleString()}. Shop Smart. Live Better at DERA ZONE.`);
+
+    const emoji = product.emoji || '🛍️';
+    const oldPriceHTML = product.priceOld
+      ? `<span class="product-price-old">PKR ${Number(product.priceOld).toLocaleString()}</span>`
+      : '';
+
+    const pSizes = Array.isArray(product.sizes) ? product.sizes : (typeof product.sizes === 'string' && product.sizes ? product.sizes.split(',') : []);
+    const sizesHTML = (pSizes.length)
+      ? `<p class="pd-option-label">Select Size</p>
+         <div class="size-options">
+           ${pSizes.map((s, i) => `<div class="size-opt${i === 0 ? ' active' : ''}" data-size="${s.trim()}">${s.trim()}</div>`).join('')}
+         </div>`
+      : '';
+
+    const pVariants = Array.isArray(product.variants) ? product.variants : (typeof product.variants === 'string' && product.variants ? product.variants.split(',') : []);
+    const variantsHTML = (pVariants.length)
+      ? `<p class="pd-option-label">Select Variant / Model</p>
+         <div class="variant-options">
+           ${pVariants.map((v, i) => `<div class="variant-opt${i === 0 ? ' active' : ''}" data-variant="${v.trim()}">${v.trim()}</div>`).join('')}
+         </div>`
+      : '';
+
+    const pColors = Array.isArray(product.colors) ? product.colors : (typeof product.colors === 'string' && product.colors ? product.colors.split(',') : []);
+    const colorsHTML = (pColors.length)
+      ? `<p class="pd-option-label">Select Color</p>
+         <div class="color-options">
+           ${pColors.map((c, i) => {
+             const cName = (typeof c === 'string') ? c.trim() : c.name;
+             return `<div class="color-opt${i === 0 ? ' active' : ''}" data-color="${cName}">${cName}</div>`;
+           }).join('')}
+         </div>`
+      : '';
+
+    const stockHTML = product.inStock === false
+      ? `<p style="color:#ef4444;font-size:0.85rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:16px;"><i class="fa-solid fa-circle-xmark"></i> Out of Stock</p>`
+      : `<p style="color:#10b981;font-size:0.85rem;font-weight:700;margin-bottom:16px;"><i class="fa-solid fa-circle-check"></i> In Stock &amp; Ready to Ship</p>`;
+
+    const images = (product.images && product.images.length) ? product.images : [];
+    const hasVideo = !!product.video;
+    const hasImages = images.length > 0;
+    const totalMediaCount = images.length + (hasVideo ? 1 : 0);
+
+    const galleryThumbsHTML = (totalMediaCount > 1)
+      ? `<div class="product-gallery-thumbs" id="pd-thumbs">
+          ${images.map((url, i) => `<div class="gallery-thumb${(i===0 && hasImages) ? ' active' : ''}" data-idx="${i}" onclick="derazoneSwitchGalleryImage(${i})"><img src="${url}" onerror="this.parentElement.style.display='none'"/></div>`).join('')}
+          ${hasVideo ? `<div class="gallery-thumb${!hasImages ? ' active' : ''}" data-idx="video" onclick="derazoneSwitchGalleryImage('video')"><i class="fa-solid fa-circle-play" style="font-size:1.5rem;color:#7000ff;"></i></div>` : ''}
+        </div>`
+      : '';
+
+    const mainMediaHTML = hasImages
+      ? `<img src="${images[0]}" id="pd-main-image" onerror="this.src='images/logo-square-transparent.png'"/>`
+      : hasVideo
+        ? `<video src="${product.video}" id="pd-main-image" controls muted autoplay></video>`
+        : `<div style="font-size:5rem;">${emoji}</div>`;
+
+    const catSlug = (product.category || 'accessories').toLowerCase().replace(/\s+/g, '-');
+    const catLabel = (typeof velorCatLabel === 'function') ? velorCatLabel(product.category) : product.category;
+
+    root.innerHTML = `
+      <div class="product-detail-grid">
+        <div>
+          <div class="product-gallery-main" id="pd-gallery-main">${mainMediaHTML}</div>
+          ${galleryThumbsHTML}
+        </div>
+        <div>
+          <p class="pd-breadcrumb">
+            <a href="index.html">Home</a> / <a href="shop.html">Shop</a> / <a href="shop.html?cat=${catSlug}">${catLabel || 'Category'}</a>
+          </p>
+          <h1 class="pd-title">${product.name}</h1>
+          <div class="pd-price">
+            PKR ${Number(product.price).toLocaleString()}
+            ${oldPriceHTML}
+          </div>
+          ${stockHTML}
+          <p class="pd-desc">${product.description || 'Premium quality guaranteed. Inspected before dispatch.'}</p>
+          ${sizesHTML}
+          ${colorsHTML}
+          ${variantsHTML}
+          
+          <div class="pd-add-row">
+            <button class="btn-primary" id="pd-add-btn" ${product.inStock === false ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
+              <i class="fa-solid fa-bag-shopping" style="margin-right:8px;"></i> ${product.inStock === false ? 'Out of Stock' : 'Add to Bag'}
+            </button>
+            <button class="btn-outline" id="pd-buynow-btn" ${product.inStock === false ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
+              Buy Now
+            </button>
+            <div class="pd-wishlist" title="Wishlist"><i class="fa-regular fa-heart"></i></div>
+          </div>
+
+          <button id="pd-whatsapp-btn" class="btn-pd-whatsapp">
+            <i class="fa-brands fa-whatsapp" style="font-size:1.2rem;"></i> Quick WhatsApp Order
+          </button>
+
+          <!-- Delivery Trust Strip (3-5 Working Days, COD) -->
+          <div class="pd-trust-strip">
+            <div class="pd-trust-item">
+              <i class="fa-solid fa-truck-fast"></i>
+              <span><strong>3–5 Working Days Delivery:</strong> Fast nationwide courier dispatch across Pakistan.</span>
+            </div>
+            <div class="pd-trust-item">
+              <i class="fa-solid fa-hand-holding-dollar"></i>
+              <span><strong>Cash on Delivery Available:</strong> Pay in cash at your doorstep when you receive the parcel.</span>
+            </div>
+            <div class="pd-trust-item">
+              <i class="fa-solid fa-shield-halved"></i>
+              <span><strong>100% Quality Inspected:</strong> Every unit is thoroughly checked prior to packing.</span>
+            </div>
+          </div>
+
+        </div>
+      </div>`;
+
+    /* Gallery image/video switching */
+    window.derazoneGalleryImages = images || [];
+    window.derazoneGalleryVideo = product.video || null;
+    window.derazoneSwitchGalleryImage = function (idx) {
+      const main = document.getElementById('pd-gallery-main');
+      if (idx === 'video' && window.derazoneGalleryVideo) {
+        main.innerHTML = `<video src="${window.derazoneGalleryVideo}" controls autoplay muted style="width:100%;height:100%;object-fit:cover;"></video>`;
+      } else if (typeof idx === 'number' && window.derazoneGalleryImages[idx]) {
+        main.innerHTML = `<img src="${window.derazoneGalleryImages[idx]}" style="width:100%;height:100%;object-fit:cover;"/>`;
       }
+      document.querySelectorAll('#pd-thumbs .gallery-thumb').forEach(t => t.classList.remove('active'));
+      document.querySelector(`#pd-thumbs .gallery-thumb[data-idx="${idx}"]`)?.classList.add('active');
+    };
+
+    /* Option selection clicks */
+    root.querySelectorAll('.size-opt, .color-opt, .variant-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        opt.parentElement.querySelectorAll('.' + opt.classList[0]).forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+      });
+    });
+
+    /* Add to bag */
+    const addBtn = document.getElementById('pd-add-btn');
+    if (addBtn && product.inStock !== false) {
+      addBtn.addEventListener('click', () => {
+        const size = root.querySelector('.size-opt.active')?.dataset.size;
+        const color = root.querySelector('.color-opt.active')?.dataset.color;
+        const varOpt = root.querySelector('.variant-opt.active')?.dataset.variant;
+        const variant = [varOpt, size, color].filter(Boolean).join(' — ') || 'Standard';
+        window.addToCart(product.name, Number(product.price), emoji, variant, (product.images && product.images[0]) || '');
+      });
     }
-    } catch(err) { console.error('Addon boxes fetch error:', err); }
-  }
 
-  /* Related products (same category, excluding this one) */
-  try {
-    const relData = await apiGet(`/products?category=${encodeURIComponent(product.category)}&limit=5`);
-    const related = (relData.products || []).filter(p => p.id !== product.id).slice(0, 4);
-    if (related.length) {
-      document.getElementById('pd-related').style.display = '';
-      const grid = document.getElementById('pd-related-grid');
-      grid.innerHTML = related.map(derazoneProductCardHTML).join('');
-      derazoneReInitCards(grid);
+    /* Buy now */
+    const buyNowBtn = document.getElementById('pd-buynow-btn');
+    if (buyNowBtn && product.inStock !== false) {
+      buyNowBtn.addEventListener('click', () => {
+        const size = root.querySelector('.size-opt.active')?.dataset.size;
+        const color = root.querySelector('.color-opt.active')?.dataset.color;
+        const varOpt = root.querySelector('.variant-opt.active')?.dataset.variant;
+        const variant = [varOpt, size, color].filter(Boolean).join(' — ') || 'Standard';
+        window.buyNow(product.name, Number(product.price), emoji, variant, (product.images && product.images[0]) || '');
+      });
     }
-  } catch (err) {
-    console.error('Failed to load related products:', err);
-  }
-})();
 
-/* Simple named-color to CSS color mapping for the color swatches */
-function derazoneColorSwatch(name) {
-  const map = {
-    ivory: '#f5f0e8', blush: '#e8c4c4', gold: '#c9a84c', 'rose gold': '#e0bfb8',
-    black: '#1a1a1a', 'obsidian black': '#1a1a1a', champagne: '#d9c8a8',
-    nude: '#d9b896', berry: '#8a3a4a', noir: '#1a1a1a', silver: '#c0c0c0', white: '#f5f5f5',
-  };
-  const key = (name || '').toLowerCase();
-  for (const k in map) if (key.includes(k)) return map[k];
-  return '#888';
-}
-</script>
+    /* WhatsApp direct order */
+    const waBtn = document.getElementById('pd-whatsapp-btn');
+    if (waBtn) {
+      waBtn.addEventListener('click', () => {
+        const size = root.querySelector('.size-opt.active')?.dataset.size;
+        const color = root.querySelector('.color-opt.active')?.dataset.color;
+        const pdVariant = root.querySelector('.variant-opt.active')?.dataset.variant;
+        const variant = [pdVariant, size, color].filter(Boolean).join(' — ');
+        const waNum = window.DERAZONE_CONFIG?.whatsapp?.number || '923294551652';
+        let msg = `Hello DERA ZONE, I want to order this product: ${product.name}`;
+        if (variant) msg += ` (${variant})`;
+        msg += ` - PKR ${product.price}. Link: ${window.location.href}`;
+        window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`, '_blank');
+      });
+    }
 
+    /* Related products */
+    try {
+      const relData = await apiGet(`/products?category=${encodeURIComponent(product.category)}&limit=5`);
+      const related = (relData.products || []).filter(p => p.id !== product.id).slice(0, 4);
+      if (related.length) {
+        document.getElementById('pd-related').style.display = '';
+        const grid = document.getElementById('pd-related-grid');
+        grid.innerHTML = related.map(derazoneProductCardHTML).join('');
+        derazoneReInitCards(grid);
+      }
+    } catch (err) {
+      console.error('Related products fetch error:', err);
+    }
+
+  })();
+  </script>
 </body>
 </html>
-
-

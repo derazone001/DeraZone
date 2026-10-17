@@ -2,46 +2,148 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>DERA ZONE - Shop Smart. Live Better.</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@900&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DERA ZONE — Official Brand Assets</title>
+  <link rel="icon" type="image/png" href="images/logo-square-transparent.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    body { font-family: 'Cairo', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #faf8f5; margin: 0; text-align: center; padding: 20px;}
-    canvas { display: none; }
-    #logoImage { border: 1px dashed #ccc; padding: 20px; background: transparent; max-width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .instruction { font-size: 1.2rem; color: #d32f2f; font-weight: bold; margin-bottom: 20px; max-width: 400px;}
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fbfbfe;
+      color: #0f0728;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    .header-box {
+      text-align: center;
+      max-width: 600px;
+      margin-bottom: 40px;
+    }
+    .header-box h1 {
+      font-family: 'Cairo', sans-serif;
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+      color: #0f0728;
+    }
+    .header-box p {
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+    .assets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+      max-width: 900px;
+      width: 100%;
+    }
+    .asset-card {
+      background: #ffffff;
+      border: 1px solid rgba(112, 0, 255, 0.12);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 8px 30px rgba(112, 0, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .preview-box {
+      width: 100%;
+      height: 180px;
+      background: repeating-conic-gradient(#f1f5f9 0% 25%, #ffffff 0% 50%) 50% / 20px 20px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      padding: 16px;
+      box-sizing: border-box;
+      border: 1px solid #e2e8f0;
+    }
+    .preview-box img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+    }
+    .asset-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .asset-desc {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 20px;
+    }
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #7000ff 0%, #9d4edd 100%);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(112, 0, 255, 0.3);
+    }
+    .btn-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(112, 0, 255, 0.45);
+    }
+    .btn-back {
+      margin-top: 40px;
+      color: #7000ff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
-<body >
+<body>
 
-  <h2 style="color: #333; margin-bottom: 10px;">DERA ZONE Logo Generator</h2>
-  <p class="instruction">Mobile Users: Long-press the logo below and select "Save Image" or "Download Image".</p>
-  
-  <canvas id="logoCanvas" width="1000" height="400"></canvas>
-  <img id="logoImage" alt="Zarin e Husn Logo" />
+  <div class="header-box">
+    <h1>DERA ZONE Brand Assets</h1>
+    <p>Official transparent high-resolution PNG logos for website, marketing, social media, and packaging.</p>
+  </div>
 
-  <script>
-    window.onload = () => {
-      // Wait for font to load
-      document.fonts.ready.then(() => {
-        const canvas = document.getElementById('logoCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.fillStyle = '#111111';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.font = '900 180px "Cairo"'; 
-        
-        const text = 'زَرِین حسن';
-        ctx.fillText(text, canvas.width / 2, canvas.height / 2 + 20);
-        
-        // Put the canvas data into an IMG tag so users can easily long-press to save
-        const img = document.getElementById('logoImage');
-        img.src = canvas.toDataURL('image/png');
-      });
-    };
-  </script>
+  <div class="assets-grid">
+    
+    <!-- Wide Horizontal Logo -->
+    <div class="asset-card">
+      <div class="preview-box">
+        <img src="images/logo-wide-transparent.png" alt="DERA ZONE Wide Logo" />
+      </div>
+      <div class="asset-title">Horizontal Transparent Logo</div>
+      <div class="asset-desc">Transparent background. Ideal for navigation headers, invoices, banners, and letterheads.</div>
+      <a href="images/logo-wide-transparent.png" download="derazone-wide-logo.png" class="btn-download">
+        <i class="fa-solid fa-download"></i> Download Wide Logo
+      </a>
+    </div>
+
+    <!-- Square Icon Logo -->
+    <div class="asset-card">
+      <div class="preview-box">
+        <img src="images/logo-square-transparent.png" alt="DERA ZONE Square Logo" />
+      </div>
+      <div class="asset-title">Square / App Icon Logo</div>
+      <div class="asset-desc">Transparent background. Ideal for profile pictures, app icons, favicons, and stickers.</div>
+      <a href="images/logo-square-transparent.png" download="derazone-square-logo.png" class="btn-download">
+        <i class="fa-solid fa-download"></i> Download Square Logo
+      </a>
+    </div>
+
+  </div>
+
+  <a href="index.html" class="btn-back">← Back to DERA ZONE Homepage</a>
+
 </body>
 </html>
-

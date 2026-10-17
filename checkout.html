@@ -3,291 +3,849 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DERA ZONE - Shop Smart. Live Better.</title>
-  <link rel="icon" type="image/png" href="images/logo-square.png" />
+  <title>Checkout — DERA ZONE | Shop Smart. Live Better.</title>
+  <meta name="description" content="Secure checkout at DERA ZONE. Nationwide cash on delivery and online bank transfer across Pakistan." />
+  <link rel="icon" type="image/png" href="images/logo-square-transparent.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="css/style.css?v=3"/>
-  <link rel="stylesheet" href="css/pages.css?v=3"/>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=1790280000000"/>
+  <link rel="stylesheet" href="css/pages.css?v=4"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Orbitron:wght@500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .checkout-hero {
+      background: linear-gradient(180deg, #ffffff 0%, #f6f0ff 100%);
+      padding: 40px 0 25px;
+      text-align: center;
+      border-bottom: 1px solid rgba(112, 0, 255, 0.08);
+    }
+    .checkout-hero h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #0f0728;
+      margin-bottom: 6px;
+    }
+    .checkout-hero p {
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+    .checkout-main {
+      padding: 50px 0 90px;
+      background: #fbfbfe;
+    }
+    .checkout-steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .ck-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .ck-step .ck-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      transition: all 0.25s ease;
+    }
+    .ck-step.active {
+      color: #7000ff;
+    }
+    .ck-step.active .ck-num {
+      background: #7000ff;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(112, 0, 255, 0.35);
+    }
+    .ck-step.complete .ck-num {
+      background: #10b981;
+      color: #ffffff;
+    }
+    .ck-step-line {
+      width: 60px;
+      height: 2px;
+      background: #e2e8f0;
+    }
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 36px;
+      align-items: flex-start;
+    }
+    .ck-panel {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid rgba(112, 0, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(112, 0, 255, 0.04);
+      padding: 36px;
+    }
+    .ck-panel.hidden {
+      display: none !important;
+    }
+    .ck-panel-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #0f0728;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .ck-panel-title em {
+      font-style: normal;
+      color: #7000ff;
+    }
+    .ck-form .form-group {
+      margin-bottom: 18px;
+    }
+    .ck-form label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .ck-form input,
+    .ck-form select,
+    .ck-form textarea {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: #0f0728;
+      background: #ffffff;
+      box-sizing: border-box;
+      transition: all 0.25s ease;
+    }
+    .ck-form input:focus,
+    .ck-form select:focus,
+    .ck-form textarea:focus {
+      outline: none;
+      border-color: #7000ff;
+      box-shadow: 0 0 0 4px rgba(112, 0, 255, 0.1);
+    }
+    .ck-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .ck-option-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-bottom: 14px;
+      transition: all 0.2s ease;
+      background: #ffffff;
+    }
+    .ck-option-card:hover {
+      border-color: #c084fc;
+      background: #faf7ff;
+    }
+    .ck-option-card input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #7000ff;
+      margin: 0;
+      cursor: pointer;
+    }
+    .ck-option-body {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .ck-option-body strong {
+      display: block;
+      font-size: 0.95rem;
+      color: #0f0728;
+    }
+    .ck-option-body span {
+      font-size: 0.82rem;
+      color: #64748b;
+    }
+    .ck-option-price {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #7000ff;
+    }
+    .free-badge {
+      background: #dcfce7;
+      color: #15803d;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+    }
+    .cod-info-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-top: 14px;
+      font-size: 0.88rem;
+      color: #475569;
+      line-height: 1.5;
+    }
+    .bank-details-box {
+      background: #faf7ff;
+      border: 2px solid #9d4edd;
+      border-radius: 14px;
+      padding: 24px;
+      margin-top: 16px;
+      box-shadow: 0 6px 20px rgba(112, 0, 255, 0.08);
+    }
+    .bank-details-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0f0728;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .bank-detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(112, 0, 255, 0.12);
+      font-size: 0.9rem;
+    }
+    .bank-detail-row:last-of-type {
+      border-bottom: none;
+    }
+    .bank-detail-row span {
+      color: #64748b;
+      font-weight: 500;
+    }
+    .bank-detail-row strong {
+      color: #0f0728;
+      font-weight: 700;
+    }
+    .bank-copy-val {
+      cursor: pointer;
+      color: #7000ff !important;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ffffff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px dashed #c084fc;
+      transition: all 0.2s;
+    }
+    .bank-copy-val:hover {
+      background: #7000ff;
+      color: #ffffff !important;
+      border-color: #7000ff;
+    }
+    .bank-details-note {
+      font-size: 0.85rem;
+      color: #475569;
+      margin-top: 14px;
+      line-height: 1.5;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(112, 0, 255, 0.2);
+    }
+    .btn-whatsapp-bank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #25D366;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-top: 14px;
+      width: 100%;
+      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+    .btn-whatsapp-bank:hover {
+      background: #1eb954;
+      transform: translateY(-1px);
+    }
+    .ck-btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .btn-primary.ck-next-btn {
+      width: 100%;
+      padding: 15px;
+      font-size: 1rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #7000ff 0%, #9d4edd 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(112, 0, 255, 0.3);
+      transition: all 0.25s ease;
+    }
+    .btn-primary.ck-next-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(112, 0, 255, 0.45);
+    }
+    .ck-summary-box {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid rgba(112, 0, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(112, 0, 255, 0.04);
+      padding: 28px;
+    }
+    .ck-summary-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f0728;
+      margin-bottom: 18px;
+    }
+    .ck-summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.92rem;
+      color: #475569;
+      margin-bottom: 12px;
+    }
+    .ck-summary-row.ck-total-row {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0f0728;
+      border-top: 1.5px solid #f1f5f9;
+      padding-top: 14px;
+      margin-top: 14px;
+    }
+    .ck-summary-divider {
+      height: 1px;
+      background: #f1f5f9;
+      margin: 16px 0;
+    }
+    .ck-coupon-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .ck-coupon-row input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+    .ck-coupon-row button {
+      padding: 10px 18px;
+      border: 1.5px solid #7000ff;
+      background: transparent;
+      color: #7000ff;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .ck-coupon-row button:hover {
+      background: #7000ff;
+      color: #ffffff;
+    }
+    .ck-trust-badges {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #f1f5f9;
+      font-size: 0.82rem;
+      color: #64748b;
+    }
+    .ck-trust-badges span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .order-success {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .success-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #dcfce7;
+      color: #16a34a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 900;
+      margin: 0 auto 20px;
+    }
+    .order-ref {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #7000ff;
+      background: #faf7ff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      display: inline-block;
+      margin-top: 16px;
+      border: 1px dashed #c084fc;
+    }
+    @media (max-width: 900px) {
+      .checkout-grid {
+        grid-template-columns: 1fr;
+      }
+      .ck-row-2 {
+        grid-template-columns: 1fr;
+      }
+      .ck-panel {
+        padding: 24px 20px;
+      }
+    }
+  </style>
 </head>
-<body >
+<body>
 
-<nav class="dz-nav">
+  <!-- MASTER NAVBAR (White Logo Row + 8 Categories) -->
+  <nav class="dz-nav">
     <div class="nav-container">
+      
+      <!-- LEFT: Search Toggle + Mobile Hamburger -->
       <div class="nav-left">
-        <button id="search-toggle" aria-label="Search" class="icon-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
-        <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+        <button id="search-toggle" aria-label="Search" class="icon-btn" title="Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <button class="hamburger" aria-label="Menu" title="Menu">
+          <span></span><span></span><span></span>
+        </button>
       </div>
+
+      <!-- CENTER: Logo on WHITE background -->
       <div class="nav-center">
-        <a href="/" class="brand-logo">DERA ZONE</a>
+        <a href="/" class="brand-logo" aria-label="DERA ZONE">DERA ZONE</a>
       </div>
+
+      <!-- RIGHT: WhatsApp, User & Cart -->
       <div class="nav-right">
-        <a href="account" aria-label="Account" class="icon-btn"><i class="fa-regular fa-user"></i></a>
-        <button data-open-cart aria-label="Bag" class="icon-btn cart-btn">
-          <i class="fa-solid fa-bag-shopping"></i><span class="cart-count" style="display:none">0</span>
+        <a href="https://wa.me/923294551652?text=Hello%20DERA%20ZONE,%20I%20have%20an%20inquiry" target="_blank" class="icon-btn wa-icon-btn" aria-label="WhatsApp" title="Chat on WhatsApp">
+          <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <a href="account.html" aria-label="Account" class="icon-btn" title="My Account">
+          <i class="fa-regular fa-user"></i>
+        </a>
+        <button data-open-cart aria-label="Bag" class="icon-btn cart-btn" title="View Cart">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="cart-count" style="display:none">0</span>
         </button>
       </div>
     </div>
+    
+    <!-- CATEGORY BAR LINKS (Exact 8 Categories) -->
     <ul class="nav-links">
       <li><a href="shop.html?cat=accessories">ACCESSORIES</a></li>
       <li class="separator">&#183;</li>
       <li><a href="shop.html?cat=gadgets">GADGETS</a></li>
       <li class="separator">&#183;</li>
-      <li><a href="shop.html?cat=wireless-earbuds-audio">AUDIO</a></li>
+      <li><a href="shop.html?cat=wireless-earbuds-audio">WIRELESS EARBUDS &amp; AUDIO</a></li>
       <li class="separator">&#183;</li>
       <li><a href="shop.html?cat=jewellery">JEWELLERY</a></li>
       <li class="separator">&#183;</li>
-      <li><a href="shop.html?cat=clothing-apparel">CLOTHING</a></li>
+      <li><a href="shop.html?cat=fashion-lifestyle">FASHION &amp; LIFESTYLE</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=footwear">FOOTWEAR</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=clothing-apparel">CLOTHING &amp; APPAREL</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=winter-collection">WINTER COLLECTION</a></li>
     </ul>
   </nav>
-  <!-- 3D Canvas behind header -->
-  <canvas id="checkout-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.18"></canvas>
-  <main class="checkout-main" style="position:relative;z-index:1">
+
+  <!-- SEARCH OVERLAY -->
+  <div id="search-overlay">
+    <div class="search-box">
+      <div class="search-inner">
+        <span class="search-icon-big"><i class="fa-solid fa-magnifying-glass"></i></span>
+        <input type="text" id="search-input" placeholder="Search wireless audio, smart gadgets, accessories…" autocomplete="off" />
+        <button id="search-close">&#10005;</button>
+      </div>
+      <div id="search-results"></div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT HERO -->
+  <div class="checkout-hero">
     <div class="container">
+      <h1>Secure Checkout</h1>
+      <p>Fast dispatch across Pakistan · 3–5 working days delivery</p>
+    </div>
+  </div>
+
+  <main class="checkout-main">
+    <div class="container">
+      
       <!-- Step Indicator -->
       <div class="checkout-steps">
         <div class="ck-step active" id="step-ind-1">
-          <span class="ck-num">1</span><span class="ck-lbl">Delivery</span>
+          <span class="ck-num">1</span>
+          <span class="ck-lbl">Delivery</span>
         </div>
         <div class="ck-step-line"></div>
         <div class="ck-step" id="step-ind-2">
-          <span class="ck-num">2</span><span class="ck-lbl">Payment</span>
+          <span class="ck-num">2</span>
+          <span class="ck-lbl">Payment</span>
         </div>
         <div class="ck-step-line"></div>
         <div class="ck-step" id="step-ind-3">
-          <span class="ck-num">3</span><span class="ck-lbl">Confirm</span>
+          <span class="ck-num">3</span>
+          <span class="ck-lbl">Confirm</span>
         </div>
       </div>
+
       <div class="checkout-grid">
-        <!-- LEFT: form panels -->
+        
+        <!-- LEFT COLUMN: Checkout Panels -->
         <div class="checkout-form-col">
-          <!-- STEP 1: Delivery -->
+          
+          <!-- STEP 1: Delivery Details -->
           <div class="ck-panel" id="ck-panel-1">
-            <h2 class="ck-panel-title">Delivery <em>Details</em></h2>
-            <div class="gold-rule"></div>
+            <h2 class="ck-panel-title">Shipping &amp; <em>Delivery Details</em></h2>
+            
             <form id="delivery-form" class="ck-form">
               <div class="ck-row-2">
                 <div class="form-group">
                   <label>First Name</label>
-                  <input type="text" name="fname" placeholder="First Name" required/>
+                  <input type="text" name="fname" placeholder="Muhammad" required/>
                 </div>
                 <div class="form-group">
                   <label>Last Name</label>
-                  <input type="text" name="lname" placeholder="Last Name" required/>
+                  <input type="text" name="lname" placeholder="Ali" required/>
                 </div>
               </div>
-              <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" name="email" placeholder="you@email.com" required/>
+
+              <div class="ck-row-2">
+                <div class="form-group">
+                  <label>Email Address</label>
+                  <input type="email" name="email" placeholder="you@email.com" required/>
+                </div>
+                <div class="form-group">
+                  <label>WhatsApp / Phone Number</label>
+                  <input type="tel" name="phone" placeholder="03XXXXXXXXX" required/>
+                </div>
               </div>
+
               <div class="form-group">
-                <label>Phone Number</label>
-                <input type="tel" name="phone" placeholder="+92 315 0727131" required/>
+                <label>Complete Street Address</label>
+                <input type="text" name="address" placeholder="House / Flat No, Street, Sector, Area" required/>
               </div>
-              <div class="form-group">
-                <label>Street Address</label>
-                <input type="text" name="address" placeholder="House 12, Street 4, DHA" required/>
-              </div>
+
               <div class="ck-row-2">
                 <div class="form-group">
                   <label>City</label>
-                  <input type="text" name="city" placeholder="Lahore" required/>
+                  <input type="text" name="city" placeholder="Lahore / Karachi / Islamabad" required/>
                 </div>
                 <div class="form-group">
                   <label>Province</label>
-                  <select name="province">
+                  <select name="province" required>
                     <option value="">Select Province</option>
-                    <option>Punjab</option>
-                    <option>Sindh</option>
-                    <option>KPK</option>
-                    <option>Balochistan</option>
-                    <option>AJK</option>
-                    <option>Gilgit-Baltistan</option>
+                    <option value="Punjab">Punjab</option>
+                    <option value="Sindh">Sindh</option>
+                    <option value="Khyber Pakhtunkhwa">Khyber Pakhtunkhwa (KPK)</option>
+                    <option value="Balochistan">Balochistan</option>
+                    <option value="Islamabad Capital Territory">Islamabad Capital Territory</option>
+                    <option value="Azad Kashmir">Azad Kashmir</option>
+                    <option value="Gilgit-Baltistan">Gilgit-Baltistan</option>
                   </select>
                 </div>
               </div>
+
               <div class="form-group">
-                <label>Delivery Notes (Optional)</label>
-                <textarea name="notes" placeholder="Any special instructions…" rows="3"></textarea>
+                <label>Order / Delivery Notes (Optional)</label>
+                <textarea name="notes" placeholder="Any landmark or delivery instructions..." rows="2"></textarea>
               </div>
+
               <!-- Delivery method -->
-              <div class="ck-option-group">
-                <p class="section-label" style="margin-bottom:14px">Delivery Method</p>
+              <div class="ck-option-group" style="margin-top:20px;">
+                <label style="margin-bottom:10px;display:block;">Shipping Method</label>
                 <label class="ck-option-card">
                   <input type="radio" name="delivery" value="standard" checked/>
                   <div class="ck-option-body">
                     <div>
-                      <strong>Standard Delivery</strong>
-                      <span>3–6 working days</span>
+                      <strong>Standard Courier Delivery</strong>
+                      <span>3–5 working days shipping time across Pakistan</span>
                     </div>
-                    <div class="ck-option-price free-badge">FREE over PKR 5K</div>
+                    <div class="ck-option-price free-badge">FREE over PKR 2,500</div>
                   </div>
                 </label>
               </div>
-              <button type="submit" class="btn-primary ck-next-btn">Continue to Payment →</button>
+
+              <button type="submit" class="btn-primary ck-next-btn">Continue to Payment <i class="fa-solid fa-arrow-right"></i></button>
             </form>
           </div>
-          <!-- STEP 2: Payment -->
+
+          <!-- STEP 2: Payment Method -->
           <div class="ck-panel hidden" id="ck-panel-2">
-            <h2 class="ck-panel-title">Payment <em>Method</em></h2>
-            <div class="gold-rule"></div>
+            <h2 class="ck-panel-title">Select <em>Payment Method</em></h2>
+            
             <form id="payment-form" class="ck-form">
               <div class="ck-option-group">
+                
+                <!-- COD Option -->
                 <label class="ck-option-card">
                   <input type="radio" name="payment" value="cod" checked/>
                   <div class="ck-option-body">
                     <div>
-                      <strong>&#128179; Cash on Delivery</strong>
-                      <span>Pay when your order arrives</span>
+                      <strong><i class="fa-solid fa-money-bill-wave" style="color:#10b981;margin-right:6px;"></i> Cash on Delivery (COD)</strong>
+                      <span>Pay in cash when parcel is handed over at your doorstep</span>
                     </div>
-                    <div class="ck-option-price" id="cod-fee-label">PKR 200 delivery<br><span style="font-size:12px;color:var(--primary);font-weight:600">FREE over 5000</span></div>
+                    <div class="ck-option-price" id="cod-fee-label">Standard Delivery</div>
                   </div>
                 </label>
+
+                <!-- Bank Deposit / Advance Payment Option -->
                 <label class="ck-option-card">
                   <input type="radio" name="payment" value="bank_deposit"/>
                   <div class="ck-option-body">
                     <div>
-                      <strong>&#127974; Bank Deposit</strong>
-                      <span>Deposit to our bank account</span>
+                      <strong><i class="fa-solid fa-building-columns" style="color:#7000ff;margin-right:6px;"></i> Advance Payment (Bank Deposit / Online Transfer)</strong>
+                      <span>Transfer directly to our official Meezan Bank account</span>
                     </div>
-                    <div class="ck-option-price" id="bank-fee-label" style="text-align:right">PKR 200 delivery<br><span style="font-size:12px;color:var(--primary);font-weight:600">FREE over 1000</span></div>
+                    <div class="ck-option-price" id="bank-fee-label">Fast Verification</div>
                   </div>
                 </label>
+
               </div>
-              <!-- COD advance note (shown only when COD selected) -->
-              <div id="cod-advance-fields">
-                <div class="bank-details-box">
-                  <p class="bank-details-title">Advance Payment Required</p>
-                  <p class="bank-details-note" style="margin-top:0;padding-top:0;border-top:none">
-                    A PKR 100 advance is required to confirm your Cash on Delivery order. You pay PKR 100 now, and the rest on delivery. Your order will not be confirmed without this advance. Right after placing your order, you'll receive a WhatsApp message — pay the PKR 100 in that same chat and send a screenshot.
-                  </p>
-                  <div class="bank-detail-row" style="margin-top:14px">
-                    <span>Bank</span>
-                    <strong>Bank Alfalah</strong>
-                  </div>
-                  <div class="bank-detail-row">
-                    <span>Account Title</span>
-                    <strong>MUHAMMAD SUBHAN</strong>
-                  </div>
-                  <div class="bank-detail-row">
-                    <span>Account Number</span>
-                    <strong class="bank-copy-val" data-copy="09601009896691">09601009896691 <i class="fa-regular fa-copy"></i></strong>
-                  </div>
-                  <div class="bank-detail-row">
-                    <span>IBAN</span>
-                    <strong class="bank-copy-val" data-copy="PK45ALFH0960001009896691">PK45ALFH0960001009896691 <i class="fa-regular fa-copy"></i></strong>
-                  </div>
-                  <div class="bank-detail-row">
-                    <span>JazzCash</span>
-                    <strong class="bank-copy-val" data-copy="03392620080">0339 2620080 <i class="fa-regular fa-copy"></i></strong>
-                  </div>
-                  <div class="bank-detail-row">
-                    <span>JazzCash Title</span>
-                    <strong>Muhammad Subhan</strong>
-                  </div>
-                </div>
+
+              <!-- COD informative note (No bank details shown here!) -->
+              <div id="cod-advance-fields" class="cod-info-box">
+                <i class="fa-solid fa-circle-check" style="color:#10b981;margin-right:6px;"></i> 
+                <strong>Cash on Delivery Selected:</strong> Pay exact parcel amount in cash to the delivery rider upon delivery. No upfront payment required.
               </div>
-              <!-- Bank Deposit details (shown only when bank deposit selected) -->
+
+              <!-- Bank Deposit Details (ONLY shown when advance payment is selected) -->
               <div id="bank-deposit-fields" style="display:none">
                 <div class="bank-details-box">
-                  <p class="bank-details-title">Bank Account Details</p>
-                  <div class="bank-detail-row">
-                    <span>Bank</span>
-                    <strong>Bank Alfalah</strong>
+                  <div class="bank-details-title">
+                    <i class="fa-solid fa-building-columns" style="color:#7000ff;"></i> Official DERA ZONE Bank Account
                   </div>
+                  
+                  <div class="bank-detail-row">
+                    <span>Bank Name</span>
+                    <strong>Meezan Bank Limited</strong>
+                  </div>
+
                   <div class="bank-detail-row">
                     <span>Account Title</span>
-                    <strong>MUHAMMAD SUBHAN</strong>
+                    <strong>DERA ZONE</strong>
                   </div>
+
                   <div class="bank-detail-row">
                     <span>Account Number</span>
-                    <strong class="bank-copy-val" data-copy="09601009896691">09601009896691 <i class="fa-regular fa-copy"></i></strong>
+                    <strong class="bank-copy-val" data-copy="02260116195736" title="Click to copy">
+                      02260116195736 <i class="fa-regular fa-copy"></i>
+                    </strong>
                   </div>
+
                   <div class="bank-detail-row">
                     <span>IBAN</span>
-                    <strong class="bank-copy-val" data-copy="PK45ALFH0960001009896691">PK45ALFH0960001009896691 <i class="fa-regular fa-copy"></i></strong>
+                    <strong class="bank-copy-val" data-copy="PK05MEZN0002260116195736" title="Click to copy">
+                      PK05MEZN0002260116195736 <i class="fa-regular fa-copy"></i>
+                    </strong>
                   </div>
+
                   <p class="bank-details-note">
-                    After placing your order, please send a screenshot of the payment to our WhatsApp so we can confirm and ship your order.
+                    <i class="fa-solid fa-info-circle" style="color:#7000ff;"></i> After completing the online transfer, please send a screenshot of the transaction receipt to our WhatsApp support (+92 329 4551652) so our dispatch team can immediately verify and process your parcel.
                   </p>
-                  <a href="#" id="bank-whatsapp-btn" target="_blank" rel="noopener" class="btn-whatsapp">
-                    <i class="fa-brands fa-whatsapp"></i> Send Payment Screenshot
+
+                  <a href="https://wa.me/923294551652?text=Hello%20DERA%20ZONE,%20I%20have%20made%20a%20bank%20deposit%20payment" id="bank-whatsapp-btn" target="_blank" rel="noopener" class="btn-whatsapp-bank">
+                    <i class="fa-brands fa-whatsapp"></i> Send Payment Screenshot on WhatsApp
                   </a>
                 </div>
               </div>
+
               <div class="ck-btn-row">
-                <button type="button" class="btn-outline" onclick="goToStep(1)">← Back</button>
-                <button type="submit" class="btn-primary">Review Order →</button>
+                <button type="button" class="btn-outline" onclick="goToStep(1)" style="padding:14px 20px;border-radius:10px;cursor:pointer;">← Back to Delivery</button>
+                <button type="submit" class="btn-primary ck-next-btn" style="flex:1;">Review Order <i class="fa-solid fa-arrow-right"></i></button>
               </div>
             </form>
           </div>
-          <!-- STEP 3: Confirm -->
+
+          <!-- STEP 3: Confirm & Place Order -->
           <div class="ck-panel hidden" id="ck-panel-3">
-            <h2 class="ck-panel-title">Confirm <em>Order</em></h2>
-            <div class="gold-rule"></div>
+            <h2 class="ck-panel-title">Review &amp; <em>Confirm Order</em></h2>
+            
             <div id="order-summary-full"></div>
+
             <div class="ck-btn-row" style="margin-top:28px">
-              <button type="button" class="btn-outline" onclick="goToStep(2)">← Back</button>
-              <button type="button" class="btn-primary" onclick="placeOrder()">Place Order ✓</button>
+              <button type="button" class="btn-outline" onclick="goToStep(2)" style="padding:14px 20px;border-radius:10px;cursor:pointer;">← Back to Payment</button>
+              <button type="button" class="btn-primary ck-next-btn" onclick="placeOrder()" style="flex:1;">
+                <i class="fa-solid fa-check"></i> Place Order Now
+              </button>
             </div>
           </div>
-          <!-- STEP 4: Success -->
+
+          <!-- STEP 4: Success Screen -->
           <div class="ck-panel hidden" id="ck-panel-success">
             <div class="order-success">
               <div class="success-icon">&#10003;</div>
-              <h2 class="ck-panel-title" style="text-align:center">Order <em>Placed!</em></h2>
-              <p>Thank you for shopping with DERA ZONE. Your order confirmation has been sent to your email. We'll notify you when it ships.</p>
-              <div class="order-ref" id="order-ref-num"></div>
-              <div id="order-success-bank-note" style="display:none;margin-top:18px"></div>
-              <a href="shop" class="btn-primary" style="margin-top:28px;display:inline-block">Continue Shopping</a>
+              <h2 class="ck-panel-title" style="text-align:center;border-bottom:none;">Order <em>Confirmed!</em></h2>
+              <p style="color:#64748b;font-size:0.95rem;max-width:500px;margin:0 auto;">
+                Thank you for shopping with DERA ZONE. Your order has been placed into our dispatch queue. Our customer care team will keep you updated via WhatsApp and email.
+              </p>
+              
+              <div class="order-ref" id="order-ref-num">Order Reference: DZ-000000</div>
+              
+              <div id="order-success-bank-note" style="display:none;margin-top:20px;"></div>
+              
+              <div style="margin-top:28px;">
+                <a href="shop.html" class="btn-primary" style="display:inline-block;padding:14px 28px;border-radius:10px;text-decoration:none;">
+                  Continue Shopping <i class="fa-solid fa-arrow-right"></i>
+                </a>
+              </div>
             </div>
           </div>
+
         </div>
-        <!-- RIGHT: Order summary -->
+
+        <!-- RIGHT COLUMN: Order Summary Box -->
         <div class="checkout-summary-col" id="checkout-summary-sidebar">
           <div class="ck-summary-box">
-            <h3 class="ck-summary-title">Your Bag</h3>
+            <h3 class="ck-summary-title">Your Bag Summary</h3>
             <div id="ck-summary-items"></div>
             <div class="ck-summary-divider"></div>
 
             <!-- Coupon code -->
             <div class="ck-coupon-row">
               <input type="text" id="ck-coupon-input" placeholder="Coupon code" autocomplete="off"/>
-              <button type="button" id="ck-coupon-apply-btn" class="btn-outline">Apply</button>
+              <button type="button" id="ck-coupon-apply-btn">Apply</button>
             </div>
-            <p id="ck-coupon-msg" style="display:none"></p>
+            <p id="ck-coupon-msg" style="display:none;font-size:0.8rem;margin-bottom:12px;"></p>
 
             <div class="ck-summary-row">
               <span>Subtotal</span><span id="ck-subtotal">PKR 0</span>
             </div>
             <div class="ck-summary-row" id="ck-discount-row" style="display:none">
-              <span>Discount</span><span id="ck-discount" style="color:var(--gold)">− PKR 0</span>
+              <span>Discount</span><span id="ck-discount" style="color:#7000ff;font-weight:700;">− PKR 0</span>
             </div>
             <div class="ck-summary-row">
-              <span>Delivery</span><span id="ck-delivery-fee">FREE</span>
+              <span>Shipping</span><span id="ck-delivery-fee">FREE</span>
             </div>
-            <div class="ck-summary-divider"></div>
             <div class="ck-summary-row ck-total-row">
-              <span>Total</span><span id="ck-total">PKR 0</span>
+              <span>Grand Total</span><span id="ck-total" style="color:#7000ff;">PKR 0</span>
             </div>
+
             <div class="ck-trust-badges">
-              <span>&#128274; Secure Checkout</span>
-              <span>&#8635; Easy Returns</span>
-              <span>&#128230; Fast Delivery</span>
+              <span><i class="fa-solid fa-shield-halved" style="color:#7000ff;"></i> 100% Verified Quality Checked</span>
+              <span><i class="fa-solid fa-truck-fast" style="color:#7000ff;"></i> 3–5 Working Days Delivery Across Pakistan</span>
+              <span><i class="fa-brands fa-whatsapp" style="color:#25D366;"></i> WhatsApp Order Support (+92 329 4551652)</span>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </main>
 
-  <div id="overlay"></div>
+  <!-- MASTER FOOTER -->
+  <footer class="dz-footer">
+    <div class="container">
+      <div class="footer-grid">
+        
+        <!-- Col 1: Brand Info -->
+        <div class="footer-brand">
+          <a href="/" class="brand-logo footer-logo" aria-label="DERA ZONE">DERA ZONE</a>
+          <p class="footer-tagline">
+            Shop Smart. Live Better. Pakistan's ultimate destination for wireless audio, smart gadgets, tech accessories, and trending lifestyle essentials.
+          </p>
+          <div class="footer-social" id="footer-social-links">
+            <a href="https://www.instagram.com/derazone01?stkn=MXVnNnd3cTJyNHEydw==" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.facebook.com/share/1KD2yz1GPn/" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://www.tiktok.com/@derazone001?_r=1&amp;_t=ZS-99wDO848b7x" target="_blank" rel="noopener" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="https://wa.me/923294551652" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          </div>
+        </div>
+
+        <!-- Col 2: Shop Links (8 Categories) -->
+        <div class="footer-col">
+          <h4>Shop Categories</h4>
+          <ul>
+            <li><a href="shop.html?cat=accessories">Accessories</a></li>
+            <li><a href="shop.html?cat=gadgets">Gadgets</a></li>
+            <li><a href="shop.html?cat=wireless-earbuds-audio">Wireless Earbuds &amp; Audio</a></li>
+            <li><a href="shop.html?cat=jewellery">Jewellery</a></li>
+            <li><a href="shop.html?cat=fashion-lifestyle">Fashion &amp; Lifestyle</a></li>
+            <li><a href="shop.html?cat=footwear">Footwear</a></li>
+            <li><a href="shop.html?cat=clothing-apparel">Clothing &amp; Apparel</a></li>
+            <li><a href="shop.html?cat=winter-collection">Winter Collection</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Help & Policies -->
+        <div class="footer-col">
+          <h4>Customer Care</h4>
+          <ul>
+            <li><a href="about.html">About DERA ZONE</a></li>
+            <li><a href="contact.html">Contact Support</a></li>
+            <li><a href="policy.html?page=shipping">Shipping Information</a></li>
+            <li><a href="policy.html?page=returns">Returns &amp; Exchange</a></li>
+            <li><a href="policy.html?page=track">Track Your Order</a></li>
+            <li><a href="policy.html?page=terms">Privacy Policy</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Contact Info (No Bank details here!) -->
+        <div class="footer-col get-in-touch-col">
+          <h4>Get In Touch</h4>
+          <ul class="get-in-touch-list">
+            <li><i class="fa-regular fa-envelope"></i> <span>derazone001@gmail.com</span></li>
+            <li><i class="fa-brands fa-whatsapp"></i> <span>+92 329 4551652</span></li>
+            <li><i class="fa-solid fa-location-dot"></i> <span>Nationwide Delivery, Pakistan</span></li>
+            <li><i class="fa-solid fa-clock"></i> <span>3-5 Working Days Delivery Time</span></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <p>&copy; 2026 <span style="color:#c084fc;font-weight:700;">DERA ZONE</span>. All rights reserved. Shop Smart. Live Better.</p>
+        <div class="footer-pay">
+          <span class="pay-badge">Cash on Delivery</span>
+          <span class="pay-badge">Online Bank Transfer</span>
+          <span class="pay-badge">Direct WhatsApp Order</span>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
   <div id="toast"></div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- SCRIPTS -->
   <script src="js/whatsapp-config.js"></script>
   <script src="js/api.js"></script>
   <script src="js/main.js"></script>
   <script src="js/checkout.js"></script>
+  <script src="js/search.js"></script>
 </body>
 </html>
-

@@ -3,348 +3,260 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Primary Meta -->
-  <meta name="description" content="DERA ZONE was founded in Lahore with one belief — every woman deserves beautiful accessories. Discover our story, our values, and what makes us different." />
-  <link rel="canonical" href="https://derazone.com/about" />
-  <!-- Open Graph / Facebook / WhatsApp -->
-  <meta property="og:type"        content="website" />
-  <meta property="og:url"         content="https://derazone.com/about" />
-  <meta property="og:title"       content="Our Story — DERA ZONE | Made in Lahore, Pakistan" />
-  <meta property="og:description" content="DERA ZONE was founded in Lahore with one belief — every woman deserves beautiful accessories. Discover our story, our values, and what makes us different." />
-  <meta property="og:image"       content="https://derazone.com/images/categories/necklace.jpg" />
-  <meta property="og:site_name"   content="DERA ZONE" />
-  <meta property="og:locale"      content="en_PK" />
-  <!-- Twitter Card -->
-  <meta name="twitter:card"        content="summary_large_image" />
-  <meta name="twitter:title"       content="Our Story — DERA ZONE | Made in Lahore, Pakistan" />
-  <meta name="twitter:description" content="DERA ZONE was founded in Lahore with one belief — every woman deserves beautiful accessories. Discover our story, our values, and what makes us different." />
-  <meta name="twitter:image"       content="https://derazone.com/images/categories/necklace.jpg" />
-  <title>DERA ZONE - Shop Smart. Live Better.</title>
-  <link rel="icon" type="image/png" href="images/logo-square.png" />
-  <link rel="stylesheet" href="css/style.css?v=1790277302163" />
-  <link rel="stylesheet" href="css/pages.css?v=3" />
+  <title>About Us — DERA ZONE</title>
+  <meta name="description" content="Learn about DERA ZONE — Pakistan's premier destination for wireless earbuds, smart watches, tech gadgets, and lifestyle essentials." />
+  <link rel="icon" type="image/png" href="images/logo-square-transparent.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
+  <!-- Google Fonts: Inter & Orbitron -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@500;700;800;900&display=swap" rel="stylesheet">
 </head>
-<body >
+<body>
 
-<nav class="dz-nav">
+  <!-- MASTER NAVBAR -->
+  <nav class="dz-nav">
     <div class="nav-container">
+      
+      <!-- LEFT: Search & Hamburger -->
       <div class="nav-left">
-        <button id="search-toggle" aria-label="Search" class="icon-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
-        <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+        <button id="search-toggle" aria-label="Search" class="icon-btn" title="Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <button class="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
       </div>
+
+      <!-- CENTER: Logo on WHITE background -->
       <div class="nav-center">
-        <a href="/" class="brand-logo">DERA ZONE</a>
+        <a href="/" class="brand-logo" aria-label="DERA ZONE">DERA ZONE</a>
       </div>
+
+      <!-- RIGHT: WhatsApp, User & Cart -->
       <div class="nav-right">
-        <a href="account" aria-label="Account" class="icon-btn"><i class="fa-regular fa-user"></i></a>
-        <button data-open-cart aria-label="Bag" class="icon-btn cart-btn">
-          <i class="fa-solid fa-bag-shopping"></i><span class="cart-count" style="display:none">0</span>
+        <a href="https://wa.me/923294551652?text=Hello%20DERA%20ZONE,%20I%20have%20an%20inquiry" target="_blank" class="icon-btn wa-icon-btn" aria-label="WhatsApp" title="Chat on WhatsApp">
+          <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <a href="account" aria-label="Account" class="icon-btn" title="My Account">
+          <i class="fa-regular fa-user"></i>
+        </a>
+        <button data-open-cart aria-label="Bag" class="icon-btn cart-btn" title="View Cart">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="cart-count" style="display:none">0</span>
         </button>
       </div>
     </div>
+    
+    <!-- CATEGORY BAR LINKS (Exact 8 Categories) -->
     <ul class="nav-links">
       <li><a href="shop.html?cat=accessories">ACCESSORIES</a></li>
       <li class="separator">&#183;</li>
       <li><a href="shop.html?cat=gadgets">GADGETS</a></li>
       <li class="separator">&#183;</li>
-      <li><a href="shop.html?cat=wireless-earbuds-audio">AUDIO</a></li>
+      <li><a href="shop.html?cat=wireless-earbuds-audio">WIRELESS EARBUDS &amp; AUDIO</a></li>
       <li class="separator">&#183;</li>
       <li><a href="shop.html?cat=jewellery">JEWELLERY</a></li>
       <li class="separator">&#183;</li>
-      <li><a href="shop.html?cat=clothing-apparel">CLOTHING</a></li>
+      <li><a href="shop.html?cat=fashion-lifestyle">FASHION &amp; LIFESTYLE</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=footwear">FOOTWEAR</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=clothing-apparel">CLOTHING &amp; APPAREL</a></li>
+      <li class="separator">&#183;</li>
+      <li><a href="shop.html?cat=winter-collection">WINTER COLLECTION</a></li>
     </ul>
   </nav>
-<!-- SEARCH OVERLAY -->
-<div id="search-overlay">
-  <div class="search-box">
-    <div class="search-inner">
-      <span class="search-icon-big"><i class="fa-solid fa-magnifying-glass"></i></span>
-      <input type="text" id="search-input" placeholder="Search skincare, serums, toners…" autocomplete="off" />
-      <button id="search-close">&#10005;</button>
-    </div>
-    <div id="search-results"></div>
-  </div>
-</div>
 
-<style>
-  .about-hero {
-    position: relative;
-    padding: 120px 0 80px;
-    background: #fdfaf7;
-    overflow: hidden;
-  }
-  .about-hero::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -20%;
-    width: 60%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(234, 227, 216, 0.4) 0%, transparent 70%);
-    z-index: 0;
-  }
-  .about-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 40px;
-    display: flex;
-    align-items: center;
-    gap: 80px;
-    position: relative;
-    z-index: 1;
-  }
-  .about-text-col {
-    flex: 1;
-  }
-  .about-img-col {
-    flex: 1;
-    position: relative;
-  }
-  .about-img-main {
-    width: 100%;
-    border-radius: 200px 200px 0 0;
-    overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-  }
-  .about-img-main img {
-    width: 100%;
-    height: 600px;
-    object-fit: cover;
-    display: block;
-    transition: transform 1.5s ease;
-  }
-  .about-img-main:hover img {
-    transform: scale(1.05);
-  }
-  .about-img-accent {
-    position: absolute;
-    bottom: -40px;
-    left: -40px;
-    width: 240px;
-    height: 240px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 10px solid #fdfaf7;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  }
-  .about-img-accent img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .about-title {
-    font-family: 'Cinzel', serif;
-    font-size: 3.5rem;
-    color: var(--text);
-    margin-bottom: 24px;
-    line-height: 1.1;
-  }
-  .about-title em {
-    color: var(--gold);
-    font-style: normal;
-  }
-  .about-desc {
-    font-family: 'Inter', sans-serif;
-    font-size: 1.1rem;
-    color: var(--text-mid);
-    line-height: 1.8;
-    margin-bottom: 24px;
-  }
-  
-  .values-section {
-    padding: 100px 0;
-    background: #ffffff;
-  }
-  .values-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 40px;
-  }
-  .value-card {
-    text-align: center;
-    padding: 40px 30px;
-    background: #fdfaf7;
-    border: 1px solid var(--border-soft);
-    border-radius: 12px;
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
-  }
-  .value-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.05);
-  }
-  .value-icon {
-    font-size: 2.5rem;
-    color: var(--gold);
-    margin-bottom: 20px;
-  }
-  .value-card h3 {
-    font-family: 'Cinzel', serif;
-    font-size: 1.5rem;
-    margin-bottom: 16px;
-    color: var(--text);
-  }
-  .value-card p {
-    font-size: 1rem;
-    color: var(--text-mid);
-    line-height: 1.6;
-  }
-  
-  .cta-section {
-    padding: 100px 0;
-    background: var(--text);
-    text-align: center;
-    color: #ffffff;
-  }
-  .cta-section .section-label {
-    color: var(--gold);
-  }
-  .cta-section h2 {
-    color: #ffffff;
-  }
-  .cta-section em {
-    color: var(--gold);
-  }
-  
-  @media (max-width: 991px) {
-    .about-container { flex-direction: column; text-align: center; gap: 60px; padding: 0 20px; }
-    .about-img-accent { display: none; }
-    .about-title { font-size: 2.5rem; }
-    .about-img-main img { height: 400px; }
-    .values-grid { grid-template-columns: 1fr; padding: 0 20px; }
-  }
-</style>
-
-<section class="about-hero">
-  <div class="about-container">
-    <div class="about-text-col reveal">
-      <p class="section-label">Our Story</p>
-      <h1 class="about-title">Born From a Passion for <em>Beauty</em></h1>
-      <div class="gold-rule" style="margin-left: 0; margin-bottom: 30px; @media(max-width:991px){margin: 0 auto 30px;}"></div>
-      <p class="about-desc">
-        DERA ZONE was founded in the heart of Lahore with one simple belief — that every woman deserves premium fashion and accessories that are as beautiful as she is. Every necklace, lipstick, and blush is curated with intention, so you don't just dress up — you express your soul.
-      </p>
-      <p class="about-desc">
-        We partner with skilled artisans and carefully selected suppliers to bring you pieces that elevate your entire look. We believe in quality over quantity, pieces that last beyond a season, and customer trust above all.
-      </p>
-    </div>
-    <div class="about-img-col reveal reveal-delay-2">
-      <div class="about-img-main">
-        <img src="images/hero_passion_new_v2.jpg" alt="DERA ZONE Jewelry and Cosmetics" loading="lazy" />
+  <!-- SEARCH OVERLAY -->
+  <div id="search-overlay">
+    <div class="search-box">
+      <div class="search-inner">
+        <span class="search-icon-big"><i class="fa-solid fa-magnifying-glass"></i></span>
+        <input type="text" id="search-input" placeholder="Search wireless audio, smart watches, accessories…" autocomplete="off" />
+        <button id="search-close">&#10005;</button>
       </div>
-      <div class="about-img-accent">
-        <img src="images/hero_banner_new_1.jpg" alt="Details" loading="lazy" />
+      <div id="search-results"></div>
+    </div>
+  </div>
+
+  <!-- ABOUT HERO -->
+  <div class="shop-compact-header">
+    <div class="container">
+      <h1 class="shop-title">ABOUT DERA ZONE</h1>
+      <p class="shop-desc">Shop Smart. Live Better. Our journey, mission, and commitment to Pakistan's shoppers.</p>
+    </div>
+  </div>
+
+  <!-- ABOUT STORY SECTION -->
+  <section class="dz-section">
+    <div class="container" style="max-width:960px;">
+      
+      <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;padding:40px 32px;box-shadow:0 4px 20px rgba(0,0,0,0.03);margin-bottom:40px;">
+        <span style="display:inline-block;background:rgba(112,0,255,0.1);color:#7000ff;padding:4px 12px;border-radius:999px;font-size:0.8rem;font-weight:700;text-transform:uppercase;margin-bottom:16px;">Our Story</span>
+        <h2 style="font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:800;color:#111827;margin-bottom:18px;line-height:1.3;">
+          Empowering Everyday Life with Smart Tech &amp; Style
+        </h2>
+        <p style="color:#4b5563;font-size:1rem;line-height:1.8;margin-bottom:18px;">
+          <strong>DERA ZONE</strong> was born from a clear vision: to provide people across Pakistan with immediate access to trending, high-performance technology, audio gear, and lifestyle accessories without inflated markups or unreliable shipping.
+        </p>
+        <p style="color:#4b5563;font-size:1rem;line-height:1.8;margin-bottom:18px;">
+          Whether you are searching for crystal-clear active noise-cancelling earbuds, smart fitness watches, durable fast charging accessories, or streetwear essentials, we carefully inspect and test every item in our inventory before dispatching it to your door.
+        </p>
+        <p style="color:#4b5563;font-size:1rem;line-height:1.8;margin:0;">
+          With fast 3-5 working days nationwide courier delivery, convenient Cash on Delivery, and human customer support available around the clock via WhatsApp, we are committed to making online shopping honest, accessible, and enjoyable.
+        </p>
       </div>
-    </div>
-  </div>
-</section>
 
-<!-- Values Section -->
-<section class="values-section">
-  <div style="text-align:center; margin-bottom:60px;" class="reveal">
-    <p class="section-label">What We Stand For</p>
-    <h2 class="section-title">Our <em>Values</em></h2>
-  </div>
-  <div class="values-grid">
-    <div class="value-card reveal">
-      <div class="value-icon"><i class="fa-solid fa-gem"></i></div>
-      <h3>Premium Quality</h3>
-      <p>Every piece of jewelry and cosmetic item is selected because it's not just beautiful, but comfortable and kind to you.</p>
-    </div>
-    <div class="value-card reveal reveal-delay-2">
-      <div class="value-icon"><i class="fa-regular fa-hourglass-half"></i></div>
-      <h3>Timeless Elegance</h3>
-      <p>We curate accessories that last beyond a season. Pieces that become part of your signature look effortlessly.</p>
-    </div>
-    <div class="value-card reveal reveal-delay-3">
-      <div class="value-icon"><i class="fa-regular fa-heart"></i></div>
-      <h3>Customer First</h3>
-      <p>From packaging to delivery — every touchpoint is designed to make you feel like our most important customer.</p>
-    </div>
-  </div>
-</section>
+      <!-- 3 VALUES -->
+      <div class="dz-features-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:40px;">
+        
+        <div class="dz-feature-item" style="flex-direction:column;text-align:center;align-items:center;padding:30px 20px;">
+          <div class="dz-feature-icon" style="margin-bottom:14px;"><i class="fa-solid fa-check-double"></i></div>
+          <div class="dz-feature-text">
+            <h4 style="font-size:1.1rem;margin-bottom:8px;">Tested Quality</h4>
+            <p>Every gadget and accessory is checked for functionality, battery health, and finish before packing.</p>
+          </div>
+        </div>
 
-<!-- CTA -->
-<section class="cta-section">
-  <div class="container reveal">
-    <p class="section-label" style="color:var(--gold);">Ready to Explore?</p>
-    <h2 class="section-title" style="margin-bottom:40px; color:#fff;">Discover the <em>Collection</em></h2>
-    <a href="shop" class="btn-primary" style="border-color:var(--gold); background:var(--gold); color:var(--text);">Shop Now</a>
-  </div>
-</section>
+        <div class="dz-feature-item" style="flex-direction:column;text-align:center;align-items:center;padding:30px 20px;">
+          <div class="dz-feature-icon" style="margin-bottom:14px;"><i class="fa-solid fa-truck-fast"></i></div>
+          <div class="dz-feature-text">
+            <h4 style="font-size:1.1rem;margin-bottom:8px;">Reliable Delivery</h4>
+            <p>Swift 3-5 working days dispatch across Lahore, Karachi, Rawalpindi, Peshawar &amp; all cities.</p>
+          </div>
+        </div>
 
-<footer>
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <a href="/" style="text-decoration: none; color: inherit; font-family: 'Cairo', sans-serif; font-size: 2.2rem; font-weight: 900; line-height: 1; display: inline-block; white-space: nowrap; letter-spacing: 2px;">&#1586;&#1614;&#1585;&#1616;&#1740;&#1606; &#1581;&#1587;&#1606;</a>
-        <p>Pakistan's premier destination for fine clothing, jewelry, and skincare. Crafted with elegance for the modern woman.</p>
-        <div class="footer-social" id="footer-social-links">
-          <a href="https://www.instagram.com/zarin_e_husn/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-          <a href="https://www.facebook.com/profile.php?id=61590913872614" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+        <div class="dz-feature-item" style="flex-direction:column;text-align:center;align-items:center;padding:30px 20px;">
+          <div class="dz-feature-icon" style="margin-bottom:14px;"><i class="fa-brands fa-whatsapp"></i></div>
+          <div class="dz-feature-text">
+            <h4 style="font-size:1.1rem;margin-bottom:8px;">Always Responsive</h4>
+            <p>Real human assistance on WhatsApp whenever you have a question or need to track your order.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CTA -->
+      <div style="background:linear-gradient(135deg,#090810 0%,#15112a 100%);border:2px solid #7000ff;border-radius:16px;padding:36px;text-align:center;color:#ffffff;">
+        <h3 style="font-family:'Orbitron',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:10px;">Ready to Upgrade Your Everyday Gear?</h3>
+        <p style="color:#9ca3af;margin-bottom:24px;font-size:0.95rem;">Explore our complete catalog and shop with Cash on Delivery nationwide.</p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+          <a href="shop.html" class="btn-hero-primary">Browse All Collections <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="https://wa.me/923294551652" target="_blank" class="btn-hero-whatsapp"><i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp</a>
         </div>
       </div>
-      <div class="footer-col">
-        <h4>Shop</h4>
+
+    </div>
+  </section>
+
+  <!-- MASTER FOOTER (No Bank Details) -->
+  <footer class="dz-footer">
+    <div class="container">
+      <div class="footer-grid">
+        
+        <!-- Col 1: Brand & Bio -->
+        <div class="footer-brand">
+          <a href="/" class="footer-logo">DERA ZONE</a>
+          <p class="footer-desc">
+            Pakistan's premier destination for high-performance audio, smart gadgets, daily tech gear, and lifestyle essentials. Shop Smart. Live Better.
+          </p>
+          <div class="footer-social" id="footer-social-links">
+            <a href="https://www.instagram.com/derazone01?stkn=MXVnNnd3cTJyNHEydw==" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.facebook.com/share/1KD2yz1GPn/" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+            <a href="https://www.tiktok.com/@derazone001?_r=1&amp;_t=ZS-99wDO848b7x" target="_blank" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="https://wa.me/923294551652" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          </div>
+        </div>
+
+        <!-- Col 2: Shop Links (8 Categories) -->
+        <div class="footer-col">
+          <h4>Shop Categories</h4>
           <ul>
-            <li><a href="jewelry.html">Jewelry</a></li>
-            <li><a href="cosmetics.html">Cosmetics</a></li>
-          <li><a href="shop.html?cat=deals">Deals</a></li>
+            <li><a href="shop.html?cat=accessories">Accessories</a></li>
+            <li><a href="shop.html?cat=gadgets">Gadgets</a></li>
+            <li><a href="shop.html?cat=wireless-earbuds-audio">Wireless Earbuds &amp; Audio</a></li>
+            <li><a href="shop.html?cat=jewellery">Jewellery</a></li>
+            <li><a href="shop.html?cat=fashion-lifestyle">Fashion &amp; Lifestyle</a></li>
+            <li><a href="shop.html?cat=footwear">Footwear</a></li>
+            <li><a href="shop.html?cat=clothing-apparel">Clothing &amp; Apparel</a></li>
+            <li><a href="shop.html?cat=winter-collection">Winter Collection</a></li>
           </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Help</h4>
-        <ul>
-          <li><a href="contact">Contact</a></li>
-          <li><a href="policy?page=returns">Returns</a></li>
-          <li><a href="policy?page=shipping">Shipping</a></li>
-        </ul>
-      </div>
-      <div class="footer-col get-in-touch-col">
+        </div>
+
+        <!-- Col 3: Help & Policies -->
+        <div class="footer-col">
+          <h4>Customer Care</h4>
+          <ul>
+            <li><a href="about.html">About DERA ZONE</a></li>
+            <li><a href="contact">Contact Support</a></li>
+            <li><a href="policy?page=shipping">Shipping Information</a></li>
+            <li><a href="policy?page=returns">Returns &amp; Exchange</a></li>
+            <li><a href="policy?page=track">Track Your Order</a></li>
+            <li><a href="policy?page=privacy">Privacy Policy</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Contact Info (No Bank details here!) -->
+        <div class="footer-col get-in-touch-col">
           <h4>Get In Touch</h4>
           <ul class="get-in-touch-list">
-            <li><i class="fa-regular fa-envelope" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-derazone="email">derazone@gmail.com</span></li>
-            <li><i class="fa-brands fa-whatsapp" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-derazone="phone">+92 315 0727131</span></li>
-            <li><i class="fa-solid fa-location-dot" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-derazone="location">Lahore, Pakistan</span></li>
-            <li><i class="fa-regular fa-clock" style="color:var(--gold); width: 16px; text-align: center; font-size: 1.1rem;"></i> <span data-derazone="hours">Mon-Sat: 10am - 7pm</span></li>
+            <li><i class="fa-regular fa-envelope"></i> <span>derazone001@gmail.com</span></li>
+            <li><i class="fa-brands fa-whatsapp"></i> <span>+92 329 4551652</span></li>
+            <li><i class="fa-solid fa-location-dot"></i> <span>Nationwide Delivery, Pakistan</span></li>
+            <li><i class="fa-solid fa-clock"></i> <span>3-5 Working Days Delivery Time</span></li>
           </ul>
         </div>
-    </div>
-    <div class="footer-bottom">
-      <p>© 2026 <span class="gold-text">DERA ZONE</span>. All rights reserved.</p>
-    </div>
-  </div>
-</footer>
 
-<div id="cart-drawer">
-  <div class="cart-header">
-    <h3>Your Bag</h3>
-    <button id="cart-close" class="cart-close"><i class="fa-solid fa-xmark"></i></button>
-  </div>
-  <div class="cart-items" id="cart-items"><div class="cart-empty">Your bag is empty.</div></div>
-  <div class="cart-footer">
-    <div class="cart-total"><span>Total</span><span id="cart-total-val">PKR 0</span></div>
-    <button onclick="proceedToCheckout()" class="btn-primary cart-checkout" style="display:block;clip-path:none;text-align:center;padding:16px;width:100%;cursor:pointer;">Checkout</button>
-  </div>
-</div>
-<div id="overlay"></div>
-<div id="toast"></div>
+      </div>
 
-<script src="js/whatsapp-config.js"></script>
-<script src="js/main.js"></script>
-<script src="js/search.js"></script>
-<script src="js/api.js"></script>
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <p>&copy; 2026 <span style="color:#c084fc;font-weight:700;">DERA ZONE</span>. All rights reserved. Shop Smart. Live Better.</p>
+        <div class="footer-pay">
+          <span class="pay-badge">Cash on Delivery</span>
+          <span class="pay-badge">Online Bank Transfer</span>
+          <span class="pay-badge">Direct WhatsApp Order</span>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- CART SIDEBAR / DRAWER -->
+  <div id="cart-drawer-overlay"></div>
+  <aside id="cart-drawer">
+    <div class="cart-header">
+      <div class="cart-header-title">
+        <i class="fa-solid fa-bag-shopping"></i> Your Bag
+        <span class="cart-drawer-count">(0)</span>
+      </div>
+      <button id="cart-close" aria-label="Close cart">&#10005;</button>
+    </div>
+    <div id="cart-items" class="cart-body">
+      <div class="cart-empty">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <p>Your shopping bag is empty.</p>
+        <a href="shop.html" class="btn-primary" style="margin-top:12px;font-size:0.85rem;">Start Shopping</a>
+      </div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-subtotal-row">
+        <span>Subtotal</span>
+        <span id="cart-subtotal">PKR 0</span>
+      </div>
+      <p class="cart-shipping-note">Free Delivery across Pakistan on orders over PKR 2,500</p>
+      <a href="checkout" class="btn-primary cart-checkout-btn">Proceed to Checkout <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+  </aside>
+
+  <!-- SCRIPTS -->
+  <script src="js/whatsapp-config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/search.js"></script>
 </body>
 </html>
-
-

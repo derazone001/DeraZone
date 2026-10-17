@@ -180,14 +180,14 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const result = await apiSubscribeNewsletter(email);
       if (result.ok) {
-        showToast(result.data.message || "Welcome to Golnisà! 💛 You'll be the first to hear about new arrivals and offers.");
+        showToast(result.data.message || "Welcome to DERA ZONE! ⚡ You'll be the first to hear about new arrivals and offers.");
         input.value = '';
       } else {
         showToast(result.data.error || 'Please try again.');
       }
     } catch {
       /* Backend not available — graceful fallback */
-      showToast("Welcome to Golnisà! 💛 You'll be the first to hear about new arrivals and offers.");
+      showToast("Welcome to DERA ZONE! ⚡ You'll be the first to hear about new arrivals and offers.");
       input.value = '';
     } finally {
       if (btn) { btn.disabled = false; btn.textContent = 'Subscribe'; }
@@ -298,8 +298,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ── Show/Hide Password Toggle ──
-   Usage: <button onclick="toggleGolnisàPassword('field-id', this)"><i class="fa-regular fa-eye"></i></button> */
-window.toggleGolnisàPassword = (inputId, btn) => {
+   Usage: <button onclick="togglePassword('field-id', this)"><i class="fa-regular fa-eye"></i></button> */
+window.togglePassword = (inputId, btn) => {
   const input = document.getElementById(inputId);
   if (!input) return;
   const icon = btn.querySelector('i');
@@ -308,6 +308,8 @@ window.toggleGolnisàPassword = (inputId, btn) => {
   if (icon) icon.className = showing ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash';
   btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
 };
+window.toggleDERAZONEPassword = window.togglePassword;
+window.toggleGolnisàPassword = window.togglePassword;
 /* ── Proceed to Checkout — cart check ── */
 window.proceedToCheckout = () => {
   const cart = JSON.parse(localStorage.getItem('derazone_cart') || '[]');
