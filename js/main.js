@@ -132,6 +132,33 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('cart-close')?.addEventListener('click', closeCart);
   overlay?.addEventListener('click', closeCart);
 
+  /* ── Mobile Menu Drawer ── */
+  const mobileDrawer  = document.getElementById('mobile-menu-drawer');
+  const mobileOverlay = document.getElementById('mobile-menu-overlay');
+  const mobileClose   = document.getElementById('mobile-menu-close');
+
+  const openMobileMenu = () => {
+    mobileDrawer?.classList.add('open');
+    mobileOverlay?.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  };
+  const closeMobileMenu = () => {
+    mobileDrawer?.classList.remove('open');
+    mobileOverlay?.classList.remove('active');
+    document.body.style.overflow = '';
+  };
+  window.openMobileMenu = openMobileMenu;
+  window.closeMobileMenu = closeMobileMenu;
+
+  document.querySelectorAll('#mobile-menu-toggle, .mobile-menu-btn, .hamburger').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openMobileMenu();
+    });
+  });
+  mobileClose?.addEventListener('click', closeMobileMenu);
+  mobileOverlay?.addEventListener('click', closeMobileMenu);
+
   updateCartUI();
 
   /* ── Toast ── */

@@ -21,13 +21,13 @@
   <nav class="dz-nav">
     <div class="nav-container">
       
-      <!-- LEFT: Search & Hamburger -->
+      <!-- LEFT: Hamburger & Search -->
       <div class="nav-left">
+        <button id="mobile-menu-toggle" class="icon-btn mobile-menu-btn" aria-label="Open Navigation Menu" title="Menu">
+          <i class="fa-solid fa-bars-staggered"></i>
+        </button>
         <button id="search-toggle" aria-label="Search" class="icon-btn" title="Search">
           <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
-        <button class="hamburger" aria-label="Menu">
-          <span></span><span></span><span></span>
         </button>
       </div>
 
@@ -356,7 +356,9 @@
         
         <!-- Col 1: Brand & Bio -->
         <div class="footer-brand">
-          <a href="index.html" class="footer-logo">DERA ZONE</a>
+          <a href="index.html" class="footer-logo" aria-label="DERA ZONE">
+            <img src="images/logo-footer.png" alt="DERA ZONE" class="footer-logo-img" />
+          </a>
           <p class="footer-desc">
             Pakistan's premier destination for high-performance audio, smart gadgets, daily tech gear, and lifestyle essentials. Shop Smart. Live Better.
           </p>
@@ -421,6 +423,86 @@
 
     </div>
   </footer>
+
+  <!-- MOBILE NAVIGATION DRAWER -->
+  <div id="mobile-menu-overlay"></div>
+  <aside id="mobile-menu-drawer">
+    <div class="mobile-menu-header">
+      <img src="images/logo-wide.png" alt="DERA ZONE" class="mobile-menu-logo" />
+      <button id="mobile-menu-close" class="mobile-menu-close" aria-label="Close Navigation Menu">&#10005;</button>
+    </div>
+    <div class="mobile-menu-body">
+      <div class="mobile-menu-section">
+        <div class="mobile-menu-section-title"><i class="fa-solid fa-layer-group"></i> Shop Categories</div>
+        <ul class="mobile-cat-list">
+          <li class="mobile-cat-item">
+            <a href="shop.html?cat=accessories">
+              <span class="mobile-cat-icon"><i class="fa-solid fa-plug"></i></span>
+              <span>Accessories</span>
+            </a>
+          </li>
+          <li class="mobile-cat-item">
+            <a href="shop.html?cat=gadgets">
+              <span class="mobile-cat-icon"><i class="fa-solid fa-microchip"></i></span>
+              <span>Gadgets</span>
+            </a>
+          </li>
+          <li class="mobile-cat-item">
+            <a href="shop.html?cat=wireless-earbuds-audio">
+              <span class="mobile-cat-icon"><i class="fa-solid fa-headphones"></i></span>
+              <span>Wireless Earbuds &amp; Audio</span>
+            </a>
+          </li>
+          <li class="mobile-cat-item">
+            <a href="shop.html?cat=jewellery">
+              <span class="mobile-cat-icon"><i class="fa-solid fa-gem"></i></span>
+              <span>Jewellery</span>
+            </a>
+          </li>
+          <li class="mobile-cat-item">
+            <a href="shop.html?cat=fashion-lifestyle">
+              <span class="mobile-cat-icon"><i class="fa-solid fa-shirt"></i></span>
+              <span>Fashion &amp; Lifestyle</span>
+            </a>
+          </li>
+          <li class="mobile-cat-item">
+            <a href="shop.html?cat=footwear">
+              <span class="mobile-cat-icon"><i class="fa-solid fa-shoe-prints"></i></span>
+              <span>Footwear</span>
+            </a>
+          </li>
+          <li class="mobile-cat-item">
+            <a href="shop.html?cat=clothing-apparel">
+              <span class="mobile-cat-icon"><i class="fa-solid fa-vest"></i></span>
+              <span>Clothing &amp; Apparel</span>
+            </a>
+          </li>
+          <li class="mobile-cat-item">
+            <a href="shop.html?cat=winter-collection">
+              <span class="mobile-cat-icon"><i class="fa-solid fa-snowflake"></i></span>
+              <span>Winter Collection</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="mobile-menu-section">
+        <div class="mobile-menu-section-title"><i class="fa-solid fa-compass"></i> Explore</div>
+        <ul class="mobile-quick-links">
+          <li><a href="shop.html"><i class="fa-solid fa-bag-shopping" style="margin-right:8px;color:#7000ff;"></i> All Products</a></li>
+          <li><a href="account.html"><i class="fa-regular fa-user" style="margin-right:8px;color:#7000ff;"></i> My Account / Orders</a></li>
+          <li><a href="about.html"><i class="fa-solid fa-circle-info" style="margin-right:8px;color:#7000ff;"></i> About DERA ZONE</a></li>
+          <li><a href="contact.html"><i class="fa-solid fa-headset" style="margin-right:8px;color:#7000ff;"></i> Help &amp; Support</a></li>
+          <li><a href="policy.html?page=track"><i class="fa-solid fa-truck" style="margin-right:8px;color:#7000ff;"></i> Track Order</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="mobile-menu-footer">
+      <a href="https://wa.me/923294551652?text=Hello%20DERA%20ZONE,%20I%20have%20an%20inquiry" target="_blank" class="btn-mobile-wa">
+        <i class="fa-brands fa-whatsapp" style="font-size:1.15rem;"></i> Chat on WhatsApp
+      </a>
+    </div>
+  </aside>
 
   <!-- CART SIDEBAR / DRAWER -->
   <div id="cart-drawer-overlay"></div>
