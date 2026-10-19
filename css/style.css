@@ -53,55 +53,25 @@ button { border: none; background: none; font-family: inherit; cursor: pointer; 
 ::-webkit-scrollbar-track { background: var(--bg-deep); }
 ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
 
-/* ── Navigation ── */
-body > nav, header > nav, .site-nav {
-  position: fixed; top: 0; left: 0; right: 0;
-  height: var(--nav-h);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 48px;
-  z-index: 1000;
-  background: transparent;
-  transition: background var(--transition), border-bottom var(--transition);
-  border-bottom: 1px solid transparent;
+/* ── Base Navigation Reset ── */
+body > nav, header > nav, nav, .dz-nav {
+  position: sticky !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+  height: auto !important;
+  min-height: unset !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  background: #ffffff !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
 }
-body > nav.scrolled, header > nav.scrolled {
-  background: #000000;
-  border-bottom: 2px solid var(--gold);
-}
-.nav-logo-link { color: var(--text) !important; filter: none !important; }
-.nav-logo {
-  display: block;
-  width: 240px;
-  height: 60px;
-  background: url("../images/logo-wide.png") no-repeat center center;
-  background-size: contain;
-  text-indent: -9999px;
-}
-.nav-logo span, .nav-logo em { color: var(--text) !important; font-style: normal; }
-
-.nav-links { display: flex; gap: 40px; align-items: center; }
-.nav-links a {
-  font-size: 0.75rem;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--text);
-  font-family: var(--font-body);
-  transition: color var(--transition);
-}
-.nav-links a:hover { color: var(--gold); }
-
-/* Ensure logo and icons are light on home since hero is dark */
-body.page-home nav:not(.scrolled) .nav-logo-link,
-body.page-home nav:not(.scrolled) .nav-links > li > a, 
-body.page-home nav:not(.scrolled) .nav-icons button,
-body.page-home nav:not(.scrolled) .nav-icons a {
-  color: #fff !important;
-}
-/* Dropdown links must stay dark — white-on-white fix */
-body.page-home nav:not(.scrolled) .nav-dropdown .dropdown-menu a {
-  color: var(--text-mid) !important;
-}
-body.page-home nav:not(.scrolled) .nav-logo-link em { color: #fff !important; }
 
 .nav-icons { display: flex; gap: 24px; align-items: center; }
 .nav-icons button, .nav-icons a {
@@ -1733,18 +1703,19 @@ nav, .dz-nav {
   box-shadow: 0 2px 8px rgba(112, 0, 255, 0.5) !important;
 }
 
-/* BOTTOM CATEGORY ROW (Clean White Luxury Bar with Stylish Typography) */
+/* BOTTOM CATEGORY ROW (Sleek Luxury Dark Bar with Crystal Typography, matching Image 3) */
 .dz-nav .nav-links {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 14px !important;
+  gap: 16px !important;
   list-style: none !important;
   margin: 0 !important;
-  padding: 8px 16px !important;
-  border-top: 1px solid rgba(112, 0, 255, 0.08) !important;
-  border-bottom: 2px solid rgba(112, 0, 255, 0.15) !important;
-  background: #ffffff !important;
+  padding: 10px 20px !important;
+  border-top: 1px solid rgba(112, 0, 255, 0.3) !important;
+  border-bottom: 2px solid #7000ff !important;
+  background: #080512 !important;
+  box-shadow: 0 4px 18px rgba(112, 0, 255, 0.35) !important;
   width: 100% !important;
   box-sizing: border-box !important;
   flex-wrap: nowrap !important;
@@ -1763,14 +1734,14 @@ nav, .dz-nav {
 }
 
 .dz-nav .nav-links li a {
-  color: #1f2937 !important;
+  color: #f3f4f6 !important;
   font-family: 'Inter', sans-serif !important;
-  font-size: 0.85rem !important;
+  font-size: 0.82rem !important;
   font-weight: 700 !important;
-  letter-spacing: 1.2px !important;
+  letter-spacing: 1.5px !important;
   text-transform: uppercase !important;
   text-decoration: none !important;
-  padding: 8px 12px !important;
+  padding: 6px 10px !important;
   transition: all 0.25s ease !important;
   white-space: nowrap !important;
   position: relative !important;
@@ -1779,17 +1750,18 @@ nav, .dz-nav {
 }
 
 .dz-nav .nav-links li a:hover {
-  color: #7000ff !important;
-  background: rgba(112, 0, 255, 0.04) !important;
+  color: #c084fc !important;
+  text-shadow: 0 0 12px rgba(192, 132, 252, 0.8) !important;
+  background: rgba(112, 0, 255, 0.15) !important;
 }
 
 .dz-nav .nav-links li a::after {
   content: '' !important;
   position: absolute !important;
-  bottom: 2px !important;
-  left: 12px !important;
-  right: 12px !important;
-  height: 2.5px !important;
+  bottom: 0px !important;
+  left: 10px !important;
+  right: 10px !important;
+  height: 2px !important;
   background: linear-gradient(90deg, #7000ff, #c084fc) !important;
   border-radius: 999px !important;
   transform: scaleX(0) !important;
@@ -1800,45 +1772,82 @@ nav, .dz-nav {
 }
 
 .dz-nav .nav-links .separator {
-  color: rgba(112, 0, 255, 0.25) !important;
-  font-size: 1rem !important;
-  margin: 0 -2px !important;
+  color: #7000ff !important;
+  font-size: 1.15rem !important;
+  margin: 0 -4px !important;
+  opacity: 0.85 !important;
 }
 
-/* Mobile Menu Button inside Navbar */
+/* Tablet & Phone Menu Button inside Navbar */
 .mobile-menu-btn {
   display: none !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: rgba(112, 0, 255, 0.08) !important;
+  border: 1px solid rgba(112, 0, 255, 0.25) !important;
+  color: #111827 !important;
+  font-weight: 700 !important;
+  font-size: 0.82rem !important;
+  padding: 8px 14px !important;
+  border-radius: 999px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+}
+.mobile-menu-btn i {
+  color: #7000ff !important;
+  font-size: 1.1rem !important;
+}
+.mobile-menu-btn:hover {
+  background: rgba(112, 0, 255, 0.16) !important;
+  border-color: #7000ff !important;
+  color: #7000ff !important;
+  transform: translateY(-1px) !important;
+}
+.mobile-menu-btn .mobile-menu-text {
+  display: inline-block !important;
+  font-family: 'Orbitron', sans-serif !important;
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 1px !important;
+  color: #111827 !important;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1024px) {
   .mobile-menu-btn {
     display: inline-flex !important;
   }
   .dz-nav .nav-container {
-    padding: 12px 18px !important;
+    padding: 12px 20px !important;
     min-height: 72px !important;
   }
   .dz-nav .brand-logo {
     width: 220px !important;
-    height: 54px !important;
+    height: 52px !important;
   }
   .dz-nav .nav-links {
     justify-content: flex-start !important;
-    padding: 8px 12px !important;
+    padding: 8px 14px !important;
   }
 }
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .dz-nav .nav-container {
-    padding: 10px 14px !important;
-    min-height: 64px !important;
+    padding: 8px 12px !important;
+    min-height: 62px !important;
   }
   .dz-nav .brand-logo {
-    width: 185px !important;
-    height: 46px !important;
+    width: 175px !important;
+    height: 44px !important;
+  }
+  .mobile-menu-btn {
+    padding: 8px 10px !important;
+  }
+  .mobile-menu-btn .mobile-menu-text {
+    display: none !important;
   }
   .dz-nav .icon-btn {
     padding: 8px !important;
-    font-size: 1.05rem !important;
+    font-size: 1rem !important;
   }
 }
 
@@ -2649,6 +2658,8 @@ footer, .dz-footer {
   max-width: 240px !important;
   height: auto !important;
   background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
   border: none !important;
   box-shadow: none !important;
   text-indent: 0 !important;
@@ -2663,6 +2674,10 @@ footer, .dz-footer {
   max-width: 240px !important;
   height: auto !important;
   display: block !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   filter: drop-shadow(0 2px 14px rgba(168, 85, 247, 0.45)) !important;
   transition: transform 0.25s ease, filter 0.25s ease !important;
 }
