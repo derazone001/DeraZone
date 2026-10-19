@@ -1,5 +1,5 @@
 /* ============================================================
-   VELORRA — Spendings Routes
+   DERA ZONE — Spendings Routes
    Track investments and expenses
    ============================================================ */
 const express = require('express');

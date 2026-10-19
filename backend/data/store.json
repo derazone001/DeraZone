@@ -381,12 +381,12 @@
   "subscribers": [],
   "settings": {
     "company": {
-      "name": "Zarin-e-Husn",
-      "address": "",
-      "phone": "+92 331 4978295",
-      "email": "",
-      "website": "",
-      "socials": ""
+      "name": "DERA ZONE",
+      "address": "Pakistan",
+      "phone": "+92 329 4551652",
+      "email": "derazone@gmail.com",
+      "website": "derazone.com",
+      "socials": "derazone.pk"
     },
     "invoiceTrigger": "manual"
   },

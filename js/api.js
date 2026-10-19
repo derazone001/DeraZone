@@ -26,10 +26,16 @@ function apiHeaders(includeAuth = true) {
 
 /* ── Generic GET ── */
 async function apiGet(endpoint) {
-  const res = await fetch(`${derazone_API}${endpoint}`, {
-    headers: apiHeaders(),
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${derazone_API}${endpoint}`, {
+      headers: apiHeaders(),
+    });
+    if (!res.ok) return null;
+    const text = await res.text();
+    return JSON.parse(text);
+  } catch (err) {
+    return null;
+  }
 }
 
 /* ── Generic POST ──

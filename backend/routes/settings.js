@@ -1,5 +1,5 @@
 /* ============================================================
-   VELORRA — Settings Routes (Company & Invoice Config)
+   DERA ZONE — Settings Routes (Company & Invoice Config)
    ============================================================ */
 const express = require('express');
 const { getDB } = require('../utils/firebase');

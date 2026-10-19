@@ -1,5 +1,5 @@
 /* ============================================================
-   VELORRA — JWT Authentication Middleware
+   DERA ZONE — JWT Authentication Middleware
    ============================================================ */
 const jwt = require('jsonwebtoken');
 const store = require('../utils/store');

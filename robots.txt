@@ -14,4 +14,4 @@ Disallow: /checkout
 Disallow: /account
 
 # Sitemap location
-Sitemap: https://zarinehusn.com/sitemap.xml
+Sitemap: https://derazone.com/sitemap.xml

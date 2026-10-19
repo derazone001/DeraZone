@@ -1,13 +1,19 @@
 /* ============================================================
-   VELORRA — Shared API Helper
+   derazone — Shared API Helper
    Used by all frontend pages to talk to the backend.
    ============================================================ */
 
-const VELORRA_API = 'https://velorra-vvp3.onrender.com/api';
+const derazone_API = (function() {
+  const origin = window.location.origin || '';
+  if (origin.includes('localhost') || origin.includes('127.0.0.1') || origin === 'null' || origin.startsWith('file')) {
+    return 'http://localhost:3001/api';
+  }
+  return origin + '/api';
+})();
 
 /* ── Get stored JWT token ── */
 function getToken() {
-  return localStorage.getItem('velorra_token');
+  return localStorage.getItem('derazone_token');
 }
 
 /* ── Auth headers ── */
@@ -20,25 +26,49 @@ function apiHeaders(includeAuth = true) {
 
 /* ── Generic GET ── */
 async function apiGet(endpoint) {
-  const res = await fetch(`${VELORRA_API}${endpoint}`, {
-    headers: apiHeaders(),
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${derazone_API}${endpoint}`, {
+      headers: apiHeaders(),
+    });
+    if (!res.ok) return null;
+    const text = await res.text();
+    return JSON.parse(text);
+  } catch (err) {
+    return null;
+  }
 }
 
-/* ── Generic POST ── */
+/* ── Generic POST ──
+   NOTE: our backend is on Render's free tier, which can take 30-60s
+   to wake up after being idle. We give it generous time before giving
+   up, so a slow cold-start doesn't look like "nothing happened". */
 async function apiPost(endpoint, data, requireAuth = false) {
-  const res = await fetch(`${VELORRA_API}${endpoint}`, {
-    method: 'POST',
-    headers: apiHeaders(requireAuth),
-    body: JSON.stringify(data),
-  });
-  return { ok: res.ok, status: res.status, data: await res.json() };
+  let res;
+  try {
+    res = await fetch(`${derazone_API}${endpoint}`, {
+      method: 'POST',
+      headers: apiHeaders(requireAuth),
+      body: JSON.stringify(data),
+      signal: AbortSignal.timeout(75000),
+    });
+  } catch (err) {
+    if (err.name === 'TimeoutError' || err.name === 'AbortError') {
+      return { ok: false, status: 0, data: { error: 'Server took too long to respond. Please try again in a moment.' } };
+    }
+    throw err;
+  }
+  let body;
+  try {
+    body = await res.json();
+  } catch {
+    body = { error: 'Server returned an unexpected response. Please try again.' };
+  }
+  return { ok: res.ok, status: res.status, data: body };
 }
 
 /* ── Generic PATCH ── */
 async function apiPatch(endpoint, data) {
-  const res = await fetch(`${VELORRA_API}${endpoint}`, {
+  const res = await fetch(`${derazone_API}${endpoint}`, {
     method: 'PATCH',
     headers: apiHeaders(),
     body: JSON.stringify(data),
@@ -58,26 +88,31 @@ async function apiLogin({ email, password }) {
 
 /* ── Save auth session ── */
 function saveSession(token, user) {
-  localStorage.setItem('velorra_token', token);
-  localStorage.setItem('velorra_user', JSON.stringify(user));
+  localStorage.setItem('derazone_token', token);
+  localStorage.setItem('derazone_user', JSON.stringify(user));
 }
 
 /* ── Clear auth session ── */
 function clearSession() {
-  localStorage.removeItem('velorra_token');
-  localStorage.removeItem('velorra_user');
+  localStorage.removeItem('derazone_token');
+  localStorage.removeItem('derazone_user');
 }
 
 /* ── Get current user from localStorage ── */
 function getCurrentUser() {
   try {
-    return JSON.parse(localStorage.getItem('velorra_user') || 'null');
+    return JSON.parse(localStorage.getItem('derazone_user') || 'null');
   } catch { return null; }
 }
 
 /* ── Place order ── */
-async function apiPlaceOrder({ items, delivery, paymentMethod, deliveryMethod }) {
-  return apiPost('/orders', { items, delivery, paymentMethod, deliveryMethod });
+async function apiPlaceOrder({ items, delivery, paymentMethod, deliveryMethod, couponCode }) {
+  return apiPost('/orders', { items, delivery, paymentMethod, deliveryMethod, couponCode });
+}
+
+/* ── Validate a coupon code against a subtotal — public, no auth needed ── */
+async function apiValidateCoupon(code, subtotal) {
+  return apiPost('/coupons/validate', { code, subtotal });
 }
 
 /* ── Get orders by user email ── */
@@ -98,9 +133,63 @@ async function apiSendContact({ name, email, phone, subject, message }) {
 /* ── Check if backend is reachable ── */
 async function checkBackend() {
   try {
-    const res = await fetch(`${VELORRA_API}/health`, { signal: AbortSignal.timeout(3000) });
+    const res = await fetch(`${derazone_API}/health`, { signal: AbortSignal.timeout(3000) });
     return res.ok;
   } catch {
     return false;
   }
 }
+
+/* ── Submit a review ── */
+async function apiSubmitReview({ orderId, rating, text, city, customerName, customerEmail }) {
+  return apiPost('/reviews', { orderId, rating, text, city, customerName, customerEmail });
+}
+
+/* ── Get all approved reviews ── */
+async function apiGetReviews() {
+  return apiGet('/reviews');
+}
+
+/* ── Get categories ── */
+async function apiGetCategories() {
+  return apiGet('/products/categories');
+}
+
+/* ══════════════════════════════════════════════
+   LIVE VISITOR TRACKING
+   Har page load par automatically start hota hai.
+   ══════════════════════════════════════════════ */
+(function initVisitorTracking() {
+  /* Generate a unique session ID for this browser tab */
+  let sessionId = sessionStorage.getItem('derazone_sid');
+  if (!sessionId) {
+    sessionId = 'v-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
+    sessionStorage.setItem('derazone_sid', sessionId);
+  }
+
+  const page = window.location.pathname.replace(/.*\//, '/') || '/';
+
+  function ping() {
+    fetch(`${derazone_API}/visitors/ping`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId, page }),
+    }).catch(() => {}); /* silent fail — don't break site */
+  }
+
+  /* Ping immediately on page load */
+  ping();
+
+  /* Ping every 25 seconds to keep session alive */
+  const interval = setInterval(ping, 25000);
+
+  /* Tell server when tab closes */
+  window.addEventListener('beforeunload', () => {
+    clearInterval(interval);
+    navigator.sendBeacon(
+      `${derazone_API}/visitors/leave`,
+      JSON.stringify({ sessionId })
+    );
+  });
+})();
+

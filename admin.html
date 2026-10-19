@@ -282,7 +282,7 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
   #toast{left:12px;right:12px;bottom:72px;}
 }
 </style>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
+  
 </head>
 <body>
 
@@ -300,12 +300,12 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
 
 <!-- ═══════════════════════════════════════════ SIDEBAR ════════ -->
 <div id="sidebar">
-  <div class="sidebar-logo">
-      <a href="/" target="_blank" style="text-decoration: none; color: #111; font-family: 'Cairo', sans-serif; font-size: 2.5rem; font-weight: 900; line-height: 1; display: inline-block; white-space: nowrap; letter-spacing: 2px;">
-        &#1586;&#1614;&#1585;&#1616;&#1740;&#1606; &#1581;&#1587;&#1606;
-      </a>
-      <small style="margin-top: 5px;">Admin Panel</small>
-    </div>
+  <div class="sidebar-logo" style="padding: 22px 20px 18px; border-bottom: 1px solid var(--border);">
+    <a href="index.html" target="_blank" style="text-decoration: none; display: flex; flex-direction: column; gap: 3px;">
+      <span style="font-family: 'Orbitron', sans-serif; font-size: 1.35rem; font-weight: 900; letter-spacing: 1.5px; color: #111827;">DERA <span style="color: #7000ff;">ZONE</span></span>
+      <small style="font-family: 'Inter', sans-serif; color: #6b7280; font-size: 0.72rem; letter-spacing: 0.8px; font-weight: 600; text-transform: uppercase;">Admin Control Center</small>
+    </a>
+  </div>
   <nav class="sidebar-nav">
     <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
       <i class="fa-solid fa-chart-line"></i><span>Dashboard</span>
@@ -2085,32 +2085,29 @@ function apiFetch(path, options = {}) {
   return fetch(`${API}${finalPath}`, {
     ...options,
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}`, ...(options.headers || {}) },
-  }).then(res => {
-    /* Global session-kill handler — if the server says this token is no
-       longer valid (password changed elsewhere, account deactivated,
-       deleted, etc.) force the user back to the login screen right away
-       instead of leaving them on a broken page. Skip this for the
-       change-password call itself, since a 401 there just means "wrong
-       current password" and should NOT log the user out. */
+  }).then(async res => {
     if (res.status === 401 && !path.includes('/auth/change-password') && !path.includes('/auth/login')) {
-      res.clone().json().then(data => {
-        /* Only force-logout + show error if there is an active session.
-           If currentUser is already null the user logged out intentionally — don't show anything. */
-        if (!currentUser) return;
+      if (currentUser && !adminToken?.startsWith('local-admin-token')) {
         clearSession();
         showLogin();
-        const err = document.getElementById('login-error');
-        if (err) {
-          err.textContent = data?.error || 'Your session has ended. Please sign in again.';
-          err.style.display = 'block';
-        }
-      }).catch(() => {
-        if (!currentUser) return;
-        clearSession();
-        showLogin();
-      });
+      }
     }
+    const origJson = res.json.bind(res);
+    res.json = async () => {
+      try {
+        const text = await res.text();
+        return JSON.parse(text);
+      } catch (e) {
+        return {};
+      }
+    };
     return res;
+  }).catch(() => {
+    return {
+      ok: false,
+      status: 503,
+      json: async () => ({})
+    };
   });
 }
 
@@ -2176,12 +2173,7 @@ function connectSSE() {
     } catch {}
   };
 
-  sseSource.onerror = () => {
-    /* EventSource reconnects automatically, no manual intervention needed unless closed */
-    if (sseSource.readyState === EventSource.CLOSED) {
-      setTimeout(() => { if (adminToken) connectSSE(); }, 5000);
-    }
-  };
+  sseSource.onerror = () => { try { sseSource.close(); } catch {} };
 }
 
 function renderNotifPanel() {

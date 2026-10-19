@@ -38,10 +38,12 @@ const DERAZONE_CAT_DESCRIPTIONS = {
   'winter-collection': 'Thermal sherpa-lined jackets, wind-resistant polar fleece hoodies, and lightweight puffer vests.'
 };
 
-function velorCatLabel(cat) {
+function dzCatLabel(cat) {
   if (!cat) return '';
   return DERAZONE_CAT_LABELS[cat.toLowerCase()] || cat;
 }
+window.dzCatLabel = dzCatLabel;
+window.velorCatLabel = dzCatLabel;
 
 /* ── Live Product Catalog (Populated dynamically from backend / admin panel) ── */
 const DERAZONE_CATALOG_PRODUCTS = [];

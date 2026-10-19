@@ -9,7 +9,14 @@ DirectoryIndex index.html index.php
   RewriteEngine On
   RewriteBase /
 
-  # Redirect /admin and /admin/ cleanly to admin.html
+  # Proxy /api/ requests to Node.js backend if mod_proxy is active
+  <IfModule mod_proxy.c>
+    RewriteCond %{REQUEST_URI} ^/api/ [OR]
+    RewriteCond %{REQUEST_URI} ^/images/products/
+    RewriteRule ^api/(.*)$ http://127.0.0.1:3001/api/$1 [P,L]
+  </IfModule>
+
+  # Route /admin and /admin/ cleanly to admin.html
   RewriteRule ^admin/?$ admin.html [L,QSA]
 
   # Clean URLs: Map /page to /page.html if the .html file exists

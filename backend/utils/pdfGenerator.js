@@ -71,8 +71,8 @@ async function buildPdf(pdfPath, invId, snapshot, liveOrder, company) {
     doc.fontSize(8).fillColor(C_MUTED).font('Helvetica');
     const fWeb = company.website || 'derazone.com';
     const fEmail = company.email || 'derazone@gmail.com';
-    const fPhone = company.phone || '+92 301 4617844';
-    const fInsta = company.instagram || 'derazone01';
+    const fPhone = company.phone || '+92 329 4551652';
+    const fInsta = company.instagram || 'derazone.pk';
     const fAddr = company.address || 'Lahore, Punjab, Pakistan';
 
     const logoYOffset = startY + 60; // Shift down to make room for logo

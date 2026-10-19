@@ -1778,8 +1778,12 @@ nav, .dz-nav {
   opacity: 0.85 !important;
 }
 
-/* Phone Menu Button inside Navbar — ONLY on phone, NEVER on desktop */
-.mobile-menu-btn {
+/* Menu Button inside Navbar — ONLY on phones & tablets (<= 1024px), NEVER on desktop */
+#mobile-menu-toggle,
+.mobile-menu-btn,
+.dz-nav .mobile-menu-btn,
+.dz-nav #mobile-menu-toggle,
+button#mobile-menu-toggle {
   display: none !important;
   align-items: center !important;
   gap: 6px !important;
@@ -1794,17 +1798,20 @@ nav, .dz-nav {
   transition: all 0.2s ease !important;
   text-decoration: none !important;
 }
-.mobile-menu-btn i {
+.mobile-menu-btn i,
+#mobile-menu-toggle i {
   color: #7000ff !important;
   font-size: 1rem !important;
 }
-.mobile-menu-btn:hover {
+.mobile-menu-btn:hover,
+#mobile-menu-toggle:hover {
   background: rgba(112, 0, 255, 0.16) !important;
   border-color: #7000ff !important;
   color: #7000ff !important;
   transform: translateY(-1px) !important;
 }
-.mobile-menu-btn .mobile-menu-text {
+.mobile-menu-btn .mobile-menu-text,
+#mobile-menu-toggle .mobile-menu-text {
   display: inline-block !important;
   font-family: 'Orbitron', sans-serif !important;
   font-size: 0.7rem !important;
@@ -1813,16 +1820,24 @@ nav, .dz-nav {
   color: #111827 !important;
 }
 
-/* Desktop: absolutely hide menu button */
-@media (min-width: 769px) {
-  .mobile-menu-btn {
+/* Desktop (> 1024px): absolutely hidden */
+@media (min-width: 1025px) {
+  #mobile-menu-toggle,
+  .mobile-menu-btn,
+  .dz-nav .mobile-menu-btn,
+  .dz-nav #mobile-menu-toggle,
+  button#mobile-menu-toggle {
     display: none !important;
   }
 }
 
-/* Phone Only: show menu button on screens <= 768px */
-@media (max-width: 768px) {
-  .mobile-menu-btn {
+/* Phones & Tablets (<= 1024px): visible */
+@media (max-width: 1024px) {
+  #mobile-menu-toggle,
+  .mobile-menu-btn,
+  .dz-nav .mobile-menu-btn,
+  .dz-nav #mobile-menu-toggle,
+  button#mobile-menu-toggle {
     display: inline-flex !important;
     padding: 7px 11px !important;
   }

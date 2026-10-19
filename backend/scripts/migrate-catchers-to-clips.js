@@ -1,5 +1,5 @@
 /* ============================================================
-   VELORRA — One-time migration script
+   DERA ZONE — One-time migration script
    Renames category "catchers" -> "clips" (and subcategory too)
    for every product in Firestore.
 
