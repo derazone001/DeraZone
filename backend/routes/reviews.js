@@ -32,17 +32,21 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Review is too short.' });
     }
 
-    /* Verify order exists and is Delivered */
+    /* Verify order exists and is Delivered (or direct admin review) */
     let orderDelivered = false;
-    try {
-      if (isFirebaseAvailable()) {
-        const doc = await getDB().collection('orders').doc(orderId).get();
-        if (doc.exists && doc.data().status === 'Delivered') orderDelivered = true;
-      } else {
-        const order = store.orders.find(o => o.id === orderId);
-        if (order && order.status === 'Delivered') orderDelivered = true;
-      }
-    } catch { /* if order check fails, still allow review */ orderDelivered = true; }
+    if (orderId.startsWith('ADMIN-') || req.headers['authorization']) {
+      orderDelivered = true;
+    } else {
+      try {
+        if (isFirebaseAvailable()) {
+          const doc = await getDB().collection('orders').doc(orderId).get();
+          if (doc.exists && doc.data().status === 'Delivered') orderDelivered = true;
+        } else {
+          const order = store.orders.find(o => o.id === orderId);
+          if (order && order.status === 'Delivered') orderDelivered = true;
+        }
+      } catch { orderDelivered = true; }
+    }
 
     if (!orderDelivered) {
       return res.status(400).json({ error: 'Reviews can only be submitted for delivered orders.' });
@@ -71,7 +75,7 @@ router.post('/', async (req, res) => {
       city:          (city || '').trim(),
       customerName:  (customerName || 'Customer').trim(),
       customerEmail: (customerEmail || '').trim().toLowerCase(),
-      approved:      false,   /* Requires admin approval before showing on homepage */
+      approved:      req.body.approved === true || !!req.headers['authorization'],
       createdAt:     new Date().toISOString(),
     };
 

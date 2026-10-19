@@ -321,13 +321,6 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
     <div class="nav-item" onclick="showPage('products')" id="nav-products">
       <i class="fa-solid fa-tags"></i><span>Products</span>
     </div>
-    <div class="nav-item" onclick="showPage('stock')" id="nav-stock">
-      <i class="fa-solid fa-boxes-stacked"></i><span>Stock</span>
-    </div>
-    <div class="nav-item" onclick="showPage('stock-needed')" id="nav-stock-needed">
-      <i class="fa-solid fa-boxes-packing"></i><span>Stock Needed</span>
-      <span class="nav-badge" id="stock-needed-badge" style="display:none;background:#ff9800">0</span>
-    </div>
     <div class="nav-item" onclick="showPage('messages')" id="nav-messages">
       <i class="fa-solid fa-envelope"></i><span>Messages</span>
       <span class="nav-badge" id="unread-badge" style="display:none">0</span>
@@ -361,9 +354,6 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
     </div>
     <div class="nav-item" onclick="showPage('settings')" id="nav-settings">
         <i class="fa-solid fa-gear"></i><span>Settings</span>
-      </div>
-      <div class="nav-item" onclick="showPage('hero-videos')" id="nav-hero-videos">
-        <i class="fa-solid fa-video"></i><span>Hero Videos</span>
       </div>
       <div class="nav-item" onclick="showPage('review-images')" id="nav-review-images">
         <i class="fa-solid fa-image"></i><span>Review Images</span>
@@ -839,77 +829,6 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
   </div>
 </div>
 
-<!--  ADD STOCK MODAL  -->
-<div class="modal-overlay" id="add-stock-modal">
-  <div class="modal" style="max-width:400px">
-    <div class="modal-header">
-      <h3 id="add-stock-title">Add Stock</h3>
-      <button class="btn btn-outline btn-sm" onclick="closeModal('add-stock-modal')">×</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="add-stock-id" />
-      <input type="hidden" id="add-stock-type" value="add" />
-      <div class="form-group">
-        <label id="add-stock-label">Quantity Received/Purchased</label>
-        <input type="number" id="add-stock-qty" placeholder="Enter quantity..." />
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('add-stock-modal')">Cancel</button>
-      <button class="btn btn-gold" id="add-stock-btn" onclick="submitAddStock()">Save Stock</button>
-    </div>
-  </div>
-</div>
-
-<!--  STOCK  -->
-<div id="page-stock" class="page" style="display:none">
-  <div class="page-header">
-    <div>
-      <h1><i class="fa-solid fa-boxes-stacked" style="color:#ff9800;margin-right:8px"></i>Inventory Stock</h1>
-      <p style="color:var(--muted);font-size:0.8rem;margin-top:2px;">Track and add stock for all products.</p>
-    </div>
-    <div class="ml-auto" style="display:flex;gap:8px;">
-      <div style="position:relative;">
-        <i class="fa-solid fa-search" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)"></i>
-        <input type="text" id="stock-search" placeholder="Search products..." oninput="filterStock()" style="width:260px;padding:8px 12px 8px 36px;border:1px solid #ddd;border-radius:20px;outline:none;font-size:0.9rem;transition:all 0.3s;box-shadow:inset 0 1px 3px rgba(0,0,0,0.05);" onfocus="this.style.borderColor='var(--gold)';this.style.boxShadow='0 0 0 2px rgba(212,175,55,0.2)'" onblur="this.style.borderColor='#ddd';this.style.boxShadow='inset 0 1px 3px rgba(0,0,0,0.05)'" />
-      </div>
-    </div>
-  </div>
-  <div class="card">
-    <table class="table">
-      <thead><tr>
-        <th>Product</th>
-        <th>Purchased</th>
-        <th>Sold</th>
-        <th>Current Stock</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr></thead>
-      <tbody id="stock-body"><tr><td colspan="6" class="empty-state"><div class="spinner"></div></td></tr></tbody>
-    </table>
-  </div>
-</div>
-
-<!--  STOCK NEEDED  -->
-<div id="page-stock-needed" class="page" style="display:none">
-  <div class="page-header">
-    <div>
-      <h1><i class="fa-solid fa-boxes-packing" style="color:#f44336;margin-right:8px"></i>Stock Needed</h1>
-      <p style="color:var(--muted);font-size:0.8rem;margin-top:2px;">Items with pending orders but no stock available.</p>
-    </div>
-  </div>
-  <div class="card">
-    <table class="table">
-      <thead><tr>
-        <th>Product</th>
-        <th>Needed Qty</th>
-        <th>Action</th>
-      </tr></thead>
-      <tbody id="stock-needed-body"><tr><td colspan="3" class="empty-state"><div class="spinner"></div></td></tr></tbody>
-    </table>
-  </div>
-</div>
-
 <!--  PRODUCTS  -->
 <div id="page-products" class="page" style="display:none">
   <div class="page-header">
@@ -981,6 +900,7 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
   <div class="page-header">
     <h1>Reviews</h1>
     <div class="ml-auto">
+      <button class="btn btn-gold" onclick="openAddReviewModal()"><i class="fa-solid fa-plus"></i> Add Review</button>
       <button class="btn btn-outline" onclick="loadReviews()"><i class="fa-solid fa-rotate"></i> Refresh</button>
     </div>
   </div>
@@ -1193,28 +1113,6 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
   </div>
 </div>
 
-<!-- ── HERO VIDEOS ── -->
-<div id="page-hero-videos" class="page" style="display:none">
-  <div class="page-header">
-    <h1><i class="fa-solid fa-video" style="color:var(--gold);margin-right:8px"></i>Hero Videos</h1>
-    <div class="ml-auto">
-      <button class="btn btn-gold" onclick="openHeroVideoModal()"><i class="fa-solid fa-plus"></i> Add Video</button>
-    </div>
-  </div>
-
-  <div class="table-wrap">
-    <table>
-      <thead><tr>
-        <th>Preview</th>
-        <th>Video URL</th>
-        <th>Order</th>
-        <th>Action</th>
-      </tr></thead>
-      <tbody id="hero-videos-body"><tr><td colspan="4" class="empty-state"><div class="spinner"></div></td></tr></tbody>
-    </table>
-  </div>
-</div>
-
 <!-- ── REVIEW SCREENSHOTS ── -->
 <div id="page-review-images" class="page" style="display:none">
   <div class="page-header">
@@ -1240,35 +1138,6 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
 <!-- ── SETTINGS ── -->
 <div id="page-settings" class="page" style="display:none">
   <div class="page-header"><h1>Settings</h1></div>
-
-  <div class="settings-section" id="company-settings-section">
-    <h3><i class="fa-solid fa-building" style="color:var(--gold);margin-right:8px"></i>Company & Invoice Settings</h3>
-    <div id="company-msg" style="display:none;padding:10px;border-radius:7px;font-size:0.85rem;margin-bottom:14px;"></div>
-    
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div class="form-group"><label>Company Name</label><input type="text" id="cs-name" placeholder="e.g. DERA ZONE"/></div>
-      <div class="form-group">
-          <label>Company Logo</label>
-          <div style="display:flex; gap:10px;">
-            <input type="text" id="cs-logo" placeholder="https://..." style="flex:1;" />
-            <input type="file" id="cs-logo-file" accept="image/*" style="display:none;" onchange="uploadCompanyLogo()" />
-            <button class="btn btn-outline" onclick="document.getElementById('cs-logo-file').click()" type="button"><i class="fa-solid fa-upload"></i> Upload</button>
-          </div>
-        </div>
-      <div class="form-group"><label>Contact Phone</label><input type="text" id="cs-phone"/></div>
-      <div class="form-group"><label>Contact Email</label><input type="text" id="cs-email"/></div>
-      <div class="form-group"><label>Website URL</label><input type="text" id="cs-website"/></div>
-      <div class="form-group"><label>Invoice Auto-Generation Trigger</label>
-        <select id="cs-invoiceTrigger">
-          <option value="manual">Manual Only</option>
-          <option value="on_order_creation">On Order Creation</option>
-          <option value="on_order_confirmation">On Order Confirmation</option>
-        </select>
-      </div>
-      <div class="form-group" style="grid-column:1/-1"><label>Address</label><input type="text" id="cs-address"/></div>
-    </div>
-    <button class="btn btn-gold" onclick="saveCompanySettings()" style="margin-top:12px">Save Company Settings</button>
-  </div>
 
   <div class="settings-section" id="my-profile-section">
     <h3><i class="fa-solid fa-user-pen" style="color:var(--gold);margin-right:8px"></i>My Profile</h3>
@@ -1762,34 +1631,40 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
 </div>
 
 <!-- Toast Container -->
-<!-- ── HERO VIDEO MODAL ── -->
-<div class="modal-overlay" id="hero-video-modal">
+<!-- ── ADD REVIEW MODAL ── -->
+<div class="modal-overlay" id="add-review-modal">
   <div class="modal" style="max-width:480px">
     <div class="modal-header">
-      <h3 id="hero-video-modal-title"><i class="fa-solid fa-video" style="color:var(--gold);margin-right:8px"></i>Add Hero Video</h3>
-      <button class="btn btn-outline btn-sm" onclick="closeModal('hero-video-modal')">✕</button>
+      <h3><i class="fa-solid fa-star" style="color:var(--gold);margin-right:8px"></i>Add Customer Review</h3>
+      <button class="btn btn-outline btn-sm" onclick="closeModal('add-review-modal')">✕</button>
     </div>
     <div class="modal-body">
       <div class="form-group">
-        <label>Video Upload</label>
-        <div style="display:flex;gap:10px;align-items:center;">
-          <input type="file" id="hero-video-file" accept="video/*" style="flex:1;" />
-          <button class="btn btn-outline" onclick="uploadHeroVideoFile()" id="btn-hero-video-upload"><i class="fa-solid fa-upload"></i> Upload</button>
-        </div>
-        <small style="color:var(--muted)">Or provide a direct URL below</small>
+        <label>Customer Name *</label>
+        <input id="rev-add-name" placeholder="e.g. Hamza Tariq" />
       </div>
       <div class="form-group">
-        <label>Video URL *</label>
-        <input id="hv-url" placeholder="https://..." />
+        <label>Customer City / Location</label>
+        <input id="rev-add-city" placeholder="e.g. Lahore / Karachi / Islamabad" />
       </div>
       <div class="form-group">
-        <label>Display Order (1-4) *</label>
-        <input type="number" id="hv-order" min="1" max="4" placeholder="1" />
+        <label>Rating *</label>
+        <select id="rev-add-rating">
+          <option value="5" selected>★★★★★ (5 Stars)</option>
+          <option value="4">★★★★☆ (4 Stars)</option>
+          <option value="3">★★★☆☆ (3 Stars)</option>
+          <option value="2">★★☆☆☆ (2 Stars)</option>
+          <option value="1">★☆☆☆☆ (1 Star)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Review Text *</label>
+        <textarea id="rev-add-text" rows="4" placeholder="Write the customer feedback here..."></textarea>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('hero-video-modal')">Cancel</button>
-      <button class="btn btn-gold" onclick="saveHeroVideo()"><i class="fa-solid fa-check"></i> Save Video</button>
+      <button class="btn btn-outline" onclick="closeModal('add-review-modal')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveAdminReview()"><i class="fa-solid fa-check"></i> Publish Review</button>
     </div>
   </div>
 </div>
@@ -2246,8 +2121,6 @@ function showPage(name) {
   if (name === 'dashboard') loadDashboard();
   if (name === 'orders')    loadOrders();
   if (name === 'products')  loadProducts();
-  if (name === 'stock')     loadStock();
-  if (name === 'stock-needed') loadStockNeeded();
   if (name === 'messages')  loadMessages();
   if (name === 'subscribers') loadSubscribers();
   if (name === 'reviews')     loadReviews();
@@ -2256,7 +2129,6 @@ function showPage(name) {
     document.getElementById('prof-fname').value = currentUser.fname || '';
     document.getElementById('prof-lname').value = currentUser.lname || '';
     document.getElementById('prof-username').value = currentUser.username || '';
-    loadCompanySettings();
     loadSystemInfo();
   }
   if (name === 'spendings') loadSpendings();
@@ -2265,7 +2137,6 @@ function showPage(name) {
   if (name === 'social-orders') loadSocialOrders();
   if (name === 'coupons')       loadCoupons();
   if (name === 'invoices')      loadInvoices();
-  if (name === 'hero-videos')   loadHeroVideos();
   if (name === 'review-images') loadReviewImages();
 }
 
@@ -2390,11 +2261,6 @@ function renderDashStats(data) {
   unreadBadge.textContent = unread;
   unreadBadge.style.display = unread ? 'inline-block' : 'none';
 
-  const stockNeededCount = data.stockNeeded || 0;
-  const stockNeededBadge = document.getElementById('stock-needed-badge');
-  if (stockNeededBadge) {
-    stockNeededBadge.textContent = stockNeededCount;
-    stockNeededBadge.style.display = stockNeededCount ? 'inline-block' : 'none';
   }
 
   /* Reviews badge */
@@ -4173,191 +4039,6 @@ function exportProductsExcel() {
   toast('Beautiful Excel file downloaded! ✓', 'success');
 }
 
-/*  STOCK LOGIC  */
-let allInventory = [];
-
-async function fetchInventory() {
-  const res = await apiFetch('/admin/inventory');
-  if (res.ok) allInventory = await res.json();
-}
-
-async function loadStock() {
-  document.getElementById('stock-body').innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
-  await fetchInventory();
-  renderStock(allInventory);
-}
-
-function filterStock() {
-  const q = document.getElementById('stock-search').value.toLowerCase();
-  renderStock(allInventory.filter(i => (i.product?.name||'').toLowerCase().includes(q) || (i.product?.category||'').toLowerCase().includes(q)));
-}
-
-function renderStock(inventory) {
-  const tbody = document.getElementById('stock-body');
-  if (!inventory.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No products found in inventory.</td></tr>';
-    return;
-  }
-  
-  // Group by category
-  const grouped = {};
-  inventory.forEach(i => {
-    const cat = i.product?.category || 'Uncategorized';
-    if (!grouped[cat]) grouped[cat] = [];
-    grouped[cat].push(i);
-  });
-  
-  let html = '';
-  let catIndex = 0;
-  for (const cat in grouped) {
-    const catId = `stock-cat-${catIndex++}`;
-    html += `<tr style="background:var(--bg);cursor:pointer;user-select:none;" onclick="toggleCategory('${catId}', this)" title="Click to collapse/expand">
-      <td colspan="6" style="font-weight:700;color:var(--gold);font-size:1.1rem;padding:15px;text-transform:capitalize">
-        <i class="fa-solid fa-layer-group" style="margin-right:8px"></i>${esc(cat)}
-        <i class="fa-solid fa-chevron-up" style="float:right;margin-top:4px;color:var(--muted);transition:transform 0.3s;"></i>
-      </td>
-    </tr>`;
-    html += grouped[cat].map(i => {
-      const p = i.product;
-      const isOut = i.current_stock <= 0;
-      return `
-        <tr class="${catId}">
-          <td>
-            <div style="display:flex;align-items:center;gap:12px;">
-              <img src="${p.images?.[0] || 'images/placeholder.jpg'}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;" />
-              <div>
-                <div style="font-weight:600;font-size:0.9rem">${esc(p.name)}</div>
-                <div style="font-size:0.8rem;color:var(--muted)">${esc(p.category)}</div>
-              </div>
-            </div>
-          </td>
-          <td>${i.stock_purchased}</td>
-          <td>${i.stock_sold}</td>
-          <td style="font-weight:600;color:${isOut ? 'var(--f44336)' : 'var(--text)'}">${i.current_stock}</td>
-          <td><span class="badge" style="background:${isOut ? 'var(--f44336)' : 'var(--green)'}">${isOut ? 'Out of Stock' : 'In Stock'}</span></td>
-          <td style="display:flex;gap:6px;">
-            <button class="btn btn-outline btn-sm" onclick="openAddStockModal('${p.id}', 'add')"><i class="fa-solid fa-plus"></i> Add</button>
-            <button class="btn btn-outline btn-sm" onclick="openAddStockModal('${p.id}', 'set', ${i.stock_purchased})"><i class="fa-solid fa-pen"></i> Edit</button>
-          </td>
-        </tr>
-      `;
-    }).join('');
-  }
-  tbody.innerHTML = html;
-}
-
-async function loadStockNeeded() {
-  document.getElementById('stock-needed-body').innerHTML = `<tr><td colspan="3" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
-  await fetchInventory();
-  const needed = allInventory.filter(i => i.current_stock < 0);
-  
-  const tbody = document.getElementById('stock-needed-body');
-  if (!needed.length) {
-    tbody.innerHTML = '<tr><td colspan="3" class="empty-state" style="color:var(--green)"><i class="fa-solid fa-check-circle" style="font-size:2rem;margin-bottom:10px;"></i><br>No stock needed! All pending orders are fulfilled.</td></tr>';
-    return;
-  }
-  
-  // Group by category
-  const grouped = {};
-  needed.forEach(i => {
-    const cat = i.product?.category || 'Uncategorized';
-    if (!grouped[cat]) grouped[cat] = [];
-    grouped[cat].push(i);
-  });
-  
-  let html = '';
-  let catIndex = 0;
-  for (const cat in grouped) {
-    const catId = `needed-cat-${catIndex++}`;
-    html += `<tr style="background:var(--bg);cursor:pointer;user-select:none;" onclick="toggleCategory('${catId}', this)" title="Click to collapse/expand">
-      <td colspan="3" style="font-weight:700;color:var(--gold);font-size:1.1rem;padding:15px;text-transform:capitalize">
-        <i class="fa-solid fa-layer-group" style="margin-right:8px"></i>${esc(cat)}
-        <i class="fa-solid fa-chevron-up" style="float:right;margin-top:4px;color:var(--muted);transition:transform 0.3s;"></i>
-      </td>
-    </tr>`;
-    html += grouped[cat].map(i => {
-      const p = i.product;
-      const missing = Math.abs(i.current_stock);
-      return `
-        <tr class="${catId}">
-          <td>
-            <div style="display:flex;align-items:center;gap:12px;">
-              <img src="${p.images?.[0] || 'images/placeholder.jpg'}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;" />
-              <div>
-                <div style="font-weight:600;font-size:0.9rem">${esc(p.name)}</div>
-                <div style="font-size:0.8rem;color:var(--muted)">${esc(p.category)}</div>
-              </div>
-            </div>
-          </td>
-          <td style="font-weight:600;color:var(--f44336)">${missing}</td>
-          <td>
-            <button class="btn btn-gold btn-sm" onclick="openAddStockModal('${p.id}', 'add')"><i class="fa-solid fa-box-open"></i> Purchase / Receive</button>
-          </td>
-        </tr>
-      `;
-    }).join('');
-  }
-  tbody.innerHTML = html;
-}
-
-function toggleCategory(catId, rowEl) {
-  const rows = document.querySelectorAll(`tr.${catId}`);
-  const icon = rowEl.querySelector('.fa-chevron-up');
-  
-  let isHidden = false;
-  if (rows.length > 0) {
-    isHidden = rows[0].style.display === 'none';
-    rows.forEach(r => r.style.display = isHidden ? '' : 'none');
-  }
-  
-  if (icon) {
-    icon.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
-  }
-}
-
-function openAddStockModal(productId, type = 'add', currentPurchased = 0) {
-  document.getElementById('add-stock-id').value = productId;
-  document.getElementById('add-stock-type').value = type;
-  document.getElementById('add-stock-qty').value = type === 'set' ? currentPurchased : '';
-  
-  if (type === 'set') {
-    document.getElementById('add-stock-title').textContent = 'Edit Total Purchased Stock';
-    document.getElementById('add-stock-label').textContent = 'Exact Total Purchased Quantity';
-    document.getElementById('add-stock-btn').innerHTML = '<i class="fa-solid fa-check"></i> Update Stock';
-  } else {
-    document.getElementById('add-stock-title').textContent = 'Add Stock';
-    document.getElementById('add-stock-label').textContent = 'Quantity Received/Purchased';
-    document.getElementById('add-stock-btn').innerHTML = '<i class="fa-solid fa-plus"></i> Save Stock';
-  }
-  openModal('add-stock-modal');
-}
-
-async function submitAddStock() {
-  const id = document.getElementById('add-stock-id').value;
-  const type = document.getElementById('add-stock-type').value;
-  const qty = document.getElementById('add-stock-qty').value;
-  if (!qty || (type === 'add' && qty <= 0) || (type === 'set' && qty < 0)) { toast('Please enter a valid quantity', 'error'); return; }
-  
-  try {
-    const res = await apiFetch(`/products/${id}/stock`, {
-      method: 'POST',
-      body: JSON.stringify({ qty: Number(qty), type })
-    });
-    const data = await res.json();
-    if (res.ok) {
-      toast('Stock updated successfully!', 'success');
-      closeModal('add-stock-modal');
-      loadStats(); // Update badge
-      if (document.getElementById('page-stock').style.display !== 'none') loadStock();
-      if (document.getElementById('page-stock-needed').style.display !== 'none') loadStockNeeded();
-    } else {
-      toast(data.error || 'Failed to update stock', 'error');
-    }
-  } catch (err) {
-    toast('Error updating stock', 'error');
-  }
-}
-
 async function loadProducts() {
   const tbody = document.getElementById('products-body');
   tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
@@ -5788,154 +5469,6 @@ async function approveReview(id, approve) {
   } catch { toast('Connection error.', 'error'); }
 }
 
-async function loadCompanySettings() {
-  try {
-    const res = await apiFetch('/settings');
-    const data = await res.json();
-    if(data.settings && data.settings.company) {
-      const c = data.settings.company;
-      document.getElementById('cs-name').value = c.name || '';
-      document.getElementById('cs-logo').value = c.logoUrl || '';
-      document.getElementById('cs-phone').value = c.phone || '';
-      document.getElementById('cs-email').value = c.email || '';
-      document.getElementById('cs-website').value = c.website || '';
-      document.getElementById('cs-invoiceTrigger').value = c.invoiceTrigger || 'manual';
-      document.getElementById('cs-address').value = c.address || '';
-    }
-  } catch(e) { console.error('Failed to load settings', e); }
-}
-
-async function saveCompanySettings() {
-  const btn = document.querySelector('#company-settings-section button');
-  btn.textContent = 'Saving...';
-  try {
-    const payload = {
-      settings: {
-        company: {
-          name: document.getElementById('cs-name').value,
-          logoUrl: document.getElementById('cs-logo').value,
-          phone: document.getElementById('cs-phone').value,
-          email: document.getElementById('cs-email').value,
-          website: document.getElementById('cs-website').value,
-          invoiceTrigger: document.getElementById('cs-invoiceTrigger').value,
-          address: document.getElementById('cs-address').value
-        }
-      }
-    };
-    const res = await apiFetch('/settings', { method: 'PUT', body: JSON.stringify(payload) });
-    const data = await res.json();
-    const msg = document.getElementById('company-msg');
-    msg.style.display = 'block';
-    if(res.ok) {
-      msg.className = 'alert alert-success';
-      msg.textContent = data.message || 'Company Settings Saved!';
-    } else {
-      msg.className = 'alert alert-danger';
-      msg.textContent = data.error || 'Failed to save settings.';
-    }
-  } catch(e) {
-    const msg = document.getElementById('company-msg');
-    msg.style.display = 'block';
-    msg.className = 'alert alert-danger';
-    msg.textContent = 'Network error while saving settings.';
-  }
-  btn.textContent = 'Save Company Settings';
-}
-/* ── HERO VIDEOS MANAGEMENT ── */
-async function loadHeroVideos() {
-  const tbody = document.getElementById('hero-videos-body');
-  try {
-    const res = await apiFetch('/admin/hero-videos');
-    if (!res.ok) throw new Error('Failed to load');
-    let videosData = await res.json();
-      const videos = Array.isArray(videosData) ? videosData : (videosData.videos || []);
-      if(videos.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" class="empty-state"><i class="fa-solid fa-video-slash"></i><p>No hero videos uploaded yet.</p></td></tr>`;
-      return;
-    }
-    let html = '';
-    videos.sort((a,b) => (a.order || 99) - (b.order || 99)).forEach(v => {
-      html += `<tr>
-        <td><video src="${v.url}" style="height:60px;border-radius:6px" muted></video></td>
-        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-          <a href="${v.url}" target="_blank" style="color:var(--blue)">${v.url}</a>
-        </td>
-        <td>${v.order || '-'}</td>
-        <td>
-          <button class="btn btn-danger btn-sm" onclick="deleteHeroVideo('${v._id || v.id}')"><i class="fa-solid fa-trash"></i></button>
-        </td>
-      </tr>`;
-    });
-    tbody.innerHTML = html;
-  } catch(e) {
-    tbody.innerHTML = `<tr><td colspan="4" style="color:red;text-align:center">Error loading videos</td></tr>`;
-  }
-}
-
-function openHeroVideoModal() {
-  document.getElementById('hv-url').value = '';
-  document.getElementById('hv-order').value = '';
-  document.getElementById('hero-video-file').value = '';
-  document.getElementById('hero-video-modal').classList.add('open');
-}
-
-async function uploadHeroVideoFile() {
-  const fileInput = document.getElementById('hero-video-file');
-  if(!fileInput.files[0]) return toast('Please select a video file first', 'error');
-  const btn = document.getElementById('btn-hero-video-upload');
-  btn.textContent = 'Uploading...';
-  btn.disabled = true;
-  const fd = new FormData();
-  fd.append('file', fileInput.files[0]);
-  try {
-    const res = await fetch(`${API}/upload`, { method: 'POST', headers: { 'Authorization': `Bearer ${adminToken}` }, body: fd });
-    const data = await res.json();
-    if(data.url) {
-      document.getElementById('hv-url').value = data.url;
-      toast('Video uploaded successfully', 'success');
-    } else {
-      toast(data.error || 'Upload failed', 'error');
-    }
-  } catch(e) {
-    toast('Network error during upload', 'error');
-  }
-  btn.textContent = 'Upload';
-  btn.disabled = false;
-}
-
-async function saveHeroVideo() {
-  const url = document.getElementById('hv-url').value.trim();
-  const order = parseInt(document.getElementById('hv-order').value) || 1;
-  if(!url) return toast('Video URL is required', 'error');
-  try {
-    const res = await apiFetch('/admin/hero-videos', { method: 'POST', body: JSON.stringify({ url, order }) });
-    const data = await res.json();
-    if(res.ok) {
-      toast('Video saved successfully', 'success');
-      closeModal('hero-video-modal');
-      loadHeroVideos();
-    } else {
-      toast(data.error || 'Failed to save', 'error');
-    }
-  } catch(e) {
-    toast('Network error', 'error');
-  }
-}
-
-async function deleteHeroVideo(id) {
-  if(!confirm('Are you sure you want to delete this video?')) return;
-  try {
-    const res = await apiFetch(`/admin/hero-videos/${id}`, { method: 'DELETE' });
-    if(res.ok) {
-      toast('Video deleted', 'success');
-      loadHeroVideos();
-    } else {
-      toast('Failed to delete', 'error');
-    }
-  } catch(e) {
-    toast('Network error', 'error');
-  }
-}
 
 /* ── REVIEW IMAGES MANAGEMENT ── */
 async function loadReviewImages() {

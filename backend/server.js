@@ -27,7 +27,7 @@ const couponRoutes       = require('./routes/coupons');
 const settingsRoutes     = require('./routes/settings');
 const invoiceRoutes      = require('./routes/invoices');
 const spendingsRoutes    = require('./routes/spendings');
-const heroVideosRoutes   = require('./routes/heroVideos');
+const spotlightRoutes    = require('./routes/spotlight');
 const reviewImagesRoutes = require('./routes/reviewImages');
 
 const app  = express();
@@ -244,7 +244,7 @@ app.use('/api/reviews',       reviewRoutes);
 app.use('/api/settings',      settingsRoutes);
 app.use('/api/invoices',      invoiceRoutes);
 app.use('/api/spendings',     spendingsRoutes);
-app.use('/api/admin/hero-videos', heroVideosRoutes);
+app.use('/api/spotlight',      spotlightRoutes);
 app.use('/api/admin/review-images', reviewImagesRoutes);
 
 /* ── Abandoned Checkout Tracking ──
