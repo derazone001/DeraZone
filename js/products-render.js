@@ -42,11 +42,13 @@ function normalizeCategorySlug(c) {
   if (!c) return '';
   c = String(c).toLowerCase().trim().replace(/[\s_]+/g, '-');
   if (c === 'jewelry') return 'jewellery';
-  if (c === 'wireless' || c === 'audio' || c === 'earbuds' || c === 'wireless-audio') return 'wireless-earbuds-audio';
-  if (c === 'fashion' || c === 'lifestyle') return 'fashion-lifestyle';
-  if (c === 'shoes') return 'footwear';
-  if (c === 'clothing' || c === 'apparel') return 'clothing-apparel';
-  if (c === 'winter') return 'winter-collection';
+  if (c === 'wireless' || c === 'audio' || c === 'earbuds' || c === 'wireless-audio' || c === 'headphones' || c === 'handsfree') return 'wireless-earbuds-audio';
+  if (c === 'fashion' || c === 'lifestyle' || c === 'sunglasses') return 'fashion-lifestyle';
+  if (c === 'shoes' || c === 'sneakers') return 'footwear';
+  if (c === 'clothing' || c === 'apparel' || c === 'streetwear') return 'clothing-apparel';
+  if (c === 'winter' || c === 'jackets' || c === 'hoodies') return 'winter-collection';
+  if (c === 'powerbanks' || c === 'smartwatches' || c === 'smartwatch') return 'gadgets';
+  if (c === 'chargers' || c === 'cables' || c === 'usb-hubs' || c === 'car-charger') return 'accessories';
   return c;
 }
 window.normalizeCategorySlug = normalizeCategorySlug;
@@ -59,369 +61,8 @@ function dzCatLabel(cat) {
 window.dzCatLabel = dzCatLabel;
 window.velorCatLabel = dzCatLabel;
 
-/* ── Live Product Catalog (Loaded from store.json / backend) ── */
-const DERAZONE_CATALOG_PRODUCTS = [
-  {
-    "id": "dz-pro2-anc",
-    "name": "Pro 2 ANC Wireless Earbuds (Active Noise Cancellation)",
-    "category": "wireless-earbuds-audio",
-    "subcategory": "wireless-earbuds-audio",
-    "price": 3499,
-    "priceOld": 4999,
-    "badge": "TOP RATED",
-    "emoji": "🎧",
-    "inStock": true,
-    "featured": true,
-    "newArrival": true,
-    "trending": true,
-    "description": "Active Noise Cancellation (ANC), Transparency mode, deep dynamic bass, and 28-hour battery with wireless charging case."
-  },
-  {
-    "id": "dz-gaming-tws",
-    "name": "RGB Low-Latency Ultra Bass Gaming Earbuds",
-    "category": "wireless-earbuds-audio",
-    "subcategory": "wireless-earbuds-audio",
-    "price": 2899,
-    "priceOld": 3999,
-    "badge": "HOT",
-    "emoji": "🎮",
-    "inStock": true,
-    "featured": true,
-    "newArrival": true,
-    "trending": false,
-    "description": "40ms ultra-low latency, dynamic RGB breathing lights, dual mic ENC noise cancellation for crisp gaming audio."
-  },
-  {
-    "id": "dz-boom-speaker",
-    "name": "Shockwave Portable IPX7 Waterproof Outdoor Speaker",
-    "category": "wireless-earbuds-audio",
-    "subcategory": "wireless-earbuds-audio",
-    "price": 4299,
-    "priceOld": 5999,
-    "badge": "NEW",
-    "emoji": "🔊",
-    "inStock": true,
-    "featured": false,
-    "newArrival": true,
-    "trending": true,
-    "description": "360-degree immersive surround sound, deep punchy bass, 12-hour playtime, and rugged waterproof construction."
-  },
-  {
-    "id": "dz-ultra9-amoled",
-    "name": "Ultra 9 Max Smartwatch (AMOLED Display + BT Calling)",
-    "category": "gadgets",
-    "subcategory": "gadgets",
-    "price": 4899,
-    "priceOld": 6999,
-    "badge": "BESTSELLER",
-    "emoji": "⌚",
-    "inStock": true,
-    "featured": true,
-    "newArrival": true,
-    "trending": true,
-    "description": "High-definition 2.1-inch AMOLED display, Bluetooth calling, heart rate/sleep monitor, and multi-sports tracking modes."
-  },
-  {
-    "id": "dz-powerbank-20k",
-    "name": "20,000mAh 65W PD Fast Charge Cyberpunk Power Bank",
-    "category": "gadgets",
-    "subcategory": "gadgets",
-    "price": 3999,
-    "priceOld": 5499,
-    "badge": "FAST CHARGE",
-    "emoji": "🔋",
-    "inStock": true,
-    "featured": true,
-    "newArrival": false,
-    "trending": true,
-    "description": "Dual Type-C output, digital battery percentage screen, transparent cyberpunk casing, and laptop/phone fast charging."
-  },
-  {
-    "id": "dz-smart-lightbar",
-    "name": "Smart Ambient RGB Sound-Reactive Flow Light Bar",
-    "category": "gadgets",
-    "subcategory": "gadgets",
-    "price": 2299,
-    "priceOld": 3299,
-    "badge": "POPULAR",
-    "emoji": "💡",
-    "inStock": true,
-    "featured": false,
-    "newArrival": true,
-    "trending": false,
-    "description": "32-bit ARM processor, 18 color modes, voice-activated rhythm pickup, perfect for gaming desks and car dashboards."
-  },
-  {
-    "id": "dz-magsafe-15w",
-    "name": "15W Magnetic MagSafe Wireless Fast Charger",
-    "category": "accessories",
-    "subcategory": "accessories",
-    "price": 2499,
-    "priceOld": 3499,
-    "badge": "HOT",
-    "emoji": "⚡",
-    "inStock": true,
-    "featured": true,
-    "newArrival": true,
-    "trending": true,
-    "description": "Super-strong magnetic snap, intelligent temperature control, aluminum alloy body, and fast wireless charging."
-  },
-  {
-    "id": "dz-braided-cable",
-    "name": "100W PD Ultra-Durable Type-C Braided Fast Cable (2M)",
-    "category": "accessories",
-    "subcategory": "accessories",
-    "price": 1199,
-    "priceOld": 1799,
-    "badge": "ESSENTIAL",
-    "emoji": "🔌",
-    "inStock": true,
-    "featured": false,
-    "newArrival": false,
-    "trending": true,
-    "description": "High-density nylon braided exterior, reinforced connectors, E-Marker smart chip, supports up to 100W power delivery."
-  },
-  {
-    "id": "dz-aluminum-stand",
-    "name": "Heavy-Duty 360 Rotating Aluminum Desk Phone Stand",
-    "category": "accessories",
-    "subcategory": "accessories",
-    "price": 1499,
-    "priceOld": 2199,
-    "badge": "TOP RATED",
-    "emoji": "📱",
-    "inStock": true,
-    "featured": false,
-    "newArrival": true,
-    "trending": false,
-    "description": "Solid aerospace aluminum alloy, dual-hinge adjustable viewing angles, non-slip silicone pads, fully foldable for travel."
-  },
-  {
-    "id": "dz-cuban-chain",
-    "name": "Stainless Steel Minimalist Cuban Curb Chain (Silver)",
-    "category": "jewellery",
-    "subcategory": "jewellery",
-    "price": 1799,
-    "priceOld": 2499,
-    "badge": "TRENDING",
-    "emoji": "⛓️",
-    "inStock": true,
-    "featured": true,
-    "newArrival": true,
-    "trending": true,
-    "description": "Rust-proof 316L stainless steel, diamond-cut bevels, hypoallergenic, highly polished shine for everyday streetwear."
-  },
-  {
-    "id": "dz-matte-ring",
-    "name": "Titanium Obsidian Matte Black Minimal Beveled Ring",
-    "category": "jewellery",
-    "subcategory": "jewellery",
-    "price": 1299,
-    "priceOld": 1899,
-    "badge": "CLASSIC",
-    "emoji": "💍",
-    "inStock": true,
-    "featured": false,
-    "newArrival": false,
-    "trending": true,
-    "description": "Ultra-lightweight aerospace titanium, scratch-resistant matte brushed finish, comfort-fit rounded interior edges."
-  },
-  {
-    "id": "dz-magnetic-bracelets",
-    "name": "Dual Magnetic Attraction Couples Bracelets (Set of 2)",
-    "category": "jewellery",
-    "subcategory": "jewellery",
-    "price": 1499,
-    "priceOld": 2199,
-    "badge": "POPULAR",
-    "emoji": "✨",
-    "inStock": true,
-    "featured": false,
-    "newArrival": true,
-    "trending": false,
-    "description": "Matching his & hers magnetic heart charms, durable braided cord, adjustable sizing, beautifully packaged for gifting."
-  },
-  {
-    "id": "dz-polarized-shades",
-    "name": "Vintage Polarized UV400 Matte Hexagonal Sunglasses",
-    "category": "fashion-lifestyle",
-    "subcategory": "fashion-lifestyle",
-    "price": 2199,
-    "priceOld": 3299,
-    "badge": "TRENDING",
-    "emoji": "🕶️",
-    "inStock": true,
-    "featured": true,
-    "newArrival": true,
-    "trending": true,
-    "description": "HD polarized TAC lenses, anti-glare coating, lightweight reinforced metal frame, full UV400 eye protection."
-  },
-  {
-    "id": "dz-perfume-oud",
-    "name": "Velvet Noir Luxury Long-Lasting Unisex EDP (50ml)",
-    "category": "fashion-lifestyle",
-    "subcategory": "fashion-lifestyle",
-    "price": 3299,
-    "priceOld": 4799,
-    "badge": "LUXURY",
-    "emoji": "✨",
-    "inStock": true,
-    "featured": false,
-    "newArrival": true,
-    "trending": true,
-    "description": "Exotic blend of amber, smoky vanilla, and subtle musk notes. Formulated for long-lasting all-day projection."
-  },
-  {
-    "id": "dz-vacuum-tumbler",
-    "name": "Smart Temperature LED Display Insulated Tumbler 500ml",
-    "category": "fashion-lifestyle",
-    "subcategory": "fashion-lifestyle",
-    "price": 1999,
-    "priceOld": 2899,
-    "badge": "BESTSELLER",
-    "emoji": "☕",
-    "inStock": true,
-    "featured": false,
-    "newArrival": false,
-    "trending": true,
-    "description": "Touchscreen LED temperature readout, double-wall vacuum insulation keeps drinks hot for 12h or cold for 24h."
-  },
-  {
-    "id": "dz-cloud-sneakers",
-    "name": "Cloudfoam Air Cushion Breathable Running Sneakers",
-    "category": "footwear",
-    "subcategory": "footwear",
-    "price": 4499,
-    "priceOld": 6499,
-    "badge": "TOP RATED",
-    "emoji": "👟",
-    "inStock": true,
-    "featured": true,
-    "newArrival": true,
-    "trending": true,
-    "description": "Engineered flyknit upper, responsive high-rebound cushioning, anti-slip rubber traction sole, ultra-lightweight."
-  },
-  {
-    "id": "dz-street-chunky",
-    "name": "Urban Streetwear Chunky Platform Low-Top Sneakers",
-    "category": "footwear",
-    "subcategory": "footwear",
-    "price": 4999,
-    "priceOld": 7299,
-    "badge": "NEW",
-    "emoji": "👟",
-    "inStock": true,
-    "featured": false,
-    "newArrival": true,
-    "trending": true,
-    "description": "Bold contemporary chunky silhouette, premium synthetic leather overlays, padded collar for all-day streetwear comfort."
-  },
-  {
-    "id": "dz-ergonomic-slides",
-    "name": "Ultra-Soft Cloud Ergonomic Waterproof Slides",
-    "category": "footwear",
-    "subcategory": "footwear",
-    "price": 1899,
-    "priceOld": 2699,
-    "badge": "HOT",
-    "emoji": "🩴",
-    "inStock": true,
-    "featured": false,
-    "newArrival": false,
-    "trending": false,
-    "description": "Thick EVA foam sole, ergonomic deep heel cup, non-slip textured outsole, water-resistant and easy to clean."
-  },
-  {
-    "id": "dz-oversized-tee",
-    "name": "Heavyweight 280 GSM Drop-Shoulder Streetwear Tee",
-    "category": "clothing-apparel",
-    "subcategory": "clothing-apparel",
-    "price": 2299,
-    "priceOld": 3299,
-    "badge": "BESTSELLER",
-    "emoji": "👕",
-    "inStock": true,
-    "featured": true,
-    "newArrival": true,
-    "trending": true,
-    "description": "100% combed cotton, heavyweight 280 GSM fabric, ribbed crewneck collar, relaxed oversized drop-shoulder cut."
-  },
-  {
-    "id": "dz-relaxed-hoodie",
-    "name": "Premium French Terry Minimal Relaxed Pullover Hoodie",
-    "category": "clothing-apparel",
-    "subcategory": "clothing-apparel",
-    "price": 3799,
-    "priceOld": 5199,
-    "badge": "ESSENTIAL",
-    "emoji": "🧥",
-    "inStock": true,
-    "featured": false,
-    "newArrival": true,
-    "trending": true,
-    "description": "Ultra-soft brushed French terry cotton, double-layer hood, front kangaroo pocket, ribbed cuffs and hem."
-  },
-  {
-    "id": "dz-cargo-joggers",
-    "name": "Tactical Relaxed Fit Multi-Pocket Cargo Joggers",
-    "category": "clothing-apparel",
-    "subcategory": "clothing-apparel",
-    "price": 2999,
-    "priceOld": 4299,
-    "badge": "TRENDING",
-    "emoji": "👖",
-    "inStock": true,
-    "featured": false,
-    "newArrival": false,
-    "trending": true,
-    "description": "Stretch cotton twill fabric, elastic waistband with drawstring, 6 functional cargo pockets, cuffed ankle cuffs."
-  },
-  {
-    "id": "dz-sherpa-jacket",
-    "name": "Thermal Sherpa-Lined Heavy Duty Winter Bomber Jacket",
-    "category": "winter-collection",
-    "subcategory": "winter-collection",
-    "price": 5899,
-    "priceOld": 7999,
-    "badge": "WINTER DROP",
-    "emoji": "❄️",
-    "inStock": true,
-    "featured": true,
-    "newArrival": true,
-    "trending": true,
-    "description": "Thick windproof outer shell, plush thermal sherpa fleece lining, heavy-duty metallic zipper, and storm cuffs."
-  },
-  {
-    "id": "dz-polar-fleece",
-    "name": "Insulated Wind-Resistant Heavyweight Polar Fleece Hoodie",
-    "category": "winter-collection",
-    "subcategory": "winter-collection",
-    "price": 4299,
-    "priceOld": 5999,
-    "badge": "WARM",
-    "emoji": "🧥",
-    "inStock": true,
-    "featured": false,
-    "newArrival": true,
-    "trending": true,
-    "description": "High-pile thermal fleece insulation, anti-pilling fabric, zippered chest pocket, locks in body heat in freezing temps."
-  },
-  {
-    "id": "dz-puffer-vest",
-    "name": "Ultralight Warm Quilted Puffer Vest (Water Resistant)",
-    "category": "winter-collection",
-    "subcategory": "winter-collection",
-    "price": 4699,
-    "priceOld": 6499,
-    "badge": "LIMITED",
-    "emoji": "🦺",
-    "inStock": true,
-    "featured": false,
-    "newArrival": false,
-    "trending": true,
-    "description": "Down-alternative insulation, water-resistant nylon shell, stand collar for wind protection, perfect for layering."
-  }
-];
+/* ── Live Product Catalog (Populated dynamically from backend / admin panel) ── */
+const DERAZONE_CATALOG_PRODUCTS = [];
 
 /* ── Product Card HTML Generator ── */
 function derazoneProductCardHTML(p) {
@@ -678,33 +319,92 @@ async function derazoneRenderHomepageGrids() {
     allProducts = DERAZONE_CATALOG_PRODUCTS;
   }
 
-  // --- 1. Render Trending Now ---
+  // --- 1 & 2. Render Trending Now & New Arrivals ---
   const trendingGrid = document.getElementById('trending-now-grid');
-  if (trendingGrid && allProducts.length) {
-    const trendingList = allProducts.filter(p => p.trending === true || p.badge === 'HOT' || p.badge === 'BESTSELLER' || p.badge === 'TRENDING');
-    const displayList = trendingList.length ? trendingList : allProducts.slice(0, 4);
-    trendingGrid.innerHTML = displayList.slice(0, 4).map(p => derazoneProductCardHTML(p)).join('');
-  }
-
-  // --- 2. Render New Arrivals ---
   const newArrivalsGrid = document.getElementById('new-arrivals-grid');
-  if (newArrivalsGrid && allProducts.length) {
-    const newList = allProducts.filter(p => p.newArrival === true || p.badge === 'NEW' || p.badge === 'TOP RATED');
-    const displayList = newList.length ? newList : allProducts.slice(4, 8);
-    newArrivalsGrid.innerHTML = displayList.slice(0, 4).map(p => derazoneProductCardHTML(p)).join('');
+
+  if (!allProducts.length) {
+    const emptyNotice = `
+      <div style="grid-column:1/-1;text-align:center;padding:45px 20px;background:#ffffff;border:1.5px dashed #e5e7eb;border-radius:16px;">
+        <i class="fa-solid fa-boxes-packing" style="font-size:2.4rem;color:#7000ff;margin-bottom:12px;display:block;"></i>
+        <h4 style="font-size:1.15rem;font-weight:700;color:#0f172a;margin-bottom:6px;">Fresh Collections Dropping Soon!</h4>
+        <p style="color:#64748b;font-size:0.9rem;max-width:460px;margin:0 auto 16px;line-height:1.5;">
+          Our catalog is currently being updated with verified products. Contact our team on WhatsApp for instant inquiries &amp; priority bookings.
+        </p>
+        <a href="https://wa.me/923294551652?text=Hello%20DERA%20ZONE,%20I%20am%20looking%20for%20products" target="_blank" class="btn-hero-whatsapp" style="display:inline-flex;padding:10px 22px;border-radius:8px;font-size:0.85rem;text-decoration:none;font-weight:700;background:#25D366;color:#fff;align-items:center;gap:8px;">
+          <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
+        </a>
+      </div>
+    `;
+    if (trendingGrid) trendingGrid.innerHTML = emptyNotice;
+    if (newArrivalsGrid) newArrivalsGrid.innerHTML = emptyNotice;
+  } else {
+    if (trendingGrid) {
+      const trendingList = allProducts.filter(p => p.trending === true || p.badge === 'HOT' || p.badge === 'BESTSELLER' || p.badge === 'TRENDING');
+      const displayList = trendingList.length ? trendingList : allProducts;
+      trendingGrid.innerHTML = displayList.slice(0, 4).map(p => derazoneProductCardHTML(p)).join('');
+    }
+
+    if (newArrivalsGrid) {
+      const newList = allProducts.filter(p => p.newArrival === true || p.badge === 'NEW' || p.badge === 'TOP RATED');
+      const displayList = newList.length ? newList : allProducts;
+      newArrivalsGrid.innerHTML = displayList.slice(0, 4).map(p => derazoneProductCardHTML(p)).join('');
+    }
   }
 
-  // --- 3. Setup Categories Carousel (Single-Row Slideshow with next/prev) ---
+  // --- 3. Setup Categories Carousel (Single-Row Slideshow with Continuous Auto-Play & Next/Prev) ---
   const catTrack = document.getElementById('categories-carousel-track');
   const catPrev = document.getElementById('cat-prev-btn');
   const catNext = document.getElementById('cat-next-btn');
-  if (catTrack && catPrev && catNext) {
-    catPrev.addEventListener('click', () => {
-      catTrack.scrollBy({ left: -300, behavior: 'smooth' });
-    });
-    catNext.addEventListener('click', () => {
-      catTrack.scrollBy({ left: 300, behavior: 'smooth' });
-    });
+  if (catTrack) {
+    let isPaused = false;
+
+    function stepNext() {
+      const maxScroll = catTrack.scrollWidth - catTrack.clientWidth;
+      if (catTrack.scrollLeft >= maxScroll - 15) {
+        catTrack.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        catTrack.scrollBy({ left: 190, behavior: 'smooth' });
+      }
+    }
+
+    function stepPrev() {
+      if (catTrack.scrollLeft <= 15) {
+        catTrack.scrollTo({ left: catTrack.scrollWidth, behavior: 'smooth' });
+      } else {
+        catTrack.scrollBy({ left: -190, behavior: 'smooth' });
+      }
+    }
+
+    if (catNext) {
+      catNext.onclick = () => {
+        isPaused = true;
+        stepNext();
+        setTimeout(() => { isPaused = false; }, 3000);
+      };
+    }
+    if (catPrev) {
+      catPrev.onclick = () => {
+        isPaused = true;
+        stepPrev();
+        setTimeout(() => { isPaused = false; }, 3000);
+      };
+    }
+
+    catTrack.addEventListener('mouseenter', () => { isPaused = true; });
+    catTrack.addEventListener('mouseleave', () => { isPaused = false; });
+    catTrack.addEventListener('touchstart', () => { isPaused = true; }, { passive: true });
+    catTrack.addEventListener('touchend', () => {
+      setTimeout(() => { isPaused = false; }, 2500);
+    }, { passive: true });
+
+    // Auto-slide every 2.2 seconds automatically on phone & desktop
+    if (window._dzCatAutoSlide) clearInterval(window._dzCatAutoSlide);
+    window._dzCatAutoSlide = setInterval(() => {
+      if (!isPaused) {
+        stepNext();
+      }
+    }, 2200);
   }
 
   // --- 4. Render Pinned Collections (Spotlight from Admin) ---

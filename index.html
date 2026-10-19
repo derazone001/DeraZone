@@ -188,13 +188,13 @@
     </div>
   </section>
 
-  <!-- 3. SHOP BY CATEGORY (Single-Row Slideshow Carousel with Next / Prev) -->
+  <!-- 3. SHOP BY CATEGORY (Auto-Sliding Circular Carousel matching Reference) -->
   <section id="categories" class="dz-section">
     <div class="container">
-      <div class="section-header-row">
+      <div class="section-header-row dz-cat-header-row">
         <div>
           <h2 class="section-title">Shop By Category</h2>
-          <p class="section-subtitle">Explore all 8 curated collections in a seamless slideshow</p>
+          <p class="section-subtitle">Explore curated essentials &amp; trending tech</p>
         </div>
         <div class="carousel-nav-arrows">
           <button id="cat-prev-btn" class="carousel-arrow-btn" aria-label="Previous Category">
@@ -209,52 +209,88 @@
       <div class="dz-categories-carousel-wrap">
         <div class="dz-categories-carousel-track" id="categories-carousel-track">
           
-          <a href="shop.html?cat=accessories" class="dz-cat-card">
-            <div class="dz-cat-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
-            <h4 class="dz-cat-title">Accessories</h4>
-            <p class="dz-cat-desc">Chargers, Cables &amp; Stands</p>
+          <a href="shop.html?cat=wireless-earbuds-audio" class="dz-circle-cat-item">
+            <div class="dz-circle-cat-img-box">
+              <img src="images/categories/headphones.png" alt="Headphones" loading="lazy" />
+            </div>
+            <span class="dz-circle-cat-title">Headphones</span>
           </a>
 
-          <a href="shop.html?cat=gadgets" class="dz-cat-card">
-            <div class="dz-cat-icon"><i class="fa-solid fa-bolt"></i></div>
-            <h4 class="dz-cat-title">Gadgets</h4>
-            <p class="dz-cat-desc">Smart Tech &amp; Power Banks</p>
+          <a href="shop.html?cat=gadgets" class="dz-circle-cat-item">
+            <div class="dz-circle-cat-img-box">
+              <img src="images/categories/powerbanks.png" alt="PowerBanks" loading="lazy" />
+            </div>
+            <span class="dz-circle-cat-title">PowerBanks</span>
           </a>
 
-          <a href="shop.html?cat=wireless-earbuds-audio" class="dz-cat-card">
-            <div class="dz-cat-icon"><i class="fa-solid fa-headphones-simple"></i></div>
-            <h4 class="dz-cat-title">Wireless Audio</h4>
-            <p class="dz-cat-desc">ANC Earbuds &amp; Headsets</p>
+          <a href="shop.html?cat=accessories" class="dz-circle-cat-item">
+            <div class="dz-circle-cat-img-box">
+              <img src="images/categories/chargers.png" alt="Chargers" loading="lazy" />
+            </div>
+            <span class="dz-circle-cat-title">Chargers</span>
           </a>
 
-          <a href="shop.html?cat=jewellery" class="dz-cat-card">
-            <div class="dz-cat-icon"><i class="fa-solid fa-gem"></i></div>
-            <h4 class="dz-cat-title">Jewellery</h4>
-            <p class="dz-cat-desc">Minimal Chains &amp; Rings</p>
+          <a href="shop.html?cat=accessories" class="dz-circle-cat-item">
+            <div class="dz-circle-cat-img-box">
+              <img src="images/categories/cables.png" alt="Cables" loading="lazy" />
+            </div>
+            <span class="dz-circle-cat-title">Cables</span>
           </a>
 
-          <a href="shop.html?cat=fashion-lifestyle" class="dz-cat-card">
-            <div class="dz-cat-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-            <h4 class="dz-cat-title">Fashion &amp; Lifestyle</h4>
-            <p class="dz-cat-desc">Trending Essentials</p>
+          <a href="shop.html?cat=wireless-earbuds-audio" class="dz-circle-cat-item">
+            <div class="dz-circle-cat-img-box">
+              <img src="images/categories/handsfree.png" alt="Wired Handsfree" loading="lazy" />
+            </div>
+            <span class="dz-circle-cat-title">Wired Handsfree</span>
           </a>
 
-          <a href="shop.html?cat=footwear" class="dz-cat-card">
-            <div class="dz-cat-icon"><i class="fa-solid fa-shoe-prints"></i></div>
-            <h4 class="dz-cat-title">Footwear</h4>
-            <p class="dz-cat-desc">Sneakers &amp; Casual Shoes</p>
+          <a href="shop.html?cat=gadgets" class="dz-circle-cat-item">
+            <div class="dz-circle-cat-img-box">
+              <img src="images/categories/smartwatches.png" alt="Smartwatches" loading="lazy" />
+            </div>
+            <span class="dz-circle-cat-title">Smartwatches</span>
           </a>
 
-          <a href="shop.html?cat=clothing-apparel" class="dz-cat-card">
-            <div class="dz-cat-icon"><i class="fa-solid fa-shirt"></i></div>
-            <h4 class="dz-cat-title">Clothing &amp; Apparel</h4>
-            <p class="dz-cat-desc">Streetwear &amp; Daily Wear</p>
+          <a href="shop.html?cat=accessories" class="dz-circle-cat-item">
+            <div class="dz-circle-cat-img-box">
+              <img src="images/categories/usb-hubs.png" alt="USB Hubs" loading="lazy" />
+            </div>
+            <span class="dz-circle-cat-title">USB Hubs</span>
           </a>
 
-          <a href="shop.html?cat=winter-collection" class="dz-cat-card">
-            <div class="dz-cat-icon"><i class="fa-solid fa-snowflake"></i></div>
-            <h4 class="dz-cat-title">Winter Collection</h4>
-            <p class="dz-cat-desc">Hoodies, Jackets &amp; Warmers</p>
+          <a href="shop.html?cat=jewellery" class="dz-circle-cat-item">
+            <div class="dz-circle-cat-img-box">
+              <img src="images/categories/jewellery.png" alt="Jewellery" loading="lazy" />
+            </div>
+            <span class="dz-circle-cat-title">Jewellery</span>
+          </a>
+
+          <a href="shop.html?cat=footwear" class="dz-circle-cat-item">
+            <div class="dz-circle-cat-img-box">
+              <img src="images/categories/footwear.png" alt="Footwear" loading="lazy" />
+            </div>
+            <span class="dz-circle-cat-title">Footwear</span>
+          </a>
+
+          <a href="shop.html?cat=clothing-apparel" class="dz-circle-cat-item">
+            <div class="dz-circle-cat-img-box">
+              <img src="images/categories/clothing.png" alt="Clothing" loading="lazy" />
+            </div>
+            <span class="dz-circle-cat-title">Clothing</span>
+          </a>
+
+          <a href="shop.html?cat=winter-collection" class="dz-circle-cat-item">
+            <div class="dz-circle-cat-img-box">
+              <img src="images/categories/winter.png" alt="Winter Drop" loading="lazy" />
+            </div>
+            <span class="dz-circle-cat-title">Winter Drop</span>
+          </a>
+
+          <a href="shop.html?cat=fashion-lifestyle" class="dz-circle-cat-item">
+            <div class="dz-circle-cat-img-box">
+              <img src="images/categories/lifestyle.png" alt="Lifestyle" loading="lazy" />
+            </div>
+            <span class="dz-circle-cat-title">Lifestyle</span>
           </a>
 
         </div>

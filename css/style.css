@@ -770,7 +770,7 @@ footer { background: #ffffff; padding: 100px 0 40px; border-top: 1px solid var(-
 .footer-brand img {
   height: 90px !important;
   width: auto !important;
-  mix-blend-mode: multiply !important;
+  mix-blend-mode: normal !important;
   margin-bottom: 20px;
 }
 
@@ -1153,7 +1153,7 @@ footer { background: #ffffff; padding: 100px 0 40px; border-top: 1px solid var(-
   color: #ffffff !important;
 }
 @media (max-width: 768px) {
-  #hero { height: 75svh !important; min-height: 450px !important; align-items: flex-end !important; }
+  #hero { height: auto !important; min-height: unset !important; overflow: visible !important; }
   .hero-content { padding: 0 24px 40px 24px !important; }
   .hero-title-main { font-size: 2.2rem !important; }
   .hero-title-sub { font-size: 0.85rem !important; }
@@ -2054,10 +2054,13 @@ button#mobile-menu-toggle {
   position: relative !important;
   display: block !important;
   background: #ffffff !important;
+  height: auto !important;
+  min-height: unset !important;
+  max-height: none !important;
   padding: 60px 20px 65px !important;
   border-bottom: 1px solid #e5e7eb !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02) !important;
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 
 .hero-grid-2col {
@@ -2248,7 +2251,7 @@ button#mobile-menu-toggle {
   font-weight: 800 !important;
 }
 
-/* ── Single-Row Category Carousel / Slideshow ── */
+/* ── Shop By Category (Circular Product Carousel matching Reference) ── */
 .dz-categories-carousel-wrap {
   position: relative;
   width: 100%;
@@ -2260,70 +2263,91 @@ button#mobile-menu-toggle {
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: nowrap !important;
-  gap: 18px !important;
+  gap: 28px !important;
   overflow-x: auto !important;
   scroll-behavior: smooth !important;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none !important;
-  padding: 10px 4px 20px 4px !important;
+  padding: 15px 10px 25px !important;
 }
 .dz-categories-carousel-track::-webkit-scrollbar {
   display: none !important;
 }
 
-.dz-categories-carousel-track .dz-cat-card {
-  flex: 0 0 260px !important;
-  min-width: 240px !important;
-  max-width: 280px !important;
-  box-sizing: border-box !important;
+.dz-circle-cat-item {
+  flex: 0 0 135px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.dz-circle-cat-item:hover {
+  transform: translateY(-5px) !important;
+}
+
+.dz-circle-cat-img-box {
+  width: 130px !important;
+  height: 130px !important;
+  border-radius: 50% !important;
   background: #ffffff !important;
   border: 1.5px solid #e5e7eb !important;
-  border-radius: 16px !important;
-  padding: 24px 20px !important;
-  text-align: center !important;
-  text-decoration: none !important;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03) !important;
-}
-
-.dz-categories-carousel-track .dz-cat-card:hover {
-  border-color: #7000ff !important;
-  transform: translateY(-5px) !important;
-  box-shadow: 0 12px 28px rgba(112, 0, 255, 0.12) !important;
-}
-
-.dz-categories-carousel-track .dz-cat-icon {
-  width: 58px !important;
-  height: 58px !important;
-  border-radius: 16px !important;
-  background: rgba(112, 0, 255, 0.08) !important;
-  border: 1px solid rgba(112, 0, 255, 0.2) !important;
-  color: #7000ff !important;
-  font-size: 1.5rem !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  margin: 0 auto 16px !important;
+  overflow: hidden !important;
   transition: all 0.3s ease !important;
+  padding: 6px !important;
 }
 
-.dz-categories-carousel-track .dz-cat-card:hover .dz-cat-icon {
-  background: #7000ff !important;
-  color: #ffffff !important;
-  transform: scale(1.08) !important;
+.dz-circle-cat-item:hover .dz-circle-cat-img-box {
+  border-color: #7000ff !important;
+  box-shadow: 0 10px 25px rgba(112, 0, 255, 0.22) !important;
+  transform: scale(1.04) !important;
 }
 
-.dz-categories-carousel-track .dz-cat-title {
-  font-size: 1rem !important;
+.dz-circle-cat-img-box img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  display: block !important;
+}
+
+.dz-circle-cat-title {
+  margin-top: 12px !important;
+  font-size: 0.92rem !important;
   font-weight: 700 !important;
   color: #0f172a !important;
-  margin-bottom: 6px !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  transition: color 0.2s ease !important;
 }
 
-.dz-categories-carousel-track .dz-cat-desc {
-  font-size: 0.78rem !important;
-  color: #64748b !important;
-  line-height: 1.4 !important;
+.dz-circle-cat-item:hover .dz-circle-cat-title {
+  color: #7000ff !important;
+}
+
+@media (max-width: 768px) {
+  .dz-categories-carousel-track {
+    gap: 20px !important;
+    padding: 10px 5px 20px !important;
+  }
+  .dz-circle-cat-item {
+    flex: 0 0 105px !important;
+  }
+  .dz-circle-cat-img-box {
+    width: 100px !important;
+    height: 100px !important;
+    padding: 4px !important;
+  }
+  .dz-circle-cat-title {
+    font-size: 0.8rem !important;
+    margin-top: 8px !important;
+  }
 }
 
 .carousel-nav-arrows {
@@ -2357,9 +2381,17 @@ button#mobile-menu-toggle {
 }
 
 @media (max-width: 960px) {
+  #hero, .dz-hero {
+    height: auto !important;
+    min-height: unset !important;
+    max-height: none !important;
+    padding: 35px 16px 45px !important;
+    overflow: visible !important;
+  }
   .hero-grid-2col {
     grid-template-columns: 1fr !important;
     text-align: center !important;
+    gap: 30px !important;
   }
   .hero-left {
     text-align: center !important;
@@ -2756,6 +2788,9 @@ footer, .dz-footer {
   max-width: 240px !important;
   height: auto !important;
   display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  mix-blend-mode: normal !important;
   background: transparent !important;
   background-color: transparent !important;
   border: none !important;
