@@ -97,7 +97,9 @@
     (function(){
       try {
         var cat = new URLSearchParams(window.location.search).get('cat');
+        var norm = cat ? cat.toLowerCase().trim() : 'all';
         var labels = {
+          'all': 'ALL COLLECTIONS',
           'accessories': 'ACCESSORIES',
           'gadgets': 'GADGETS',
           'wireless-earbuds-audio': 'WIRELESS EARBUDS & AUDIO',
@@ -108,6 +110,7 @@
           'winter-collection': 'WINTER COLLECTION'
         };
         var descs = {
+          'all': 'Explore premium gadgets, wireless audio, lifestyle accessories & everyday essentials with nationwide Cash on Delivery.',
           'accessories': 'Fast chargers, MagSafe tech, ultra-durable cables, phone stands, and daily mobile essentials.',
           'gadgets': 'AMOLED smartwatches, high-capacity power banks, desk gadgets, and futuristic tech devices.',
           'wireless-earbuds-audio': 'Active noise-cancelling earbuds, deep bass gaming audio, and portable waterproof speakers.',
@@ -117,13 +120,10 @@
           'clothing-apparel': 'Heavyweight 280 GSM streetwear tees, relaxed French terry hoodies, and tactical cargo joggers.',
           'winter-collection': 'Thermal sherpa-lined jackets, wind-resistant polar fleece hoodies, and lightweight puffer vests.'
         };
-        if (cat && labels[cat.toLowerCase()]) {
-          var k = cat.toLowerCase();
-          var t = document.getElementById('shop-hero-title');
-          var d = document.getElementById('shop-hero-desc');
-          if (t) t.textContent = labels[k];
-          if (d && descs[k]) d.textContent = descs[k];
-        }
+        var t = document.getElementById('shop-hero-title');
+        var d = document.getElementById('shop-hero-desc');
+        if (t && labels[norm]) t.textContent = labels[norm];
+        if (d && descs[norm]) d.textContent = descs[norm];
       } catch(e){}
     })();
   </script>
@@ -138,7 +138,7 @@
         <div class="sidebar-block">
           <h3 class="sidebar-title">Categories</h3>
           <ul class="sidebar-list" id="sidebar-sub-collections">
-            <li><button class="sidebar-link active" data-sub-filter="all">All Products</button></li>
+            <li><button class="sidebar-link" data-sub-filter="all">All Products</button></li>
             <li><button class="sidebar-link" data-sub-filter="accessories">Accessories</button></li>
             <li><button class="sidebar-link" data-sub-filter="gadgets">Gadgets</button></li>
             <li><button class="sidebar-link" data-sub-filter="wireless-earbuds-audio">Wireless Earbuds &amp; Audio</button></li>
@@ -148,6 +148,30 @@
             <li><button class="sidebar-link" data-sub-filter="clothing-apparel">Clothing &amp; Apparel</button></li>
             <li><button class="sidebar-link" data-sub-filter="winter-collection">Winter Collection</button></li>
           </ul>
+          <script>
+            /* Instant sidebar highlight on load */
+            (function(){
+              try {
+                var p = new URLSearchParams(window.location.search).get('cat');
+                var target = p ? p.toLowerCase().trim() : 'all';
+                var btns = document.querySelectorAll('#sidebar-sub-collections .sidebar-link');
+                var found = false;
+                btns.forEach(function(b){
+                  var f = b.getAttribute('data-sub-filter');
+                  if (f === target) {
+                    b.classList.add('active');
+                    found = true;
+                  } else {
+                    b.classList.remove('active');
+                  }
+                });
+                if (!found) {
+                  var allB = document.querySelector('#sidebar-sub-collections [data-sub-filter="all"]');
+                  if (allB) allB.classList.add('active');
+                }
+              } catch(e){}
+            })();
+          </script>
         </div>
 
         <div class="sidebar-block">

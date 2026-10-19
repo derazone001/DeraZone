@@ -61,8 +61,209 @@ function dzCatLabel(cat) {
 window.dzCatLabel = dzCatLabel;
 window.velorCatLabel = dzCatLabel;
 
-/* ── Live Product Catalog (Populated dynamically from backend / admin panel) ── */
-const DERAZONE_CATALOG_PRODUCTS = [];
+/* ── Live Product Catalog (Populated dynamically from backend / admin panel, with offline fallback) ── */
+const DERAZONE_CATALOG_PRODUCTS = [
+  /* Accessories */
+  {
+    id: 'dz-acc-01',
+    name: '65W GaN Fast Charger Dual Port (USB-C + USB-A)',
+    category: 'accessories',
+    subcategory: 'accessories',
+    price: 2850,
+    priceOld: 3500,
+    images: ['images/categories/accessories.png'],
+    badge: 'HOT',
+    trending: true,
+    newArrival: false
+  },
+  {
+    id: 'dz-acc-02',
+    name: 'Ultra-Durable Braided Fast Charging Cable (Type-C 100W)',
+    category: 'accessories',
+    subcategory: 'accessories',
+    price: 950,
+    priceOld: 1400,
+    images: ['images/categories/accessories.png'],
+    badge: 'BESTSELLER',
+    trending: false,
+    newArrival: false
+  },
+  /* Gadgets */
+  {
+    id: 'dz-gad-01',
+    name: 'AMOLED Ultra Smartwatch with Silicone Sports Strap & BT Calling',
+    category: 'gadgets',
+    subcategory: 'gadgets',
+    price: 5499,
+    priceOld: 6999,
+    images: ['images/categories/gadgets.png'],
+    badge: 'TOP RATED',
+    trending: true,
+    newArrival: false
+  },
+  {
+    id: 'dz-gad-02',
+    name: '20,000mAh 22.5W Fast Charging Metallic Power Bank',
+    category: 'gadgets',
+    subcategory: 'gadgets',
+    price: 4200,
+    priceOld: 5200,
+    images: ['images/categories/gadgets.png'],
+    badge: 'POPULAR',
+    trending: false,
+    newArrival: true
+  },
+  /* Wireless Earbuds & Audio */
+  {
+    id: 'dz-aud-01',
+    name: 'Pro ANC Wireless Earbuds with Touch Control & Deep Bass',
+    category: 'wireless-earbuds-audio',
+    subcategory: 'wireless-earbuds-audio',
+    price: 3999,
+    priceOld: 4999,
+    images: ['images/categories/wireless-audio.png'],
+    badge: 'BESTSELLER',
+    trending: true,
+    newArrival: false
+  },
+  {
+    id: 'dz-aud-02',
+    name: 'Waterproof Portable Bluetooth Speaker with Surround Bass',
+    category: 'wireless-earbuds-audio',
+    subcategory: 'wireless-earbuds-audio',
+    price: 3250,
+    priceOld: 3950,
+    images: ['images/categories/wireless-audio.png'],
+    badge: 'NEW',
+    trending: false,
+    newArrival: true
+  },
+  /* Jewellery */
+  {
+    id: 'dz-jwl-01',
+    name: 'Sleek Cuban Curb Chain & Titanium Ring Set',
+    category: 'jewellery',
+    subcategory: 'jewellery',
+    price: 1850,
+    priceOld: 2400,
+    images: ['images/categories/jewellery.png'],
+    badge: 'TRENDING',
+    trending: true,
+    newArrival: false
+  },
+  {
+    id: 'dz-jwl-02',
+    name: 'Magnetic Couples Distance Bracelet Set (Matte Black & Silver)',
+    category: 'jewellery',
+    subcategory: 'jewellery',
+    price: 1450,
+    priceOld: 1950,
+    images: ['images/categories/jewellery.png'],
+    badge: 'HOT',
+    trending: false,
+    newArrival: false
+  },
+  /* Fashion & Lifestyle */
+  {
+    id: 'dz-lfs-01',
+    name: 'Polarized Matte Black Wayfarer Sunglasses UV400',
+    category: 'fashion-lifestyle',
+    subcategory: 'fashion-lifestyle',
+    price: 2150,
+    priceOld: 2800,
+    images: ['images/categories/lifestyle.png'],
+    badge: 'BESTSELLER',
+    trending: true,
+    newArrival: false
+  },
+  {
+    id: 'dz-lfs-02',
+    name: 'Luxury Long-Lasting Pocket Fragrance (50ml EDP)',
+    category: 'fashion-lifestyle',
+    subcategory: 'fashion-lifestyle',
+    price: 2450,
+    priceOld: 3200,
+    images: ['images/categories/lifestyle.png'],
+    badge: 'POPULAR',
+    trending: false,
+    newArrival: true
+  },
+  /* Footwear */
+  {
+    id: 'dz-ftw-01',
+    name: 'Air-Cushion Streetwear Low-Top Sneakers (White / Black)',
+    category: 'footwear',
+    subcategory: 'footwear',
+    price: 4850,
+    priceOld: 6200,
+    images: ['images/categories/footwear.png'],
+    badge: 'NEW',
+    trending: false,
+    newArrival: true
+  },
+  {
+    id: 'dz-ftw-02',
+    name: 'Ergonomic Cloud Slides (Matte Charcoal)',
+    category: 'footwear',
+    subcategory: 'footwear',
+    price: 1750,
+    priceOld: 2200,
+    images: ['images/categories/footwear.png'],
+    badge: 'TRENDING',
+    trending: true,
+    newArrival: false
+  },
+  /* Clothing & Apparel */
+  {
+    id: 'dz-clt-01',
+    name: 'Heavyweight 280 GSM Relaxed Fit Oversized Tee (Black)',
+    category: 'clothing-apparel',
+    subcategory: 'clothing-apparel',
+    price: 2250,
+    priceOld: 2800,
+    images: ['images/categories/clothing.png'],
+    badge: 'BESTSELLER',
+    trending: true,
+    newArrival: false
+  },
+  {
+    id: 'dz-clt-02',
+    name: 'French Terry Streetwear Drop-Shoulder Hoodie',
+    category: 'clothing-apparel',
+    subcategory: 'clothing-apparel',
+    price: 3850,
+    priceOld: 4800,
+    images: ['images/categories/clothing.png'],
+    badge: 'HOT',
+    trending: false,
+    newArrival: true
+  },
+  /* Winter Collection */
+  {
+    id: 'dz-wnt-01',
+    name: 'Thermal Sherpa-Lined Quilted Puffer Jacket',
+    category: 'winter-collection',
+    subcategory: 'winter-collection',
+    price: 5950,
+    priceOld: 7500,
+    images: ['images/categories/winter.png'],
+    badge: 'TOP RATED',
+    trending: false,
+    newArrival: true
+  },
+  {
+    id: 'dz-wnt-02',
+    name: 'Wind-Resistant Polar Fleece Zip Hoodie',
+    category: 'winter-collection',
+    subcategory: 'winter-collection',
+    price: 3650,
+    priceOld: 4500,
+    images: ['images/categories/winter.png'],
+    badge: 'SEASONAL',
+    trending: true,
+    newArrival: false
+  }
+];
 
 /* ── Product Card HTML Generator ── */
 function derazoneProductCardHTML(p) {
@@ -293,11 +494,6 @@ async function derazoneRenderShopGrid() {
 
   if (!products.length && DERAZONE_CATALOG_PRODUCTS.length) {
     products = DERAZONE_CATALOG_PRODUCTS;
-  }
-
-  if (!products.length) {
-    grid.innerHTML = derazoneEmptyState('Fresh Collections Dropping Soon!');
-    return;
   }
 
   derazoneSetupShopFilters(products, grid);

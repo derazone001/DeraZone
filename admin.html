@@ -2266,10 +2266,21 @@ function apiFetch(path, options = {}) {
   if (!options.method || options.method === 'GET') {
     finalPath += (path.includes('?') ? '&' : '?') + '_t=' + Date.now();
   }
+  const timeoutMs = options.timeout || (path.includes('/auth/login') ? 2000 : 2800);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
   return fetch(`${API}${finalPath}`, {
     ...options,
+    signal: options.signal || controller.signal,
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}`, ...(options.headers || {}) },
   }).then(async res => {
+    clearTimeout(timer);
+    if (res.status === 503) {
+      if (typeof setServerStatus === 'function') setServerStatus(false);
+    } else if (res.ok) {
+      if (typeof setServerStatus === 'function') setServerStatus(true);
+    }
     if (res.status === 401 && !path.includes('/auth/change-password') && !path.includes('/auth/login')) {
       if (currentUser && !adminToken?.startsWith('local-admin-token')) {
         clearSession();
@@ -2287,6 +2298,8 @@ function apiFetch(path, options = {}) {
     };
     return res;
   }).catch(() => {
+    clearTimeout(timer);
+    if (typeof setServerStatus === 'function') setServerStatus(false);
     return {
       ok: false,
       status: 503,
@@ -3056,18 +3069,47 @@ async function loadSocialOrders() {
   const source = document.getElementById('soc-source-filter')?.value || '';
   const status = document.getElementById('soc-status-filter')?.value || '';
   const tbody  = document.getElementById('social-orders-body');
-  tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
+
+  // Instant local store rendering (offline-first)
+  const cached = AdminLocalStore.getSocialOrders();
+  if (cached && cached.length) {
+    allSocialOrders = cached.filter(o => {
+      if (source && o.source !== source) return false;
+      if (status && o.status !== status) return false;
+      return true;
+    });
+    renderSocialOrders(allSocialOrders);
+    updateSocialPageStats(allSocialOrders);
+  } else {
+    tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
+  }
+
   try {
     let qs = [];
     if (source) qs.push('source=' + source);
     if (status) qs.push('status=' + status);
     const res  = await apiFetch('/social-orders' + (qs.length ? '?' + qs.join('&') : ''));
-    const data = await res.json();
-    allSocialOrders = data.orders || [];
-    renderSocialOrders(allSocialOrders);
-    updateSocialPageStats(allSocialOrders);
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.orders)) {
+        allSocialOrders = data.orders;
+        AdminLocalStore.saveSocialOrders(data.orders);
+        renderSocialOrders(allSocialOrders);
+        updateSocialPageStats(allSocialOrders);
+      }
+    } else {
+      if (!allSocialOrders || !allSocialOrders.length) {
+        allSocialOrders = AdminLocalStore.getSocialOrders();
+        renderSocialOrders(allSocialOrders);
+        updateSocialPageStats(allSocialOrders);
+      }
+    }
   } catch {
-    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><p>Failed to load social orders.</p></div></td></tr>`;
+    if (!allSocialOrders || !allSocialOrders.length) {
+      allSocialOrders = AdminLocalStore.getSocialOrders();
+      renderSocialOrders(allSocialOrders);
+      updateSocialPageStats(allSocialOrders);
+    }
   }
 }
 
@@ -3799,13 +3841,30 @@ async function saveSocialOrder() {
 /* ═══════════════════ COUPONS (super_admin only) ═══════════════════ */
 async function loadCoupons() {
   const tbody = document.getElementById('coupons-body');
-  tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
+  const cached = AdminLocalStore.getCoupons ? AdminLocalStore.getCoupons() : [];
+  if (cached && cached.length) {
+    allCoupons = cached;
+    renderCoupons(allCoupons);
+  } else {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
+  }
   try {
     const res  = await apiFetch('/coupons');
-    const data = await res.json();
-    allCoupons = data.coupons || [];
-    renderCoupons(allCoupons);
-  } catch { tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><p>Failed to load coupons.</p></div></td></tr>`; }
+    if (res.ok) {
+      const data = await res.json();
+      allCoupons = data.coupons || [];
+      if (AdminLocalStore.saveCoupons) AdminLocalStore.saveCoupons(allCoupons);
+      renderCoupons(allCoupons);
+    } else if (!allCoupons || !allCoupons.length) {
+      allCoupons = cached;
+      renderCoupons(allCoupons);
+    }
+  } catch {
+    if (!allCoupons || !allCoupons.length) {
+      allCoupons = cached;
+      renderCoupons(allCoupons);
+    }
+  }
 }
 
 function renderCoupons(coupons) {
@@ -3938,15 +3997,39 @@ async function deleteCoupon(id, code) {
   } catch { toast('Network error.', 'error'); }
 }
 async function loadOrders() {
-  const status = document.getElementById('order-status-filter').value;
+  const status = document.getElementById('order-status-filter')?.value || '';
   const tbody  = document.getElementById('orders-body');
-  tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
+  
+  // Instant render from local store first (offline-first, zero spinner delay)
+  const cached = AdminLocalStore.getOrders();
+  if (cached && cached.length) {
+    allOrders = status ? cached.filter(o => o.status === status) : cached;
+    renderOrders(allOrders);
+  } else {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
+  }
+
   try {
     const res  = await apiFetch(`/orders${status ? '?status=' + status : ''}`);
-    const data = await res.json();
-    allOrders = data.orders || [];
-    renderOrders(allOrders);
-  } catch { tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><p>Failed to load orders.</p></div></td></tr>`; }
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.orders)) {
+        allOrders = data.orders;
+        AdminLocalStore.saveOrders(data.orders);
+        renderOrders(allOrders);
+      }
+    } else {
+      if (!allOrders || !allOrders.length) {
+        allOrders = AdminLocalStore.getOrders();
+        renderOrders(allOrders);
+      }
+    }
+  } catch {
+    if (!allOrders || !allOrders.length) {
+      allOrders = AdminLocalStore.getOrders();
+      renderOrders(allOrders);
+    }
+  }
 }
 
 function filterOrdersTable() {
@@ -4494,17 +4577,37 @@ function exportProductsExcel() {
 
 async function loadProducts() {
   const tbody = document.getElementById('products-body');
-  tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
+  
+  // Instant local store rendering (offline-first)
+  const cached = AdminLocalStore.getProducts();
+  if (cached && cached.length) {
+    allProducts = cached;
+    filterProductsTable();
+  } else {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
+  }
+
   try {
     const res  = await apiFetch('/products?admin=true');
-    const data = await res.json();
-    allProducts = (data.products || []).map(p => {
-      if (p.category === 'catchers') p.category = 'clips';
-      if (p.subcategory === 'catchers') p.subcategory = 'clips';
-      return p;
-    });
-    filterProductsTable();
-  } catch { toast('Failed to load products', 'error'); }
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.products) && data.products.length) {
+        allProducts = data.products;
+        AdminLocalStore.saveProducts(data.products);
+        filterProductsTable();
+      }
+    } else {
+      if (!allProducts || !allProducts.length) {
+        allProducts = AdminLocalStore.getProducts();
+        filterProductsTable();
+      }
+    }
+  } catch {
+    if (!allProducts || !allProducts.length) {
+      allProducts = AdminLocalStore.getProducts();
+      filterProductsTable();
+    }
+  }
 }
 
 function filterProductsTable() {
@@ -5499,13 +5602,21 @@ function today() {
 let allAbandoned = [];
 
 async function loadAbandoned() {
+  const cached = AdminLocalStore.getAbandoned ? AdminLocalStore.getAbandoned() : [];
+  if (cached && cached.length) {
+    allAbandoned = cached;
+    filterAbandoned();
+  }
   try {
     const res  = await apiFetch('/abandoned');
-    const data = await res.json();
-    allAbandoned = data.abandoned || [];
-    /* Default: show only abandoned (not converted/resolved) */
+    if (res.ok) {
+      const data = await res.json();
+      allAbandoned = data.abandoned || [];
+      if (AdminLocalStore.saveAbandoned) AdminLocalStore.saveAbandoned(allAbandoned);
+    } else if (!allAbandoned.length) {
+      allAbandoned = cached;
+    }
     filterAbandoned();
-    /* Update dashboard stat */
     const onlyAbandoned = allAbandoned.filter(a => a.status === 'abandoned');
     const converted     = allAbandoned.filter(a => a.status === 'converted');
     const lostVal       = onlyAbandoned.reduce((s, a) => s + (a.total || 0), 0);
@@ -5514,10 +5625,15 @@ async function loadAbandoned() {
     document.getElementById('ab-total') && (document.getElementById('ab-total').textContent = onlyAbandoned.length);
     document.getElementById('ab-converted') && (document.getElementById('ab-converted').textContent = converted.length);
     document.getElementById('ab-lost-value') && (document.getElementById('ab-lost-value').textContent = 'PKR ' + lostVal.toLocaleString());
-    /* Badge */
     const badge = document.getElementById('abandoned-badge');
     if (badge) { if (onlyAbandoned.length > 0) { badge.style.display = 'flex'; badge.textContent = onlyAbandoned.length; } else badge.style.display = 'none'; }
-  } catch (err) { console.error('Abandoned load error:', err); }
+  } catch (err) {
+    console.warn('Abandoned load offline fallback:', err);
+    if (!allAbandoned.length) {
+      allAbandoned = cached;
+      filterAbandoned();
+    }
+  }
 }
 
 function filterAbandoned() {
@@ -5675,17 +5791,29 @@ function updateVisitorCount(count) {
 }
 
 async function loadVisitors() {
+  const cached = AdminLocalStore.getVisitors ? AdminLocalStore.getVisitors() : [];
+  if (cached && cached.length) {
+    updateVisitorCount(cached.length);
+    renderVisitors(cached);
+  }
   try {
     const res  = await apiFetch('/visitors');
-    const data = await res.json();
-    const count = data.count ?? 0;
-    const visitors = data.visitors || [];
-    updateVisitorCount(count);
-    renderVisitors(visitors);
+    if (res.ok) {
+      const data = await res.json();
+      const count = data.count ?? (data.visitors || []).length;
+      const visitors = data.visitors || [];
+      updateVisitorCount(count);
+      renderVisitors(visitors);
+      if (AdminLocalStore.saveVisitors) AdminLocalStore.saveVisitors(visitors);
+    } else {
+      updateVisitorCount(cached.length);
+      renderVisitors(cached);
+    }
     const lu = document.getElementById('v-last-update');
     if (lu) lu.textContent = new Date().toLocaleTimeString('en-PK');
   } catch (err) {
-    console.error('Visitors load error:', err);
+    updateVisitorCount(cached.length);
+    renderVisitors(cached);
   }
 }
 
@@ -5865,23 +5993,26 @@ function bktConfirm({ title = 'Are you sure?', message = 'This action cannot be 
 async function loadReviews() {
   const tbody = document.getElementById('reviews-body');
   if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">Loading…</td></tr>';
+  const cached = AdminLocalStore.getReviews ? AdminLocalStore.getReviews() : [];
+  if (!cached.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">Loading…</td></tr>';
+  }
   try {
     const filter = document.getElementById('reviews-filter')?.value || 'all';
     const raw = await apiFetch('/reviews/all');
-    const res = await raw.json();
-
-    if (!raw.ok) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">${res.error || 'Could not load reviews (status ' + raw.status + ').'}</td></tr>`;
-      return;
+    let reviews = [];
+    if (raw.ok) {
+      const res = await raw.json();
+      reviews = res.reviews || [];
+      if (AdminLocalStore.saveReviews) AdminLocalStore.saveReviews(reviews);
+    } else {
+      reviews = cached;
     }
-
-    let reviews = res.reviews || [];
 
     if (filter === 'pending')  reviews = reviews.filter(r => !r.approved);
     if (filter === 'approved') reviews = reviews.filter(r =>  r.approved);
 
-    const pendingCount = (res.reviews || []).filter(r => !r.approved).length;
+    const pendingCount = reviews.filter(r => !r.approved).length;
     const badge = document.getElementById('reviews-badge');
     if (badge) { badge.textContent = pendingCount; badge.style.display = pendingCount ? 'inline-block' : 'none'; }
 
