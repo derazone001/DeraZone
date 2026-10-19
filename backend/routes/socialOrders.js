@@ -46,7 +46,8 @@ router.post('/', requireAdmin, async (req, res) => {
     /* ── Enrich items and calculate totals ── */
     const enrichedItems = items.map(i => {
       let pp = Number(i.purchasePrice) || 0;
-      if (!pp && i.name) {
+      const isCustom = i.productId === 'custom' || (!i.productId && i.name);
+      if (req.user?.role === 'supervisor' || !pp || !isCustom) {
         const match = store.products.find(p => p.name === String(i.name).trim() || p.id === String(i.productId).trim());
         if (match && match.purchasePrice != null) pp = match.purchasePrice;
       }
@@ -187,6 +188,12 @@ router.get('/', requireAdmin, async (req, res) => {
       }
 
       if (lim)    orders = orders.slice(0, parseInt(lim));
+      if (req.user?.role === 'supervisor') {
+        orders = orders.map(o => ({
+          ...o,
+          items: (o.items || []).map(it => { const { purchasePrice, ...cleanIt } = it; return cleanIt; })
+        }));
+      }
       return res.json({ orders, total: orders.length });
     }
 
@@ -194,6 +201,12 @@ router.get('/', requireAdmin, async (req, res) => {
     if (status) orders = orders.filter(o => o.status === status);
     if (source) orders = orders.filter(o => o.source === source);
     if (lim)    orders = orders.slice(0, parseInt(lim));
+    if (req.user?.role === 'supervisor') {
+      orders = orders.map(o => ({
+        ...o,
+        items: (o.items || []).map(it => { const { purchasePrice, ...cleanIt } = it; return cleanIt; })
+      }));
+    }
     return res.json({ orders, total: orders.length });
 
   } catch (err) {
@@ -202,6 +215,12 @@ router.get('/', requireAdmin, async (req, res) => {
     if (req.query.status) orders = orders.filter(o => o.status === req.query.status);
     if (req.query.source) orders = orders.filter(o => o.source === req.query.source);
     if (req.query.limit)  orders = orders.slice(0, parseInt(req.query.limit));
+    if (req.user?.role === 'supervisor') {
+      orders = orders.map(o => ({
+        ...o,
+        items: (o.items || []).map(it => { const { purchasePrice, ...cleanIt } = it; return cleanIt; })
+      }));
+    }
     return res.json({ orders, total: orders.length });
   }
 });
@@ -209,6 +228,9 @@ router.get('/', requireAdmin, async (req, res) => {
 /* ── PUT /api/social-orders/:id — Update/Edit social media order (admin only) ── */
 router.put('/:id', requireAdmin, async (req, res) => {
   try {
+    if (req.user?.role === 'supervisor') {
+      return res.status(403).json({ error: 'Support staff cannot modify existing orders.' });
+    }
     const orderId = req.params.id;
     let existingOrder = null;
     let dbRef = null;
@@ -358,6 +380,9 @@ router.patch('/:id/status', requireAdmin, async (req, res) => {
 /* ── DELETE /api/social-orders/:id — Delete order (admin only) ── */
 router.delete('/:id', requireAdmin, async (req, res) => {
   try {
+    if (req.user?.role === 'supervisor') {
+      return res.status(403).json({ error: 'Support staff cannot delete orders.' });
+    }
     if (isFirebaseAvailable()) {
       await getDB().collection('social_orders').doc(req.params.id).delete();
     }

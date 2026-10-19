@@ -106,7 +106,8 @@ tr:hover td{background:rgba(0,0,0,.02);}
 .badge-role-super_admin{background:rgba(184,136,58,.2);color:var(--gold);}
 .badge-role-admin{background:rgba(59,130,246,.15);color:var(--blue);}
 .badge-role-supervisor{background:rgba(34,197,94,.15);color:var(--green);}
-.badge-role-investor{background:rgba(168,85,247,.15);color:#a855f7;}
+body.is-supervisor .profit-col, body.is-supervisor .cost-cell { display: none !important; }
+body.is-supervisor .soc-item-row { grid-template-columns: 2.4fr 60px 85px 100px 36px 36px; }
 /* ── Social platform badges ── */
 .badge-facebook  {background:rgba(24,119,242,.15);color:#1877f2;}
 .badge-instagram {background:rgba(225,48,108,.15);color:#e1306c;}
@@ -293,7 +294,12 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
     <p>Sign in to manage your store</p>
     <div id="login-error" class="login-error"></div>
     <input type="text"     id="login-username" placeholder="Username" autocomplete="username"/>
-    <input type="password" id="login-password" placeholder="Password" autocomplete="current-password"/>
+    <div style="position:relative;width:100%;margin-bottom:14px;">
+      <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" style="width:100%;padding-right:42px;margin-bottom:0;box-sizing:border-box;"/>
+      <button type="button" onclick="togglePasswordVisibility('login-password', this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.95rem;padding:4px;display:flex;align-items:center;justify-content:center;" title="Show/Hide Password">
+        <i class="fa-solid fa-eye"></i>
+      </button>
+    </div>
     <button id="login-btn" onclick="doLogin()">Sign In <i class="fa-solid fa-arrow-right"></i></button>
   </div>
 </div>
@@ -376,6 +382,19 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
 
 <!-- ── DASHBOARD ── -->
 <div id="page-dashboard" class="page">
+  <div id="dashboard-restricted" style="display:none; flex-direction:column; align-items:center; justify-content:center; min-height:420px; text-align:center; padding:50px 20px; gap:16px;">
+    <div style="width:70px; height:70px; border-radius:50%; background:rgba(239,68,68,0.12); color:#ef4444; display:flex; align-items:center; justify-content:center; font-size:2rem; margin:0 auto;">
+      <i class="fa-solid fa-lock"></i>
+    </div>
+    <h2 style="font-size:1.4rem; font-weight:700; margin:0; color:var(--text);">Dashboard Restricted</h2>
+    <p style="color:var(--muted); font-size:0.9rem; max-width:440px; margin:0; line-height:1.6;">
+      Support staff accounts do not have permission to view store analytics, revenue, or financial profit data.
+    </p>
+    <button class="btn btn-gold btn-sm" onclick="showPage('orders')" style="margin-top:8px;">
+      <i class="fa-solid fa-box"></i> Go to Orders
+    </button>
+  </div>
+  <div id="dashboard-content">
   <div class="page-header">
     <h1>Dashboard</h1>
     <div class="ml-auto">
@@ -470,6 +489,8 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
   </div>
 </div>
 
+</div><!-- dashboard-content-end -->
+
 <!-- ── ORDERS ── -->
 <div id="page-orders" class="page" style="display:none">
   <div class="page-header">
@@ -483,7 +504,7 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
     </div>
   </div>
   <div class="table-wrap">
-    <table><thead><tr><th>Order Ref</th><th>Customer</th><th>Items</th><th>Total</th><th>Profit</th><th>Payment</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+    <table><thead><tr><th>Order Ref</th><th>Customer</th><th>Items</th><th>Total</th><th class="profit-col">Profit</th><th>Payment</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
     <tbody id="orders-body"></tbody></table>
   </div>
 </div>
@@ -590,7 +611,7 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
   <div class="page-header">
     <h1><i class="fa-solid fa-tag" style="color:var(--gold);margin-right:8px"></i>Discount Coupons</h1>
     <div class="ml-auto">
-      <button class="btn btn-gold" onclick="openCouponModal()"><i class="fa-solid fa-plus"></i> New Coupon</button>
+      <button class="btn btn-gold" id="add-coupon-btn" onclick="openCouponModal()"><i class="fa-solid fa-plus"></i> New Coupon</button>
     </div>
   </div>
 
@@ -839,34 +860,15 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
     <div class="ml-auto" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
       <input class="search-input" id="product-search" placeholder="Search…" oninput="filterProductsTable()"/>
       <select class="filter-sel" id="product-category-filter" onchange="filterProductsTable()" title="Filter by category">
-
         <option value="">All Categories</option>
-        <optgroup label="Jewelry">
-          <option value="bracelets">Bracelets</option>
-          <option value="rings">Rings</option>
-          <option value="earrings">Earrings</option>
-          <option value="necklace">Necklace</option>
-          <option value="bangles">Bangles</option>
-          <option value="jewelry-sets">Jewelry Sets</option>
-        </optgroup>
-        <optgroup label="Cosmetics">
-          <option value="face-cosmetics">Face Cosmetics</option>
-          <option value="eye-makeup">Eye Makeup</option>
-          <option value="lip-makeup">Lip Makeup</option>
-          <option value="nail-cosmetics">Nail Cosmetics</option>
-          <option value="skin-care">Skin Care</option>
-          <option value="hand-foot-care">Hand & Foot Care</option>
-          <option value="makeup-tools">Makeup Tools & Brushes</option>
-          <option value="makeup-accessories">Makeup Accessories</option>
-        </optgroup>
-        <optgroup label="Deals">
-          <option value="deals">Deals</option>
-        </optgroup>
-        <optgroup label="Add-on Boxes">
-          <option value="ring-boxes">Ring Boxes</option>
-          <option value="jewelry-boxes">Jewelry Boxes</option>
-        </optgroup>
-
+        <option value="accessories">Accessories</option>
+        <option value="gadgets">Gadgets</option>
+        <option value="wireless-earbuds-audio">Wireless Earbuds & Audio</option>
+        <option value="jewellery">Jewellery</option>
+        <option value="fashion-lifestyle">Fashion & Lifestyle</option>
+        <option value="footwear">Footwear</option>
+        <option value="clothing-apparel">Clothing & Apparel</option>
+        <option value="winter-collection">Winter Collection</option>
       </select>
       <select class="filter-sel" id="product-sort-order" onchange="filterProductsTable()" title="Sort by time added">
         <option value="newest">Newest First</option>
@@ -875,7 +877,7 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
       <button class="btn btn-outline" onclick="exportProductsExcel()" title="Export to Excel"><i class="fa-solid fa-file-excel"></i> Export</button>
       <button class="btn btn-outline" onclick="openPinnedModal()"><i class="fa-solid fa-thumbtack"></i> Pinned Collections</button>
         <button class="btn btn-outline" onclick="openSpotlightModal()"><i class="fa-solid fa-star"></i> Spotlight Products</button>
-      <button class="btn btn-gold" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> Add Product</button>
+      <button class="btn btn-gold" id="btn-add-product" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> Add Product</button>
     </div>
   </div>
   <div id="products-body" class="product-admin-grid"></div>
@@ -1147,7 +1149,7 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
       <div class="form-group"><label>Last Name</label><input type="text" id="prof-lname" placeholder="Last Name"/></div>
     </div>
     <div class="form-group"><label>Username</label><input type="text" id="prof-username" placeholder="Username"/></div>
-    <div class="form-group"><label>New Password (Optional)</label><input type="password" id="prof-password" placeholder="Leave blank to keep current password"/></div>
+    <div class="form-group"><label>New Password (Optional)</label><div style="position:relative;width:100%;"><input type="password" id="prof-password" placeholder="Leave blank to keep current password" style="width:100%;padding-right:42px;box-sizing:border-box;"/><button type="button" onclick="togglePasswordVisibility('prof-password', this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.95rem;padding:4px;display:flex;align-items:center;justify-content:center;" title="Show/Hide Password"><i class="fa-solid fa-eye"></i></button></div></div>
     <button class="btn btn-gold" onclick="updateMyProfile()">Update Profile</button>
   </div>
 
@@ -1159,18 +1161,26 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
     <button class="btn btn-gold" onclick="saveLaunchDate()">Save Launch Date</button>
   </div>
 
-  <div class="settings-section">
+  <div class="settings-section" id="sys-info-section">
     <h3><i class="fa-solid fa-server" style="color:var(--gold);margin-right:8px"></i>System Info</h3>
     <div id="sys-info" style="font-size:0.84rem;color:var(--muted);line-height:2;"></div>
   </div>
 
-  <div class="settings-section">
+  <div class="settings-section" id="export-data-section">
     <h3><i class="fa-solid fa-file-export" style="color:var(--gold);margin-right:8px"></i>Export Data</h3>
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
       <button class="btn btn-outline" onclick="exportExcel('orders')"><i class="fa-solid fa-file-excel"></i> Orders Excel</button>
       <button class="btn btn-outline" onclick="exportExcel('subscribers')"><i class="fa-solid fa-file-excel"></i> Subscribers Excel</button>
       <button class="btn btn-outline" onclick="exportExcel('messages')"><i class="fa-solid fa-file-excel"></i> Messages Excel</button>
     </div>
+  </div>
+
+  <div class="settings-section" id="settings-restricted-box" style="display:none;text-align:center;padding:40px 20px;background:rgba(255,255,255,0.02);border:1px dashed var(--border);border-radius:8px;">
+    <div style="font-size:2.2rem;margin-bottom:10px;">🔒</div>
+    <h3 style="margin:0 0 8px;font-weight:700;color:var(--text);">Restricted Settings</h3>
+    <p style="color:var(--muted);font-size:0.85rem;max-width:440px;margin:0 auto;line-height:1.6;">
+      Only the Super Admin has permission to modify site launch dates, system configurations, and export database files. As Support Staff, you can manage your personal profile credentials above.
+    </p>
   </div>
 </div>
 
@@ -1401,31 +1411,14 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
         <div class="form-group" style="flex: 2;">
           <label>Additional Categories</label>
           <div id="p-additional-categories" style="border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 120px; overflow-y: auto; background: var(--bg); display: flex; flex-direction: column; gap: 6px;">
-
-            <strong style="font-size:0.8rem; color:var(--muted); margin-top:4px;">Jewelry</strong>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="bracelets"> Bracelets</label>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="rings"> Rings</label>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="earrings"> Earrings</label>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="necklace"> Necklace</label>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="bangles"> Bangles</label>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="jewelry-sets"> Jewelry Sets</label>
-
-            <strong style="font-size:0.8rem; color:var(--muted); margin-top:8px;">Cosmetics</strong>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="face-cosmetics"> Face Cosmetics</label>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="eye-makeup"> Eye Makeup</label>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="lip-makeup"> Lip Makeup</label>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="nail-cosmetics"> Nail Cosmetics</label>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="skin-care"> Skin Care</label>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="hand-foot-care"> Hand & Foot Care</label>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="makeup-tools"> Makeup Tools & Brushes</label>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="makeup-accessories"> Makeup Accessories</label>
-
-            <strong style="font-size:0.8rem; color:var(--muted); margin-top:8px;">Deals</strong>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="deals"> Deals</label>
-            <strong style="font-size:0.8rem; color:var(--muted); margin-top:8px;">Add-on Boxes</strong>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="ring-boxes"> Ring Boxes</label>
-            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="jewelry-boxes"> Jewelry Boxes</label>
-
+            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="accessories"> Accessories</label>
+            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="gadgets"> Gadgets</label>
+            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="wireless-earbuds-audio"> Wireless Earbuds & Audio</label>
+            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="jewellery"> Jewellery</label>
+            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="fashion-lifestyle"> Fashion & Lifestyle</label>
+            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="footwear"> Footwear</label>
+            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="clothing-apparel"> Clothing & Apparel</label>
+            <label style="font-size:0.9rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;"><input type="checkbox" value="winter-collection"> Winter Collection</label>
           </div>
         </div>
         <div class="form-group"><label>Badge</label>
@@ -1565,13 +1558,12 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
         <div class="form-group"><label>First Name</label><input id="e-fname" disabled/></div>
         <div class="form-group"><label>Username</label><input id="e-username" disabled/></div>
       </div>
-      <div class="form-group"><label>New Password</label><input type="password" id="e-password" placeholder="Leave blank to keep current password"/></div>
+      <div class="form-group"><label>New Password</label><div style="position:relative;width:100%;"><input type="password" id="e-password" placeholder="Leave blank to keep current password" style="width:100%;padding-right:42px;box-sizing:border-box;"/><button type="button" onclick="togglePasswordVisibility('e-password', this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.95rem;padding:4px;display:flex;align-items:center;justify-content:center;" title="Show/Hide Password"><i class="fa-solid fa-eye"></i></button></div></div>
       <div class="form-group"><label>Role</label>
         <select id="e-role">
           <option value="super_admin">Super Admin</option>
           <option value="admin">Admin</option>
           <option value="supervisor">Support Staff</option>
-          <option value="investor">Investor</option>
         </select>
       </div>
     </div>
@@ -1592,13 +1584,12 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
         <div class="form-group"><label>Last Name</label><input id="r-lname" placeholder="Last name"/></div>
       </div>
       <div class="form-group"><label>Username *</label><input id="r-username" placeholder="username (used to login)"/></div>
-      <div class="form-group"><label>Password *</label><input type="password" id="r-password" placeholder="Min 8 characters"/></div>
+      <div class="form-group"><label>Password *</label><div style="position:relative;width:100%;"><input type="password" id="r-password" placeholder="Min 8 characters" style="width:100%;padding-right:42px;box-sizing:border-box;"/><button type="button" onclick="togglePasswordVisibility('r-password', this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.95rem;padding:4px;display:flex;align-items:center;justify-content:center;" title="Show/Hide Password"><i class="fa-solid fa-eye"></i></button></div></div>
       <div class="form-group"><label>Role *</label>
         <select id="r-role">
           <option value="super_admin">Super Admin — Full access to everything, including finance and deleting other roles</option>
           <option value="admin">Admin — Sees all data &amp; can modify, except earnings &amp; Excel exports</option>
-          <option value="supervisor">Support Staff — Messages, orders (view + status + reply), and review approvals only</option>
-          <option value="investor">Investor — 100% Read-only access. Can view everything but cannot change anything.</option>
+          <option value="supervisor">Support Staff — Orders & Social Orders management, Invoices, Abandoned, Coupons view, Reviews, Live Visitors, Subscribers</option>
         </select>
       </div>
     </div>
@@ -1765,6 +1756,17 @@ async function verifyToken() {
   }
 }
 
+function togglePasswordVisibility(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  const isPass = inp.type === 'password';
+  inp.type = isPass ? 'text' : 'password';
+  const icon = btn.querySelector('i');
+  if (icon) {
+    icon.className = isPass ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+  }
+}
+
 async function doLogin() {
   const username = document.getElementById('login-username').value.trim();
   const password = document.getElementById('login-password').value;
@@ -1833,108 +1835,126 @@ function onLoginSuccess() {
 }
 
 function applyRolePermissions(role) {
-  const existingStyle = document.getElementById('investor-styles');
-  if (existingStyle) existingStyle.remove();
-  /* Super Admin & CEO — sees everything */
-  if (['ceo', 'super_admin'].includes(role)) {
-    document.getElementById('activity-btn').style.display = 'inline-flex';
-    document.getElementById('nav-spendings').style.display = 'flex';
-    document.getElementById('card-spendings').style.display = 'flex';
+  const isSuperAdmin = ['ceo', 'super_admin'].includes(role);
+  const isSupervisor = role === 'supervisor';
+  const isAdmin = role === 'admin';
+
+  if (isSupervisor) {
+    document.body.classList.add('is-supervisor');
+  } else {
+    document.body.classList.remove('is-supervisor');
+  }
+
+  /* ── Super Admin & CEO — sees everything ── */
+  if (isSuperAdmin) {
+    document.getElementById('activity-btn')?.style.setProperty('display', 'inline-flex');
+    document.getElementById('nav-spendings')?.style.setProperty('display', 'flex');
+    document.getElementById('card-spendings')?.style.setProperty('display', 'flex');
+    document.getElementById('add-user-btn')?.style.setProperty('display', 'inline-flex');
     return;
   }
-  /* Investor — sees everything (read-only), including spendings */
-  if (role === 'investor') {
-    document.getElementById('nav-spendings').style.display = 'flex';
-    document.getElementById('card-spendings').style.display = 'flex';
-  }
-  /* Hide Add User button for non-super admins */
-  document.getElementById('add-user-btn').style.display = 'none';
 
-  /* Admin — hide earnings stats + Excel export buttons */
-  if (role === 'admin') {
-    /* Hide Settings nav entirely — Change Password access is super_admin only now */
-    document.getElementById('nav-settings')?.style.setProperty('display', 'none');
-    /* Coupons are super_admin-only — discount decisions stay with the owner */
-    document.getElementById('nav-coupons')?.style.setProperty('display', 'none');
+  /* ── Admin (Operations Manager) ── */
+  if (isAdmin) {
+    document.getElementById('add-user-btn')?.style.setProperty('display', 'none');
+    document.getElementById('nav-spendings')?.style.setProperty('display', 'none');
+    document.getElementById('card-spendings')?.style.setProperty('display', 'none');
     document.getElementById('launch-date-section')?.style.setProperty('display', 'none');
-    /* Hide revenue stat card */
-    const revenueCard = document.getElementById('s-revenue')?.closest('.stat-card');
-    if (revenueCard) revenueCard.style.display = 'none';
-    /* Hide daily profit stat card */
-    const profitCard = document.getElementById('s-profit')?.closest('.stat-card');
-    if (profitCard) profitCard.style.display = 'none';
-    const totalProfitCard = document.getElementById('s-total-profit')?.closest('.stat-card');
-    if (totalProfitCard) totalProfitCard.style.display = 'none';
-    /* Hide Excel export buttons */
+    
+    // Hide revenue/profit stats
+    document.getElementById('s-revenue')?.closest('.stat-card')?.style.setProperty('display', 'none');
+    document.getElementById('s-profit')?.closest('.stat-card')?.style.setProperty('display', 'none');
+    document.getElementById('s-total-profit')?.closest('.stat-card')?.style.setProperty('display', 'none');
+    document.getElementById('lifetime-earnings-wrap')?.style.setProperty('display', 'none');
+    document.getElementById('daily-statements-wrap')?.style.setProperty('display', 'none');
+    document.getElementById('monthly-statements-wrap')?.style.setProperty('display', 'none');
     document.querySelectorAll('[onclick*="exportExcel"]').forEach(btn => btn.style.display = 'none');
-    /* Hide cost/purchase-price column in products table — only super admin sees margins */
-    document.querySelectorAll('.cost-cell').forEach(el => el.style.display = 'none');
-    /* Hide lifetime earnings + daily statements sections — super admin only */
-    document.getElementById('lifetime-earnings-wrap')?.style.setProperty('display', 'none');
-    document.getElementById('daily-statements-wrap')?.style.setProperty('display', 'none');
-    document.getElementById('monthly-statements-wrap')?.style.setProperty('display', 'none');
+    return;
   }
 
-  /* Supervisor — restrict to only Orders + Messages in sidebar */
-  if (role === 'supervisor') {
-    /* Hide sidebar items not allowed */
-    ['nav-dashboard','nav-products','nav-subscribers','nav-roles','nav-settings','nav-coupons'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = 'none';
-    });
-    /* Hide Add Social Order button */
-    const socBtn = document.getElementById('add-social-order-btn');
-    if (socBtn) socBtn.style.display = 'none';
-    /* Hide revenue stat card */
-    const revenueCard = document.getElementById('s-revenue')?.closest('.stat-card');
-    if (revenueCard) revenueCard.style.display = 'none';
-    const profitCard = document.getElementById('s-profit')?.closest('.stat-card');
-    if (profitCard) profitCard.style.display = 'none';
-    const totalProfitCard = document.getElementById('s-total-profit')?.closest('.stat-card');
-    if (totalProfitCard) totalProfitCard.style.display = 'none';
-    document.querySelectorAll('.cost-cell').forEach(el => el.style.display = 'none');
-    document.getElementById('lifetime-earnings-wrap')?.style.setProperty('display', 'none');
-    document.getElementById('daily-statements-wrap')?.style.setProperty('display', 'none');
-    document.getElementById('monthly-statements-wrap')?.style.setProperty('display', 'none');
-    /* Redirect to orders page */
-    showPage('orders');
-  }
-
-  /* Investor — 100% read-only. Hide all action buttons using a global style injection */
-  if (role === 'investor') {
-    const style = document.createElement('style');
-    style.id = 'investor-styles';
-    style.innerHTML = `
-      .action-btn, button[onclick*="delete"], button[onclick*="save"], button[onclick*="create"],
-      button[onclick*="toggleUserStatus"], button[onclick*="exportExcel"],
-      .add-btn, .edit-btn, form button[type="submit"]:not(#profile-form button) {
-          display: none !important;
-      }
-      #add-user-btn, #add-social-order-btn, .product-actions button {
-          display: none !important;
-      }
-      /* Prevent toggling toggles visually */
-      #main-app input[type="checkbox"].toggle-checkbox {
-          pointer-events: none;
-      }
-      #main-app select {
-          pointer-events: none;
-          background-color: #f5f5f5;
-      }
-    `;
-    if (!document.getElementById('investor-styles')) {
-      document.head.appendChild(style);
+  /* ── Support Staff (supervisor) ── */
+  if (isSupervisor) {
+    // 1. Dashboard: restricted (0% access to financial dashboard)
+    const navDash = document.getElementById('nav-dashboard');
+    if (navDash) {
+      navDash.innerHTML = '<i class="fa-solid fa-lock" style="color:var(--muted)"></i><span>Dashboard</span> <span style="font-size:0.62rem;background:rgba(239,68,68,0.15);color:#ef4444;padding:2px 6px;border-radius:4px;margin-left:auto;">Locked</span>';
     }
+
+    // 2. Roles & Spendings: locked
+    const navRoles = document.getElementById('nav-roles');
+    if (navRoles) {
+      navRoles.innerHTML = '<i class="fa-solid fa-lock" style="color:var(--muted)"></i><span>Users & Roles</span>';
+    }
+    const navSpendings = document.getElementById('nav-spendings');
+    if (navSpendings) navSpendings.style.display = 'none';
+
+    // 3. Settings: Allowed for My Profile only, lock others
+    const navSettings = document.getElementById('nav-settings');
+    if (navSettings) navSettings.style.display = 'flex';
+    document.getElementById('launch-date-section')?.style.setProperty('display', 'none');
+    document.getElementById('sys-info-section')?.style.setProperty('display', 'none');
+    document.getElementById('export-data-section')?.style.setProperty('display', 'none');
+    const setRestricted = document.getElementById('settings-restricted-box');
+    if (setRestricted) setRestricted.style.display = 'block';
+
+    // 4. Coupons: view only, cannot create
+    const navCoupons = document.getElementById('nav-coupons');
+    if (navCoupons) navCoupons.style.display = 'flex';
+    const addCouponBtn = document.getElementById('add-coupon-btn');
+    if (addCouponBtn) {
+      addCouponBtn.disabled = true;
+      addCouponBtn.innerHTML = '<i class="fa-solid fa-lock"></i> New Coupon';
+      addCouponBtn.style.opacity = '0.6';
+      addCouponBtn.style.cursor = 'not-allowed';
+      addCouponBtn.title = 'Super Admin only';
+    }
+
+    // 5. Products: view only, cost hidden, cannot add/edit
+    const navProducts = document.getElementById('nav-products');
+    if (navProducts) navProducts.style.display = 'flex';
+    const addProdBtn = document.getElementById('btn-add-product');
+    if (addProdBtn) {
+      addProdBtn.disabled = true;
+      addProdBtn.innerHTML = '<i class="fa-solid fa-lock"></i> Add Product';
+      addProdBtn.style.opacity = '0.6';
+      addProdBtn.style.cursor = 'not-allowed';
+      addProdBtn.title = 'Super Admin only';
+    }
+    document.querySelectorAll('.cost-cell').forEach(el => el.style.display = 'none');
+
+    // 6. Social Orders: allowed to create social orders, hide profit
+    const navSoc = document.getElementById('nav-social-orders');
+    if (navSoc) navSoc.style.display = 'flex';
+    const addSocBtn = document.getElementById('add-social-order-btn');
+    if (addSocBtn) addSocBtn.style.display = 'inline-flex';
+    document.getElementById('soc-revenue')?.closest('.stat-card')?.style.setProperty('display', 'none');
+
+    // 7. Orders: view & status allowed
+    const navOrders = document.getElementById('nav-orders');
+    if (navOrders) navOrders.style.display = 'flex';
+
+    // 8. Other features: all visible
+    ['nav-invoices','nav-abandoned','nav-visitors','nav-subscribers','nav-reviews','nav-review-images','nav-messages'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'flex';
+    });
+
+    // Hide financial widgets
+    document.getElementById('s-revenue')?.closest('.stat-card')?.style.setProperty('display', 'none');
+    document.getElementById('s-profit')?.closest('.stat-card')?.style.setProperty('display', 'none');
+    document.getElementById('s-total-profit')?.closest('.stat-card')?.style.setProperty('display', 'none');
+    document.getElementById('lifetime-earnings-wrap')?.style.setProperty('display', 'none');
+    document.getElementById('daily-statements-wrap')?.style.setProperty('display', 'none');
+    document.getElementById('monthly-statements-wrap')?.style.setProperty('display', 'none');
+    document.querySelectorAll('[onclick*="exportExcel"]').forEach(btn => btn.style.display = 'none');
+    document.getElementById('add-user-btn')?.style.setProperty('display', 'none');
+
+    // Redirect directly to orders
+    showPage('orders');
   }
 }
 
 function logout() {
-  /* Remove investor read-only styles before going back to login */
-  const investorStyle = document.getElementById('investor-styles');
-  if (investorStyle) investorStyle.remove();
-  /* Clear any leftover error messages so login screen is clean */
-  const errEl = document.getElementById('login-error');
-  if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
   clearSession();
   showLogin();
   document.getElementById('login-username').value = '';
@@ -2115,24 +2135,49 @@ document.addEventListener('click', (e) => {
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + name).style.display = 'block';
-  document.getElementById('nav-' + name).classList.add('active');
 
-  if (name === 'dashboard') loadDashboard();
-  if (name === 'orders')    loadOrders();
-  if (name === 'products')  loadProducts();
-  if (name === 'messages')  loadMessages();
-  if (name === 'subscribers') loadSubscribers();
-  if (name === 'reviews')     loadReviews();
-  if (name === 'roles')     loadRoles();
-  if (name === 'settings') {
-    document.getElementById('prof-fname').value = currentUser.fname || '';
-    document.getElementById('prof-lname').value = currentUser.lname || '';
-    document.getElementById('prof-username').value = currentUser.username || '';
-    loadSystemInfo();
+  const isSupervisor = currentUser?.role === 'supervisor';
+
+  if (name === 'dashboard') {
+    if (isSupervisor) {
+      document.getElementById('page-dashboard').style.display = 'block';
+      document.getElementById('dashboard-content').style.display = 'none';
+      document.getElementById('dashboard-restricted').style.display = 'flex';
+      document.getElementById('nav-dashboard')?.classList.add('active');
+      return;
+    } else {
+      document.getElementById('dashboard-content').style.display = 'block';
+      document.getElementById('dashboard-restricted').style.display = 'none';
+      loadDashboard();
+    }
   }
-  if (name === 'spendings') loadSpendings();
-  if (name === 'visitors')  loadVisitors();
+
+  if (name === 'roles' && isSupervisor) {
+    document.getElementById('page-roles').style.display = 'block';
+    document.getElementById('roles-table-wrap').style.display = 'none';
+    document.getElementById('roles-restricted').style.display = 'flex';
+    document.getElementById('nav-roles')?.classList.add('active');
+    return;
+  }
+
+  const pageEl = document.getElementById('page-' + name);
+  if (pageEl) pageEl.style.display = 'block';
+  document.getElementById('nav-' + name)?.classList.add('active');
+
+  if (name === 'orders')        loadOrders();
+  if (name === 'products')      loadProducts();
+  if (name === 'messages')      loadMessages();
+  if (name === 'subscribers')   loadSubscribers();
+  if (name === 'reviews')       loadReviews();
+  if (name === 'roles')         loadRoles();
+  if (name === 'settings') {
+    document.getElementById('prof-fname').value = currentUser?.fname || '';
+    document.getElementById('prof-lname').value = currentUser?.lname || '';
+    document.getElementById('prof-username').value = currentUser?.username || '';
+    if (!isSupervisor) loadSystemInfo();
+  }
+  if (name === 'spendings')     loadSpendings();
+  if (name === 'visitors')      loadVisitors();
   if (name === 'abandoned')     loadAbandoned();
   if (name === 'social-orders') loadSocialOrders();
   if (name === 'coupons')       loadCoupons();
@@ -2147,7 +2192,7 @@ async function loadDashboard() {
   loadRecentOrders();
   loadVisitors();
   loadAbandoned();
-  if (['ceo', 'super_admin', 'investor'].includes(currentUser?.role)) {
+  if (['ceo', 'super_admin'].includes(currentUser?.role)) {
     loadLifetimeEarnings();
     loadDailyStatements();
     loadMonthlyStatements();
@@ -2734,6 +2779,7 @@ function renderSocialOrders(orders) {
     tbody.innerHTML = `<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-share-nodes"></i><p>No social media orders yet</p></div></td></tr>`;
     return;
   }
+  const isSupervisor = currentUser?.role === 'supervisor';
   tbody.innerHTML = orders.map(o => {
     const profit = calcOrderProfit(o);
     const profitColor = profit >= 0 ? 'var(--green)' : 'var(--red)';
@@ -2745,7 +2791,7 @@ function renderSocialOrders(orders) {
       <td><strong>${esc(o.customerName || '—')}</strong><br><small style="color:var(--muted)">${esc(o.phone || '')}</small></td>
       <td style="color:var(--muted)">${(o.items || []).length} item(s)</td>
       <td style="color:var(--gold);font-weight:600">PKR ${(o.total || 0).toLocaleString()}</td>
-      <td style="color:${profitColor};font-weight:600">${profitLabel}</td>
+      ${isSupervisor ? '' : `<td style="color:${profitColor};font-weight:600">${profitLabel}</td>`}
       <td>${(o.paymentMethod || 'cod').toUpperCase()}</td>
       <td style="color:var(--blue);font-weight:600">PKR ${Number(o.advanceAmount || 0).toLocaleString()}</td>
       <td>
@@ -2756,7 +2802,7 @@ function renderSocialOrders(orders) {
       <td>${fmtDate(o.createdAt)}</td>
       <td style="display:flex;gap:6px">
         <button class="btn btn-outline btn-sm" onclick="viewSocialOrder('${o.id}')">Details</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteSocialOrder('${o.id}')"><i class="fa-solid fa-trash"></i></button>
+        ${isSupervisor ? '' : `<button class="btn btn-danger btn-sm" onclick="deleteSocialOrder('${o.id}')"><i class="fa-solid fa-trash"></i></button>`}
       </td>
     </tr>`;
   }).join('');
@@ -2803,14 +2849,30 @@ function viewSocialOrder(id) {
       ${o.notes ? `<div style="grid-column:1/-1"><small style="color:var(--muted)">Notes</small><p style="font-size:0.85rem;color:var(--muted)">${esc(o.notes)}</p></div>` : ''}
     </div>
     <h4 style="margin-bottom:10px;font-size:0.88rem;color:var(--muted)">Items</h4>
-    ${(o.items||[]).map(i => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.85rem"><span>🛍️ ${esc(i.name)} ${i.variant && i.variant !== 'Standard' ? `<span style=\"color:var(--gold);font-size:0.75rem;margin-left:4px;\">(${i.variant})</span>` : ''} (x${i.qty})</span><span>PKR ${(i.price*i.qty).toLocaleString()}</span></div>`).join('')}
+    ${(o.items || []).map(i => {
+      const meta = [];
+      const v = i.variant || i.selectedVariant;
+      const s = i.size || i.selectedSize;
+      const c = i.color || i.selectedColor;
+      if (v && v !== 'Standard') meta.push(`Variant: ${esc(v)}`);
+      if (s) meta.push(`Size: ${esc(s)}`);
+      if (c) meta.push(`Color: ${esc(c)}`);
+      const metaHtml = meta.length ? `<div style="font-size:0.75rem;color:var(--gold);margin-top:2px;">${meta.map(m => `<span style="background:rgba(184,136,58,0.12);padding:2px 6px;border-radius:4px;margin-right:4px;">${m}</span>`).join('')}</div>` : '';
+      return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.85rem">
+        <div>
+          <span>🛍️ <strong>${esc(i.name)}</strong> (x${i.qty})</span>
+          ${metaHtml}
+        </div>
+        <span style="font-weight:600">PKR ${(i.price*i.qty).toLocaleString()}</span>
+      </div>`;
+    }).join('')}
     <div style="display:flex;justify-content:space-between;padding:10px 0"><span style="color:var(--muted)">Subtotal</span><span>PKR ${(o.subtotal||0).toLocaleString()}</span></div>
     ${o.discount > 0 ? `<div style="display:flex;justify-content:space-between;padding:10px 0;color:var(--gold)"><span>Discount${o.coupon?.code ? ' — Coupon "' + esc(o.coupon.code) + '"' : ''}</span><span>− PKR ${o.discount.toLocaleString()}</span></div>` : ''}
     <div style="display:flex;justify-content:space-between;padding:10px 0;font-weight:600"><span>Delivery</span><span>PKR ${(o.deliveryFee||0).toLocaleString()}</span></div>
     <div style="display:flex;justify-content:space-between;padding:10px 0;font-weight:700;font-size:1.05rem"><span>Total</span><span style="color:var(--gold)">PKR ${(o.total||0).toLocaleString()}</span></div>
     ${(o.advanceAmount || 0) > 0 ? `<div style="display:flex;justify-content:space-between;padding:10px 0;border-top:1px dashed var(--border);margin-top:8px;padding-top:12px;"><span style="color:var(--muted)">Advance Paid</span><span style="color:var(--green)">- PKR ${Number(o.advanceAmount).toLocaleString()}</span></div><div style="display:flex;justify-content:space-between;padding:10px 0;font-weight:700;font-size:1.05rem"><span>Remaining Balance</span><span style="color:var(--orange)">PKR ${(Math.max(0, (o.total||0) - Number(o.advanceAmount))).toLocaleString()}</span></div>` : ''}
     <div style="display:flex;gap:6px;margin-top:16px;">
-      <button class="btn btn-outline btn-sm" onclick="closeModal('social-detail-modal'); openSocialOrderModal('${o.id}')"><i class="fa-solid fa-pen"></i> Edit Order</button>
+      ${currentUser?.role === 'supervisor' ? '' : `<button class="btn btn-outline btn-sm" onclick="closeModal('social-detail-modal'); openSocialOrderModal('${o.id}')"><i class="fa-solid fa-pen"></i> Edit Order</button>`}
       <button class="btn btn-outline btn-sm" onclick="closeModal('social-detail-modal'); generateInvoice('${o.id}')"><i class="fa-solid fa-file-invoice"></i> Generate Invoice</button>
       <button class="btn btn-outline btn-sm" onclick="closeModal('social-detail-modal'); viewInvoicesForOrder('${o.id}')"><i class="fa-solid fa-history"></i> Invoice History</button>
     </div>
@@ -2995,12 +3057,12 @@ function addSocialItem(prefill = null) {
   const total = qty * sale;
 
   row.id = `soc-item-row-${idx}`;
-  /* A row is custom if: it was explicitly saved as custom (productId==='custom'),
-     or it has no productId at all but has a name (old custom item saved as productId=''). 
-     Regular catalog products always have a real productId string. */
   const isCustom = prefill
     ? (prefill.productId === 'custom' || (prefill.productId === '' && !!prefill.name))
     : false;
+  const isSupervisor = currentUser?.role === 'supervisor';
+  const isPriceLocked = isSupervisor && !isCustom;
+
   row.innerHTML = `
     <div class="soc-product-search-wrap" style="flex: 2;">
       <input type="hidden" id="si-pid-${idx}" value="${pid}"/>
@@ -3015,8 +3077,8 @@ function addSocialItem(prefill = null) {
       <div class="soc-product-dropdown" id="si-dropdown-${idx}" style="display:none"></div>
     </div>
     <input type="number" placeholder="Qty" min="0.01" step="any" id="si-qty-${idx}" value="${qty}" oninput="recalcSocialTotal()" title="Quantity"/>
-    <input type="number" placeholder="Cost" id="si-cost-${idx}" value="${cost}" oninput="recalcSocialTotal()" title="Unit Purchase Price" ${isCustom ? '' : ''}/>
-    <input type="number" placeholder="Sale" id="si-price-${idx}" value="${sale}" oninput="recalcSocialTotal()" title="Unit Sale Price"/>
+    <input type="number" placeholder="Cost" id="si-cost-${idx}" value="${cost}" oninput="recalcSocialTotal()" title="Unit Purchase Price" style="${isSupervisor ? 'display:none;' : ''}"/>
+    <input type="number" placeholder="Sale" id="si-price-${idx}" value="${sale}" oninput="recalcSocialTotal()" title="Unit Sale Price" ${isPriceLocked ? 'readonly' : ''} style="${isPriceLocked ? 'background:rgba(255,255,255,0.05);cursor:not-allowed;' : ''}"/>
     <div class="soc-price-display" id="si-row-total-${idx}">PKR ${total.toLocaleString()}</div>
     <button class="soc-item-remove" onclick="toggleSocCustomItem(${idx})" title="Toggle custom item" id="si-custom-btn-${idx}" style="background:${isCustom ? 'rgba(184,136,58,0.2)' : 'rgba(100,100,120,0.12)'};border-color:${isCustom ? 'var(--gold)' : 'var(--border)'};color:${isCustom ? 'var(--gold)' : 'var(--muted)'};font-size:0.75rem;">✏️</button>
     <button class="soc-item-remove" onclick="removeSocialItem(${idx})" title="Remove">✕</button>
@@ -3024,6 +3086,8 @@ function addSocialItem(prefill = null) {
   document.getElementById('soc-items-container').appendChild(row);
   if (isCustom) {
     document.getElementById(`si-pid-${idx}`).value = 'custom';
+  }
+}`).value = 'custom';
   }
 }
 
@@ -3033,16 +3097,24 @@ function toggleSocCustomItem(idx) {
   const customInput  = document.getElementById(`si-custom-name-${idx}`);
   const pidInput     = document.getElementById(`si-pid-${idx}`);
   const btn          = document.getElementById(`si-custom-btn-${idx}`);
+  const priceInput   = document.getElementById(`si-price-${idx}`);
   if (!searchInput || !customInput) return;
 
-  const isNowCustom = searchInput.style.display === 'none'; /* currently custom → switch back */
+  const isNowCustom = searchInput.style.display === 'none';
   if (isNowCustom) {
     /* Switch back to search mode */
     searchInput.style.display = 'block';
     customInput.style.display = 'none';
     pidInput.value = '';
     document.getElementById(`si-cost-${idx}`).value  = '0';
-    document.getElementById(`si-price-${idx}`).value = '0';
+    if (priceInput) {
+      priceInput.value = '0';
+      if (currentUser?.role === 'supervisor') {
+        priceInput.readOnly = true;
+        priceInput.style.background = 'rgba(255,255,255,0.05)';
+        priceInput.style.cursor = 'not-allowed';
+      }
+    }
     document.getElementById(`si-dropdown-${idx}`).style.display = 'none';
     btn.style.background = 'rgba(100,100,120,0.12)';
     btn.style.borderColor = 'var(--border)';
@@ -3053,7 +3125,12 @@ function toggleSocCustomItem(idx) {
     customInput.style.display = 'block';
     document.getElementById(`si-dropdown-${idx}`).style.display = 'none';
     pidInput.value = 'custom';
-    customInput.value = searchInput.value; /* carry over any typed text */
+    customInput.value = searchInput.value;
+    if (priceInput) {
+      priceInput.readOnly = false;
+      priceInput.style.background = '';
+      priceInput.style.cursor = '';
+    }
     btn.style.background = 'rgba(184,136,58,0.2)';
     btn.style.borderColor = 'var(--gold)';
     btn.style.color = 'var(--gold)';
@@ -3106,8 +3183,17 @@ function selectSocProduct(idx, matchIdx) {
   if (!product) return;
   document.getElementById(`si-search-${idx}`).value = product.name;
   document.getElementById(`si-pid-${idx}`).value     = product.id || '';
-  document.getElementById(`si-cost-${idx}`).value    = product.purchasePrice != null ? product.purchasePrice : 0;
-  document.getElementById(`si-price-${idx}`).value   = product.price || 0;
+  const costEl = document.getElementById(`si-cost-${idx}`);
+  if (costEl) costEl.value = (currentUser?.role === 'supervisor') ? 0 : (product.purchasePrice != null ? product.purchasePrice : 0);
+  const priceEl = document.getElementById(`si-price-${idx}`);
+  if (priceEl) {
+    priceEl.value = product.price || 0;
+    if (currentUser?.role === 'supervisor') {
+      priceEl.readOnly = true;
+      priceEl.style.background = 'rgba(255,255,255,0.05)';
+      priceEl.style.cursor = 'not-allowed';
+    }
+  }
   document.getElementById(`si-row-total-${idx}`).textContent = 'PKR ' + (product.price || 0).toLocaleString();
   document.getElementById(`si-dropdown-${idx}`).style.display = 'none';
   recalcSocialTotal();
@@ -3400,9 +3486,11 @@ function renderCoupons(coupons) {
       <td>${c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : 'Never'}</td>
       <td>${statusBadge}</td>
       <td>
+        ${currentUser?.role === 'supervisor' ? '<span style="color:var(--muted);font-size:0.75rem;">🔒 View Only</span>' : `
         <button class="btn btn-outline btn-sm" onclick="openCouponModalById('${c.id}')">Edit</button>
         <button class="btn btn-outline btn-sm" onclick="toggleCouponActive('${c.id}', ${c.active === false})">${c.active === false ? 'Enable' : 'Disable'}</button>
         <button class="btn btn-danger btn-sm" onclick="deleteCoupon('${c.id}', '${esc(c.code)}')">Delete</button>
+        `}
       </td>
     </tr>`;
   }).join('');
@@ -3426,6 +3514,7 @@ function openCouponModalById(id) {
 
 /* Pass a coupon object to edit it, or call with no args for a fresh "New Coupon" form */
 function openCouponModal(coupon) {
+  if (currentUser?.role === "supervisor") return;
   document.getElementById('coupon-modal-title').innerHTML = coupon
     ? '<i class="fa-solid fa-tag" style="color:var(--gold);margin-right:8px"></i>Edit Coupon'
     : '<i class="fa-solid fa-tag" style="color:var(--gold);margin-right:8px"></i>New Coupon';
@@ -3523,6 +3612,7 @@ function filterOrdersTable() {
 function renderOrders(orders) {
   const tbody = document.getElementById('orders-body');
   if (!orders.length) { tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-box-open"></i><p>No orders found</p></div></td></tr>`; return; }
+  const isSupervisor = currentUser?.role === 'supervisor';
   tbody.innerHTML = orders.map(o => {
     const profit = calcOrderProfit(o);
     const profitColor = profit >= 0 ? 'var(--green)' : 'var(--red)';
@@ -3530,10 +3620,10 @@ function renderOrders(orders) {
     return `
     <tr>
       <td><code style="color:var(--gold);cursor:pointer" onclick="viewOrder('${o.id}')">${o.id}</code></td>
-      <td>${o.delivery?.fname} ${o.delivery?.lname}<br><small style="color:var(--muted)">${o.delivery?.email}</small></td>
+      <td>${esc(o.delivery?.fname || '')} ${esc(o.delivery?.lname || '')}<br><small style="color:var(--muted)">${esc(o.delivery?.email || '')}</small></td>
       <td style="color:var(--muted)">${(o.items || []).length} item(s)</td>
       <td>PKR ${(o.total || 0).toLocaleString()}</td>
-      <td style="color:${profitColor};font-weight:600">${profitLabel}</td>
+      ${isSupervisor ? '' : `<td style="color:${profitColor};font-weight:600">${profitLabel}</td>`}
       <td>${(o.paymentMethod || 'cod').toUpperCase()}</td>
       <td>
         <select class="status-select" onchange="updateOrderStatus('${o.id}', this.value)">
@@ -3541,8 +3631,10 @@ function renderOrders(orders) {
         </select>
       </td>
       <td>${fmtDate(o.createdAt)}</td>
-      <td><button class="btn btn-outline btn-sm" onclick="viewOrder('${o.id}')">Details</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteOrder('${o.id}')"><i class="fa-solid fa-trash"></i></button></td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="viewOrder('${o.id}')">Details</button>
+        ${isSupervisor ? '' : `<button class="btn btn-danger btn-sm" onclick="deleteOrder('${o.id}')"><i class="fa-solid fa-trash"></i></button>`}
+      </td>
     </tr>`;
   }).join('');
 }
@@ -3592,7 +3684,7 @@ function viewOrder(id) {
 
   document.getElementById('order-modal-body').innerHTML = `
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px;">
-      <button class="btn btn-outline btn-sm" onclick="closeModal('order-modal'); openWebOrderEdit('${o.id}')"><i class="fa-solid fa-pen"></i> Edit Order</button>
+      ${currentUser?.role === 'supervisor' ? '' : `<button class="btn btn-outline btn-sm" onclick="closeModal('order-modal'); openWebOrderEdit('${o.id}')"><i class="fa-solid fa-pen"></i> Edit Order</button>`}
       <button class="btn btn-outline btn-sm" onclick="generateInvoice('${o.id}')"><i class="fa-solid fa-file-invoice"></i> Generate Invoice</button>
       <button class="btn btn-outline btn-sm" onclick="viewInvoicesForOrder('${o.id}')"><i class="fa-solid fa-history"></i> History</button>
     </div>
@@ -3605,7 +3697,23 @@ function viewOrder(id) {
       <div><small style="color:var(--muted)">Status</small><p><span class="badge badge-${o.status?.toLowerCase()}">${o.status}</span></p></div>
     </div>
     <h4 style="margin-bottom:10px;font-size:0.88rem;color:var(--muted)">Items</h4>
-    ${(o.items || []).map(i => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.85rem"><span>${i.emoji||'📦'} ${i.name} ${i.variant && i.variant !== 'Standard' ? `<span style=\"color:var(--gold);font-size:0.75rem;margin-left:4px;\">(${i.variant})</span>` : ''} (x${i.qty})</span><span>PKR ${(i.price * i.qty).toLocaleString()}</span></div>`).join('')}
+    ${(o.items || []).map(i => {
+      const meta = [];
+      const v = i.variant || i.selectedVariant;
+      const s = i.size || i.selectedSize;
+      const c = i.color || i.selectedColor;
+      if (v && v !== 'Standard') meta.push(`Variant: ${esc(v)}`);
+      if (s) meta.push(`Size: ${esc(s)}`);
+      if (c) meta.push(`Color: ${esc(c)}`);
+      const metaHtml = meta.length ? `<div style="font-size:0.75rem;color:var(--gold);margin-top:2px;">${meta.map(m => `<span style="background:rgba(184,136,58,0.12);padding:2px 6px;border-radius:4px;margin-right:4px;">${m}</span>`).join('')}</div>` : '';
+      return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.85rem">
+        <div>
+          <span>${i.emoji||'📦'} <strong>${esc(i.name)}</strong> (x${i.qty})</span>
+          ${metaHtml}
+        </div>
+        <span style="font-weight:600">PKR ${(i.price * i.qty).toLocaleString()}</span>
+      </div>`;
+    }).join('')}
     <div style="display:flex;justify-content:space-between;padding:10px 0"><span style="color:var(--muted)">Subtotal</span><span>PKR ${(o.subtotal||0).toLocaleString()}</span></div>
     ${o.discount > 0 ? `<div style="display:flex;justify-content:space-between;padding:10px 0;color:var(--gold)"><span>Discount${o.coupon?.code ? ' — Coupon "' + esc(o.coupon.code) + '"' : ''}</span><span>− PKR ${o.discount.toLocaleString()}</span></div>` : ''}
     <div style="display:flex;justify-content:space-between;padding:10px 0;font-weight:600"><span>Delivery</span><span>PKR ${(o.deliveryFee||0).toLocaleString()}</span></div>
@@ -4103,12 +4211,14 @@ function renderProducts(products) {
         <div class="pac-price">PKR ${(p.price||0).toLocaleString()}${p.priceOld ? `<s>PKR ${p.priceOld.toLocaleString()}</s>` : ''}</div>
         <div class="pac-meta">
           ${stockBadge}
-          ${p.purchasePrice != null ? `<span style="color:var(--muted);font-size:0.72rem">Cost: PKR ${p.purchasePrice.toLocaleString()}</span>` : ''}
+          ${currentUser?.role !== 'supervisor' && p.purchasePrice != null ? `<span style="color:var(--muted);font-size:0.72rem">Cost: PKR ${p.purchasePrice.toLocaleString()}</span>` : ''}
         </div>
         <div class="pac-actions">
+          ${currentUser?.role === 'supervisor' ? '<span style="color:var(--muted);font-size:0.75rem;padding:4px 0;">🔒 Read-only</span>' : `
           <button class="btn btn-outline btn-sm" onclick="editProductById('${p.id}')" title="Edit"><i class="fa-solid fa-pen"></i> Edit</button>
           <button class="btn btn-outline btn-sm" onclick="duplicateProductById('${p.id}')" title="Duplicate"><i class="fa-regular fa-copy"></i> Copy</button>
           <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+          `}
         </div>
       </div>
     </div>`;
@@ -5031,7 +5141,7 @@ function fmtDate(iso) {
 }
 
 function formatRole(role) {
-  return { ceo: 'CEO', super_admin:'Super Admin', admin:'Admin', supervisor:'Support Staff', investor: 'Investor' }[role] || role;
+  return { ceo: 'CEO', super_admin:'Super Admin', admin:'Admin', supervisor:'Support Staff' }[role] || role;
 }
 
 function today() {
@@ -5081,19 +5191,29 @@ function renderAbandoned(list) {
   tbody.innerHTML = list.map((a, i) => {
     const d    = a.delivery || {};
     const name = `${d.fname || ''} ${d.lname || ''}`.trim() || '—';
-    const items = (a.items || []).map(it => `${it.name} ×${it.qty}`).join(', ') || '—';
+    const items = (a.items || []).map(it => {
+      const meta = [];
+      const v = it.variant || it.selectedVariant;
+      const s = it.size || it.selectedSize;
+      const c = it.color || it.selectedColor;
+      if (v && v !== 'Standard') meta.push(`Variant: ${esc(v)}`);
+      if (s) meta.push(`Size: ${esc(s)}`);
+      if (c) meta.push(`Color: ${esc(c)}`);
+      const metaHtml = meta.length ? `<span style="display:block;font-size:0.72rem;color:var(--muted);margin-top:2px;">${meta.join(' &bull; ')}</span>` : '';
+      return `<div style="margin-bottom:6px;line-height:1.35;"><strong>${esc(it.name)}</strong> ×${it.qty || 1}${metaHtml}</div>`;
+    }).join('') || '—';
     const statusBadge = a.status === 'converted'
       ? '<span style="background:rgba(34,197,94,0.15);color:#22c55e;padding:3px 10px;border-radius:20px;font-size:0.68rem;font-weight:600">✅ Resolved</span>'
       : '<span style="background:rgba(249,115,22,0.15);color:#f97316;padding:3px 10px;border-radius:20px;font-size:0.68rem;font-weight:600">🛒 Abandoned</span>';
     const waLink = d.phone
-      ? `<a href="https://wa.me/${d.phone.replace(/\D/g,'')}?text=Hi+${encodeURIComponent(d.fname||'')}%2C+you+left+something+in+your+cart+at+DERA ZONE+Jewelry%21+Complete+your+order+here%3A+https%3A%2F%2Fderazone.com%2Fcheckout.html" target="_blank" class="btn btn-outline" style="font-size:0.7rem;padding:5px 10px;color:#25d366;border-color:rgba(37,211,102,0.4)"><i class="fa-brands fa-whatsapp"></i> Recover</a>`
+      ? `<a href="https://wa.me/${d.phone.replace(/\D/g,'')}?text=Hi+${encodeURIComponent(d.fname||'')}%2C+you+left+something+in+your+cart+at+DERA+ZONE%21+Complete+your+order+here%3A+https%3A%2F%2Fderazone.com%2Fcheckout.html" target="_blank" class="btn btn-outline" style="font-size:0.7rem;padding:5px 10px;color:#25d366;border-color:rgba(37,211,102,0.4)"><i class="fa-brands fa-whatsapp"></i> Recover</a>`
       : '';
     return `<tr>
       <td>${i + 1}</td>
       <td><strong>${name}</strong>${d.email ? `<br><small style="color:var(--muted)">${d.email}</small>` : ''}</td>
       <td>${d.phone || '—'}</td>
       <td>${d.city || '—'}</td>
-      <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.78rem">${items}</td>
+      <td style="min-width:200px;font-size:0.8rem;line-height:1.4;">${items}</td>
       <td style="color:var(--gold);font-weight:600">PKR ${(a.total||0).toLocaleString()}</td>
       <td style="font-size:0.75rem">${a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-PK',{day:'2-digit',month:'short',year:'numeric'}) : '—'}</td>
       <td>${statusBadge}</td>

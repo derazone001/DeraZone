@@ -7,7 +7,7 @@
 const express          = require('express');
 const { v4: uuidv4 }   = require('uuid');
 const { getDB }        = require('../utils/firebase');
-const { requireRole }  = require('../middleware/auth');
+const { requireRole, requireAdmin } = require('../middleware/auth');
 const store             = require('../utils/store');
 
 const router = express.Router();
@@ -72,8 +72,8 @@ router.post('/', requireRole('super_admin'), async (req, res) => {
   }
 });
 
-/* ── GET /api/coupons — List all coupons (super_admin ONLY) ── */
-router.get('/', requireRole('super_admin'), async (req, res) => {
+/* ── GET /api/coupons — List all coupons (all admin staff can view) ── */
+router.get('/', requireAdmin, async (req, res) => {
   try {
     if (isFirebaseAvailable()) {
       try {

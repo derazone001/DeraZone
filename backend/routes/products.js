@@ -2,11 +2,23 @@
    DERA ZONE — Products Routes (uses shared store)
    ============================================================ */
 const express = require('express');
+const jwt     = require('jsonwebtoken');
 const { getDB }       = require('../utils/firebase');
 const { requireAdmin, requireRole } = require('../middleware/auth');
 const store            = require('../utils/store');
 
 const router = express.Router();
+
+function shouldIncludePurchasePrice(req) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) return false;
+  try {
+    const decoded = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET || 'derazone_secret_jwt_key_2024_fallback');
+    return ['super_admin', 'admin', 'ceo'].includes(decoded.role);
+  } catch {
+    return false;
+  }
+}
 
 function isFirebaseAvailable() {
   try { return !!getDB(); } catch { return false; }
@@ -64,6 +76,9 @@ router.get('/', async (req, res) => {
         // For products we also need to sort by createdAt descending like the others if we want
         products.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
         if (lim) products = products.slice(0, parseInt(lim));
+        if (!shouldIncludePurchasePrice(req)) {
+          products = products.map(p => { const { purchasePrice, ...rest } = p; return rest; });
+        }
         return res.json({ products, total: products.length });
       } catch (fbErr) {
         console.error('Firebase GET products failed, falling back to memory:', fbErr.message);
@@ -78,6 +93,9 @@ router.get('/', async (req, res) => {
     if (search) { const q = search.toLowerCase(); products = products.filter(p => p.name?.toLowerCase().includes(q) || p.category?.toLowerCase().includes(q)); }
     products.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     if (lim) products = products.slice(0, parseInt(lim));
+    if (!shouldIncludePurchasePrice(req)) {
+      products = products.map(p => { const { purchasePrice, ...rest } = p; return rest; });
+    }
     return res.json({ products, total: products.length });
 
   } catch (err) {
@@ -93,11 +111,15 @@ router.get('/:id', async (req, res) => {
       const db = getDB();
       const doc = await db.collection('products').doc(req.params.id).get();
       if (!doc.exists) return res.status(404).json({ error: 'Product not found.' });
-      return res.json({ product: { ...doc.data(), id: doc.id } });
+      const product = { ...doc.data(), id: doc.id };
+      if (!shouldIncludePurchasePrice(req)) delete product.purchasePrice;
+      return res.json({ product });
     }
     const product = store.findProduct(req.params.id);
     if (!product) return res.status(404).json({ error: 'Product not found.' });
-    return res.json({ product });
+    const productCopy = { ...product };
+    if (!shouldIncludePurchasePrice(req)) delete productCopy.purchasePrice;
+    return res.json({ product: productCopy });
   } catch (err) {
     console.error('Get product error:', err);
     return res.status(500).json({ error: 'Failed to fetch product.' });

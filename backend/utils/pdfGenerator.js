@@ -139,13 +139,20 @@ async function buildPdf(pdfPath, invId, snapshot, liveOrder, company) {
     (order.items || []).forEach(item => {
       const itemTotal = (item.price * item.qty);
       doc.fillColor(C_TEXT).fontSize(9);
-      const itemNameVar = item.name + (item.variant && item.variant !== 'Standard' ? ` - ${item.variant}` : '');
+      const metaParts = [];
+      const v = item.variant || item.selectedVariant;
+      const s = item.size || item.selectedSize;
+      const c = item.color || item.selectedColor;
+      if (v && v !== 'Standard') metaParts.push(v);
+      if (s) metaParts.push(`Size: ${s}`);
+      if (c) metaParts.push(`Color: ${c}`);
+      const itemNameVar = item.name + (metaParts.length ? ` (${metaParts.join(', ')})` : '');
         const nameHeight = doc.heightOfString(itemNameVar, { width: 230 });
       const rowHeight = Math.max(40, nameHeight + 25);
       
       doc.rect(50, y, 495, rowHeight).fillAndStroke('#ffffff', '#ffffff');
       doc.fillColor(C_TEXT);
-      doc.text(item.name, 60, y + 10, { width: 230 });
+      doc.text(itemNameVar, 60, y + 10, { width: 230 });
       doc.fillColor(C_MUTED).fontSize(8).text(`SKU: ${item.sku || 'N/A'}`, 60, y + 10 + nameHeight + 4);
       doc.fillColor(C_TEXT).fontSize(9);
       doc.text(`PKR ${item.price.toLocaleString()}`, 300, y + 15, { width: 80, align: 'right' });

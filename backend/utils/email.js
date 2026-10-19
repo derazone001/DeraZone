@@ -13,12 +13,20 @@ const TO   = process.env.EMAIL_TO;
 /* ── Order Confirmation Email (to customer) ── */
 async function sendOrderConfirmation({ to, orderRef, items, delivery, total, paymentMethod }) {
   const resend = getResend();
-  const itemRows = items.map(i =>
-    `<tr>
-      <td style="padding:10px 0;border-bottom:1px solid #2a2a2a;">${i.emoji || '🛍️'} ${i.name} ${i.variant && i.variant !== 'Standard' ? `(${i.variant}) ` : ''} ×  ${i.qty}</td>
+  const itemRows = items.map(i => {
+    const meta = [];
+    const variant = i.variant || i.selectedVariant;
+    const size = i.size || i.selectedSize;
+    const color = i.color || i.selectedColor;
+    if (variant && variant !== 'Standard') meta.push(`Variant: ${variant}`);
+    if (size) meta.push(`Size: ${size}`);
+    if (color) meta.push(`Color: ${color}`);
+    const metaHtml = meta.length ? `<br><small style="color:#a78bfa;font-size:12px;">${meta.join(' &bull; ')}</small>` : '';
+    return `<tr>
+      <td style="padding:10px 0;border-bottom:1px solid #2a2a2a;">${i.emoji || '🛍️'} <strong>${i.name}</strong> × ${i.qty}${metaHtml}</td>
       <td style="padding:10px 0;border-bottom:1px solid #2a2a2a;text-align:right;">PKR ${(i.price * i.qty).toLocaleString()}</td>
-    </tr>`
-  ).join('');
+    </tr>`;
+  }).join('');
 
   await resend.emails.send({
     from: FROM,
@@ -50,7 +58,17 @@ async function sendOrderConfirmation({ to, orderRef, items, delivery, total, pay
 async function sendNewOrderNotification({ orderRef, items, delivery, total, paymentMethod }) {
   if (!TO) return;
   const resend = getResend();
-  const itemList = items.map(i => `<li>${i.name} ${i.variant && i.variant !== 'Standard' ? `(${i.variant}) ` : ''} ×  ${i.qty} — PKR ${(i.price * i.qty).toLocaleString()}</li>`).join('');
+  const itemList = items.map(i => {
+    const meta = [];
+    const variant = i.variant || i.selectedVariant;
+    const size = i.size || i.selectedSize;
+    const color = i.color || i.selectedColor;
+    if (variant && variant !== 'Standard') meta.push(`Variant: ${variant}`);
+    if (size) meta.push(`Size: ${size}`);
+    if (color) meta.push(`Color: ${color}`);
+    const metaStr = meta.length ? ` [${meta.join(', ')}]` : '';
+    return `<li><strong>${i.name}</strong>${metaStr} × ${i.qty} — PKR ${(i.price * i.qty).toLocaleString()}</li>`;
+  }).join('');
 
   await resend.emails.send({
     from: FROM,

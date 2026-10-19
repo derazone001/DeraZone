@@ -247,7 +247,13 @@ router.get('/', requireAdmin, async (req, res) => {
         if (status) q = q.where('status', '==', status);
         if (lim) q = q.limit(parseInt(lim));
         const snap = await q.get();
-        const orders = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+        let orders = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+        if (req.user?.role === 'supervisor') {
+          orders = orders.map(o => ({
+            ...o,
+            items: (o.items || []).map(it => { const { purchasePrice, ...cleanIt } = it; return cleanIt; })
+          }));
+        }
         return res.json({ orders, total: orders.length });
       } catch (fbErr) {
         console.error('Firebase GET orders failed, falling back to memory:', fbErr.message);
@@ -256,6 +262,12 @@ router.get('/', requireAdmin, async (req, res) => {
     let orders = [...store.orders];
     if (status) orders = orders.filter(o => o.status === status);
     if (lim) orders = orders.slice(0, parseInt(lim));
+    if (req.user?.role === 'supervisor') {
+      orders = orders.map(o => ({
+        ...o,
+        items: (o.items || []).map(it => { const { purchasePrice, ...cleanIt } = it; return cleanIt; })
+      }));
+    }
     return res.json({ orders, total: orders.length });
   } catch (err) {
     console.error('Get orders error:', err);
@@ -401,6 +413,9 @@ router.patch('/:id/advance', requireAdmin, async (req, res) => {
 /* ── DELETE /api/orders/:id (super_admin only) ── */
 router.delete('/:id', requireAdmin, async (req, res) => {
   try {
+    if (req.user?.role === 'supervisor') {
+      return res.status(403).json({ error: 'Support staff cannot delete orders.' });
+    }
     const id = req.params.id;
     if (isFirebaseAvailable()) {
       const ref = getDB().collection('orders').doc(id);
@@ -429,6 +444,9 @@ router.delete('/:id', requireAdmin, async (req, res) => {
 /* ── PUT /api/orders/:id — Edit Web Order ── */
 router.put('/:id', requireAdmin, async (req, res) => {
   try {
+    if (req.user?.role === 'supervisor') {
+      return res.status(403).json({ error: 'Support staff cannot modify orders.' });
+    }
     const { id } = req.params;
     const { customerName, customerEmail, phone, city, address, items, paymentMethod, status, notes } = req.body;
     
