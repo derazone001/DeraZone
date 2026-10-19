@@ -468,7 +468,7 @@ app.get('/api/visitors', (req, res) => {
 });
 
 /* ── Admin dashboard HTML ── serve the file directly to avoid router path issues */
-app.get(['/admin', '/admin/'], (req, res) => {
+app.get(['/admin', '/admin/', '/admin/index.html', '/admin.html'], (req, res) => {
   res.sendFile(path.join(__dirname, 'admin', 'index.html'));
 });
 

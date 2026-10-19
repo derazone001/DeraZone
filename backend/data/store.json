@@ -4,7 +4,7 @@
       "id": "super-admin-1",
       "username": "admin",
       "email": "admin",
-      "passwordHash": "$2a$10$pO8kC4cZ7AkxKy0Zn7.X1uT76ZekI1y8QGUf1.SYbrFAjH/QTbPW2",
+      "passwordHash": null,
       "role": "ceo",
       "fname": "Super",
       "lname": "Admin",

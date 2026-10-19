@@ -1,0 +1,41 @@
+# ============================================================
+# DERA ZONE - Apache / cPanel / Web Server Configuration
+# ============================================================
+
+Options -Indexes
+DirectoryIndex index.html index.php
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Redirect /admin and /admin/ cleanly to admin.html
+  RewriteRule ^admin/?$ admin.html [L,QSA]
+
+  # Clean URLs: Map /page to /page.html if the .html file exists
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^(.*)$ $1.html [L,QSA]
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-XSS-Protection "1; mode=block"
+
+  # Prevent aggressive caching of HTML & CSS during active development
+  <FilesMatch "\.(html|htm|css|js)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </FilesMatch>
+</IfModule>
+
+# MIME types
+<IfModule mod_mime.c>
+  AddType image/svg+xml .svg
+  AddType application/font-woff2 .woff2
+  AddType application/json .json
+</IfModule>
