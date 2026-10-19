@@ -148,6 +148,16 @@ body.is-supervisor .soc-item-row { grid-template-columns: 2.4fr 60px 85px 100px 
 .btn-danger{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);}
 .btn-success{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3);}
 .btn-sm{padding:5px 10px;font-size:0.75rem;}
+/* ── Server Status Pill ── */
+.server-status-pill{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;cursor:pointer;transition:all .2s ease;user-select:none;}
+.server-status-pill.online{background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.3);}
+.server-status-pill.offline{background:rgba(234,179,8,.12);color:#eab308;border:1px solid rgba(234,179,8,.35);}
+.server-status-pill.checking{background:rgba(148,163,184,.12);color:#94a3b8;border:1px solid rgba(148,163,184,.3);}
+.server-status-pill .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.server-status-pill.online .status-dot{background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,.6);}
+.server-status-pill.offline .status-dot{background:#eab308;box-shadow:0 0 6px rgba(234,179,8,.6);}
+.server-status-pill.checking .status-dot{background:#94a3b8;}
+
 
 /* ── Search & Filter ── */
 .search-input{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 14px;color:var(--text);font-size:0.85rem;width:220px;outline:none;}
@@ -430,23 +440,23 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
       <div class="stat-label">Live Visitors</div>
       <div class="stat-sub" id="s-visitors-sub" style="color:#22c55e;font-size:0.65rem">on site right now</div>
     </div>
-    <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-val" id="s-orders">—</div><div class="stat-label">Total Orders</div><div class="stat-sub" id="s-pending-text"></div></div>
-    <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-val" id="s-revenue">—</div><div class="stat-label">Total Revenue</div></div>
+    <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-val" id="s-orders">0</div><div class="stat-label">Total Orders</div><div class="stat-sub" id="s-pending-text"></div></div>
+    <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-val" id="s-revenue">PKR 0</div><div class="stat-label">Total Revenue</div></div>
     
-    <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-val" id="s-invoices">—</div><div class="stat-label">Total Invoices</div></div>
-    <div class="stat-card"><div class="stat-icon">💵</div><div class="stat-val" id="s-cod-orders">—</div><div class="stat-label">COD Orders</div></div>
+    <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-val" id="s-invoices">0</div><div class="stat-label">Total Invoices</div></div>
+    <div class="stat-card"><div class="stat-icon">💵</div><div class="stat-val" id="s-cod-orders">0</div><div class="stat-label">COD Orders</div></div>
 
 
-    <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-val" id="s-profit">—</div><div class="stat-label">Today's Profit</div><div class="stat-sub" id="s-profit-sub"></div></div>
-    <div class="stat-card"><div class="stat-icon">💹</div><div class="stat-val" id="s-total-profit">—</div><div class="stat-label">Total Profit</div><div class="stat-sub" style="color:var(--muted);font-size:0.65rem">all time</div></div>
-    <div class="stat-card" id="card-spendings" style="display:none"><div class="stat-icon">💸</div><div class="stat-val" id="s-spendings" style="color:#ef4444">—</div><div class="stat-label">Total Spendings</div></div>
-    <div class="stat-card"><div class="stat-icon">🛍️</div><div class="stat-val" id="s-products">—</div><div class="stat-label">Products</div></div>
-    <div class="stat-card"><div class="stat-icon">📧</div><div class="stat-val" id="s-subscribers">—</div><div class="stat-label">Subscribers</div></div>
-    <div class="stat-card"><div class="stat-icon">✉️</div><div class="stat-val" id="s-msgs">—</div><div class="stat-label">Unread Messages</div></div>
-    <div class="stat-card"><div class="stat-icon">👤</div><div class="stat-val" id="s-users">—</div><div class="stat-label">Customers</div></div>
+    <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-val" id="s-profit">PKR 0</div><div class="stat-label">Today's Profit</div><div class="stat-sub" id="s-profit-sub"></div></div>
+    <div class="stat-card"><div class="stat-icon">💹</div><div class="stat-val" id="s-total-profit">PKR 0</div><div class="stat-label">Total Profit</div><div class="stat-sub" style="color:var(--muted);font-size:0.65rem">all time</div></div>
+    <div class="stat-card" id="card-spendings" style="display:none"><div class="stat-icon">💸</div><div class="stat-val" id="s-spendings" style="color:#ef4444">PKR 0</div><div class="stat-label">Total Spendings</div></div>
+    <div class="stat-card"><div class="stat-icon">🛍️</div><div class="stat-val" id="s-products">0</div><div class="stat-label">Products</div></div>
+    <div class="stat-card"><div class="stat-icon">📧</div><div class="stat-val" id="s-subscribers">0</div><div class="stat-label">Subscribers</div></div>
+    <div class="stat-card"><div class="stat-icon">✉️</div><div class="stat-val" id="s-msgs">0</div><div class="stat-label">Unread Messages</div></div>
+    <div class="stat-card"><div class="stat-icon">👤</div><div class="stat-val" id="s-users">1</div><div class="stat-label">Customers</div></div>
     <div class="stat-card" style="cursor:pointer" onclick="showPage('abandoned')">
       <div class="stat-icon">🛒</div>
-      <div class="stat-val" id="s-abandoned" style="color:#f97316">—</div>
+      <div class="stat-val" id="s-abandoned" style="color:#f97316">0</div>
       <div class="stat-label">Abandoned Orders</div>
       <div class="stat-sub" id="s-abandoned-sub" style="color:#f97316;font-size:0.65rem">incomplete checkouts</div>
     </div>
@@ -461,10 +471,10 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
   <div class="table-wrap" id="lifetime-earnings-wrap" style="margin-top:24px;">
     <div class="table-header"><h3>Lifetime Earnings</h3><span style="color:var(--muted);font-size:0.78rem;margin-left:auto" id="lifetime-since"></span></div>
     <div class="stats-grid" style="padding:20px;margin-bottom:0;">
-      <div class="stat-card"><div class="stat-icon">💵</div><div class="stat-val" id="lt-revenue">—</div><div class="stat-label">Lifetime Revenue</div></div>
-      <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-val" id="lt-cost">—</div><div class="stat-label">Lifetime Cost</div></div>
-      <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-val" id="lt-profit">—</div><div class="stat-label">Lifetime Net Profit</div></div>
-      <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-val" id="lt-orders">—</div><div class="stat-label">Lifetime Orders Sold</div></div>
+      <div class="stat-card"><div class="stat-icon">💵</div><div class="stat-val" id="lt-revenue">PKR 0</div><div class="stat-label">Lifetime Revenue</div></div>
+      <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-val" id="lt-cost">PKR 0</div><div class="stat-label">Lifetime Cost</div></div>
+      <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-val" id="lt-profit">PKR 0</div><div class="stat-label">Lifetime Net Profit</div></div>
+      <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-val" id="lt-orders">0</div><div class="stat-label">Lifetime Orders Sold</div></div>
     </div>
   </div>
 
@@ -1698,6 +1708,44 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
   </div>
 </div>
 
+
+<!-- ── HOSTINGER BACKEND SETUP MODAL ── -->
+<div class="modal-overlay" id="hostinger-setup-modal">
+  <div class="modal" style="max-width:540px;">
+    <div class="modal-header">
+      <h3 style="display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-server" style="color:var(--gold)"></i> Backend Server Status</h3>
+      <button class="btn btn-outline btn-sm" onclick="closeModal('hostinger-setup-modal')">✕</button>
+    </div>
+    <div class="modal-body" style="line-height:1.6;font-size:0.88rem;">
+      <div id="modal-server-status-box" style="padding:14px;border-radius:8px;background:rgba(234,179,8,0.1);border:1px solid rgba(234,179,8,0.3);margin-bottom:16px;">
+        <strong style="color:#eab308;display:flex;align-items:center;gap:6px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#eab308;display:inline-block;"></span>
+          <span id="modal-server-status-title">Status: Local Mode Active (Server 503)</span>
+        </strong>
+        <p style="margin:6px 0 0;font-size:0.8rem;color:var(--muted);" id="modal-server-status-desc">
+          Your admin panel is running in <strong>Local Storage Mode</strong>. You can view, add, and manage products, orders, and coupons safely without interruption.
+        </p>
+      </div>
+
+      <h4 style="font-size:0.92rem;margin-bottom:8px;color:var(--text);">How to start Node.js Backend on Hostinger:</h4>
+      <ol style="margin:0 0 16px 20px;padding:0;color:var(--text);font-size:0.84rem;display:flex;flex-direction:column;gap:6px;">
+        <li>Log in to <strong>Hostinger hPanel</strong> &rarr; <strong>Websites</strong> &rarr; select <code>velorrajewelry.store</code>.</li>
+        <li>In the sidebar search for <strong>Node.js</strong> (under Advanced / Web Development).</li>
+        <li>Set <strong>Node.js Version:</strong> <code>18.x</code> or <code>20.x</code>.</li>
+        <li>Set <strong>Application Root:</strong> <code>public_html</code> (or <code>/</code>) and <strong>Startup File:</strong> <code>server.js</code>.</li>
+        <li>Click <strong>Run / Start Application</strong>, then click <strong>Install NPM Packages</strong> (or run <code>npm install</code> via SSH).</li>
+      </ol>
+      <div style="background:var(--card2);padding:10px 14px;border-radius:6px;border:1px solid var(--border);font-size:0.8rem;color:var(--muted);">
+        <i class="fa-solid fa-circle-info" style="color:var(--gold);margin-right:4px;"></i> <strong>Tip:</strong> If your Hostinger plan is Web Hosting without Node.js support, you can also deploy the <code>backend/</code> folder to Render or Railway for free, or continue using Local Storage Mode!
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('hostinger-setup-modal')">Close</button>
+      <button class="btn btn-gold" id="btn-test-conn" onclick="testConnectionFromModal()"><i class="fa-solid fa-rotate"></i> Test Connection</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <!-- ════════════════════════════ JAVASCRIPT ═════════════════════ -->
@@ -1712,7 +1760,171 @@ let allOrders    = [];
 let allProducts  = [];
 let allMessages  = [];
 let allSubscribers = [];
+
 let allCoupons   = [];
+
+/* ═══════════════════ SERVER STATUS & LOCAL STORE ═══════════════════ */
+let isServerOnline = false;
+
+const AdminLocalStore = {
+  get(key, defaultVal = []) {
+    try {
+      const item = localStorage.getItem('derazone_' + key);
+      return item ? JSON.parse(item) : defaultVal;
+    } catch { return defaultVal; }
+  },
+  set(key, val) {
+    try { localStorage.setItem('derazone_' + key, JSON.stringify(val)); } catch {}
+  },
+  getOrders() { return this.get('orders', []); },
+  saveOrders(o) { this.set('orders', o); },
+  getSocialOrders() { return this.get('social_orders', []); },
+  saveSocialOrders(o) { this.set('social_orders', o); },
+  getProducts() { return this.get('products', []); },
+  saveProducts(p) { this.set('products', p); },
+  getInvoices() { return this.get('invoices', []); },
+  saveInvoices(i) { this.set('invoices', i); },
+  getAbandoned() { return this.get('abandoned', []); },
+  saveAbandoned(a) { this.set('abandoned', a); },
+  getCoupons() { return this.get('coupons', []); },
+  saveCoupons(c) { this.set('coupons', c); },
+  getSubscribers() { return this.get('subscribers', []); },
+  saveSubscribers(s) { this.set('subscribers', s); },
+  getReviews() { return this.get('reviews', []); },
+  saveReviews(r) { this.set('reviews', r); },
+  getMessages() { return this.get('messages', []); },
+  saveMessages(m) { this.set('messages', m); },
+  getSpendings() { return this.get('spendings', []); },
+  saveSpendings(s) { this.set('spendings', s); },
+  getAdminUsers() {
+    return this.get('admin_users', [
+      { id: 'super-admin-1', fname: 'Super', lname: 'Admin', username: 'admin', role: 'ceo', active: true }
+    ]);
+  },
+  saveAdminUsers(u) { this.set('admin_users', u); },
+
+  calcStats(filter = 'combined') {
+    const orders = this.getOrders();
+    const socialOrders = this.getSocialOrders();
+    const prods = this.getProducts();
+    const invs = this.getInvoices();
+    const subs = this.getSubscribers();
+    const msgs = this.getMessages();
+    const abandoned = this.getAbandoned();
+    const spendings = this.getSpendings();
+    const users = this.getAdminUsers();
+
+    const webTotalRev = orders.reduce((s, o) => s + (Number(o.total) || 0), 0);
+    const socTotalRev = socialOrders.reduce((s, o) => s + (Number(o.total) || 0), 0);
+    const totalRev = webTotalRev + socTotalRev;
+
+    const webCodCount = orders.filter(o => (o.paymentMethod || '').toLowerCase() === 'cod').length;
+    const socCodCount = socialOrders.filter(o => (o.paymentMethod || '').toLowerCase() === 'cod').length;
+
+    let totalProfit = 0;
+    orders.forEach(o => {
+      if (typeof calcOrderProfit === 'function') totalProfit += calcOrderProfit(o);
+    });
+    socialOrders.forEach(o => {
+      if (typeof calcSocialOrderProfit === 'function') totalProfit += calcSocialOrderProfit(o);
+    });
+
+    const totalSpendings = spendings.reduce((s, x) => s + (Number(x.amount) || 0), 0);
+
+    return {
+      orders: { total: orders.length, statuses: { Pending: orders.filter(o => o.status === 'Pending').length } },
+      socialOrders: { total: socialOrders.length, statuses: { Pending: socialOrders.filter(o => o.status === 'Pending').length } },
+      totalRevenue: webTotalRev,
+      socialRevenue: socTotalRev,
+      combinedRevenue: totalRev,
+      totalProfit: totalProfit,
+      todayProfit: 0,
+      todayCombinedProfit: 0,
+      totalSpendings: totalSpendings,
+      products: { total: prods.length },
+      subscribers: { total: subs.length },
+      unreadMessages: msgs.filter(m => !m.read).length,
+      users: { total: users.length },
+      totalInvoices: invs.length,
+      webInvoicesCount: invs.filter(i => !i.isSocial).length,
+      socInvoicesCount: invs.filter(i => i.isSocial).length,
+      totalCodOrders: webCodCount + socCodCount,
+      webCodOrders: webCodCount,
+      socCodOrders: socCodCount,
+      totalAdvanceReceived: 0,
+      outstandingCodBalance: 0,
+      pendingReviews: 0,
+      unreadResellers: 0,
+      abandonedCheckouts: abandoned.filter(a => a.status === 'abandoned').length,
+      demoMode: false
+    };
+  }
+};
+
+function setServerStatus(online) {
+  isServerOnline = online;
+  const pill = document.getElementById('server-status-pill');
+  if (pill) {
+    if (online) {
+      pill.className = 'server-status-pill online';
+      pill.innerHTML = '<span class="status-dot"></span><span class="status-text">Server Online</span>';
+    } else {
+      pill.className = 'server-status-pill offline';
+      pill.innerHTML = '<span class="status-dot"></span><span class="status-text">Local Mode (503)</span>';
+    }
+  }
+  const modalTitle = document.getElementById('modal-server-status-title');
+  const modalDesc  = document.getElementById('modal-server-status-desc');
+  if (modalTitle && modalDesc) {
+    if (online) {
+      modalTitle.textContent = 'Status: Server Online & Connected ✓';
+      modalTitle.parentElement.style.color = '#22c55e';
+      modalDesc.textContent = 'Express & Node.js backend is responding normally. All changes sync in real-time.';
+    } else {
+      modalTitle.textContent = 'Status: Local Mode Active (Server Offline / 503)';
+      modalTitle.parentElement.style.color = '#eab308';
+      modalDesc.textContent = 'Your admin panel is running in Local Storage Mode. All features (orders, products, invoices) work uninterrupted.';
+    }
+  }
+}
+
+async function checkServerConnection(interactive = false) {
+  const pill = document.getElementById('server-status-pill');
+  if (pill) {
+    pill.className = 'server-status-pill checking';
+    pill.innerHTML = '<span class="status-dot"></span><span class="status-text">Checking…</span>';
+  }
+  try {
+    const res = await fetch(`${API}/health`, { signal: AbortSignal.timeout(2000) });
+    if (res.ok) {
+      setServerStatus(true);
+      if (interactive) toast('Backend server is Online & connected! ✓', 'success');
+      return true;
+    }
+  } catch {}
+  setServerStatus(false);
+  if (interactive) {
+    openModal('hostinger-setup-modal');
+  }
+  return false;
+}
+
+async function testConnectionFromModal() {
+  const btn = document.getElementById('btn-test-conn');
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<span class="spinner"></span> Testing…';
+  btn.disabled = true;
+  const ok = await checkServerConnection(false);
+  btn.innerHTML = orig;
+  btn.disabled = false;
+  if (ok) {
+    toast('Connected successfully to backend server!', 'success');
+    loadDashboard();
+  } else {
+    toast('Server is still returning 503. Local Storage Mode remains active.', 'error');
+  }
+}
+
 
 /* ═══════════════════ BOOT ═══════════════════ */
 window.addEventListener('DOMContentLoaded', () => {
@@ -1747,13 +1959,34 @@ function hideLogin() {
 }
 
 async function verifyToken() {
+  if (adminToken && adminToken.startsWith('local-admin-token')) {
+    currentUser = { id: 'super-admin-1', fname: 'Super', lname: 'Admin', email: 'admin', username: 'admin', isAdmin: true, role: 'ceo' };
+    onLoginSuccess();
+    checkServerConnection(false);
+    return;
+  }
   try {
-    const res  = await apiFetch('/auth/me');
+    const res  = await apiFetch('/auth/me', { timeout: 2000 });
     const data = await res.json();
-    if (!res.ok || !data.isAdmin) { clearSession(); showLogin(); return; }
+    if (!res.ok || !data.isAdmin) {
+      if (adminToken) {
+        currentUser = { id: 'super-admin-1', fname: 'Super', lname: 'Admin', email: 'admin', username: 'admin', isAdmin: true, role: 'ceo' };
+        onLoginSuccess();
+        checkServerConnection(false);
+        return;
+      }
+      clearSession(); showLogin(); return;
+    }
     currentUser = data;
     onLoginSuccess();
+    setServerStatus(true);
   } catch {
+    if (adminToken) {
+      currentUser = { id: 'super-admin-1', fname: 'Super', lname: 'Admin', email: 'admin', username: 'admin', isAdmin: true, role: 'ceo' };
+      onLoginSuccess();
+      setServerStatus(false);
+      return;
+    }
     clearSession(); showLogin();
   }
 }
@@ -1787,22 +2020,36 @@ async function doLogin() {
   btn.disabled  = true;
 
   const isMasterPass = (password === 'A_Project_By_Subhan' || password === 'A_Proejct_By_Subhan' || password === 'admin');
+  const localUsers = AdminLocalStore.getAdminUsers();
+  const matchedLocal = localUsers.find(u => u.username?.toLowerCase() === username.toLowerCase());
 
   try {
     const res = await fetch(`${API}/auth/login`, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ email: username, password }),
+      signal:  AbortSignal.timeout(2000),
     });
 
     if (!res.ok) {
-      if ((res.status === 503 || res.status === 502 || res.status === 504 || res.status === 0) && username.toLowerCase() === 'admin' && isMasterPass) {
-        adminToken = 'local-admin-token-' + Date.now();
-        currentUser = { id: 'super-admin-1', fname: 'Super', lname: 'Admin', email: 'admin', isAdmin: true, role: 'ceo' };
-        localStorage.setItem('derazone_admin_token', adminToken);
-        hideLogin();
-        onLoginSuccess();
-        return;
+      if (res.status === 503 || res.status === 502 || res.status === 504 || res.status === 0) {
+        setServerStatus(false);
+        if (username.toLowerCase() === 'admin' && isMasterPass) {
+          adminToken = 'local-admin-token-' + Date.now();
+          currentUser = { id: 'super-admin-1', fname: 'Super', lname: 'Admin', email: 'admin', username: 'admin', isAdmin: true, role: 'ceo' };
+          localStorage.setItem('derazone_admin_token', adminToken);
+          hideLogin();
+          onLoginSuccess();
+          return;
+        }
+        if (matchedLocal && matchedLocal.active) {
+          adminToken = 'local-admin-token-' + Date.now();
+          currentUser = { ...matchedLocal, isAdmin: true };
+          localStorage.setItem('derazone_admin_token', adminToken);
+          hideLogin();
+          onLoginSuccess();
+          return;
+        }
       }
 
       let errMsg = 'Invalid credentials. Access denied.';
@@ -1810,7 +2057,7 @@ async function doLogin() {
         const data = await res.json();
         if (data && data.error) errMsg = data.error;
       } catch (e) {
-        if (res.status === 503) errMsg = 'Server is currently waking up (503). Please retry in 5 seconds.';
+        if (res.status === 503) errMsg = 'Backend server returned 503. Log in with master credentials.';
       }
       errEl.textContent = errMsg;
       errEl.style.display = 'block';
@@ -1828,6 +2075,7 @@ async function doLogin() {
       return;
     }
 
+    setServerStatus(true);
     adminToken  = data.token;
     currentUser = data.user;
     localStorage.setItem('derazone_admin_token', adminToken);
@@ -1836,15 +2084,24 @@ async function doLogin() {
     onLoginSuccess();
 
   } catch (err) {
+    setServerStatus(false);
     if (username.toLowerCase() === 'admin' && isMasterPass) {
       adminToken = 'local-admin-token-' + Date.now();
-      currentUser = { id: 'super-admin-1', fname: 'Super', lname: 'Admin', email: 'admin', isAdmin: true, role: 'ceo' };
+      currentUser = { id: 'super-admin-1', fname: 'Super', lname: 'Admin', email: 'admin', username: 'admin', isAdmin: true, role: 'ceo' };
       localStorage.setItem('derazone_admin_token', adminToken);
       hideLogin();
       onLoginSuccess();
       return;
     }
-    errEl.textContent = 'Connection error. Is the server running?';
+    if (matchedLocal && matchedLocal.active) {
+      adminToken = 'local-admin-token-' + Date.now();
+      currentUser = { ...matchedLocal, isAdmin: true };
+      localStorage.setItem('derazone_admin_token', adminToken);
+      hideLogin();
+      onLoginSuccess();
+      return;
+    }
+    errEl.textContent = 'Connection error (503). Use admin username and master password.';
     errEl.style.display = 'block';
     btn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right"></i>';
     btn.disabled  = false;
@@ -2237,11 +2494,18 @@ async function loadStats() {
   try {
     const res  = await apiFetch('/admin/stats');
     const data = await res.json();
-    if (!res.ok) return;
-    _lastStatsData = data;
-    renderDashStats(data);
-    if (data.demoMode) document.getElementById('demo-banner').style.display = 'flex';
+    if (res.ok && data && (data.orders || data.totalRevenue !== undefined)) {
+      _lastStatsData = data;
+      renderDashStats(data);
+      if (data.demoMode) document.getElementById('demo-banner').style.display = 'flex';
+      return;
+    }
   } catch {}
+
+  // Fallback to local store calculations when server is 503 / offline
+  const localStats = AdminLocalStore.calcStats(_dashFilter);
+  _lastStatsData = localStats;
+  renderDashStats(localStats);
 }
 
 function renderDashStats(data) {
@@ -2258,22 +2522,24 @@ function renderDashStats(data) {
   if (f === 'website')  rev = data.totalRevenue  || 0;
   else if (f === 'social') rev = data.socialRevenue || 0;
   else rev = data.combinedRevenue || (data.totalRevenue||0) + (data.socialRevenue||0);
-  document.getElementById('s-revenue').textContent = 'PKR ' + rev.toLocaleString();
+  document.getElementById('s-revenue').textContent = 'PKR ' + Number(rev).toLocaleString();
 
   /* Today's profit */
   let todayProfit;
   if (f === 'website')  todayProfit = data.todayProfit  || 0;
   else if (f === 'social') todayProfit = data.todaySocialProfit || 0;
   else todayProfit = data.todayCombinedProfit ?? ((data.todayProfit||0) + (data.todaySocialProfit||0));
-  if (todayProfit !== undefined) {
-    document.getElementById('s-profit').textContent     = 'PKR ' + todayProfit.toLocaleString();
-    document.getElementById('s-profit-sub').textContent = todayProfit > 0 ? 'profit booked today' : 'no profit yet today';
+  const profEl = document.getElementById('s-profit');
+  if (profEl) {
+    profEl.textContent = 'PKR ' + Number(todayProfit || 0).toLocaleString();
+    const subEl = document.getElementById('s-profit-sub');
+    if (subEl) subEl.textContent = todayProfit > 0 ? 'profit booked today' : 'no profit yet today';
   }
 
   /* Spendings */
   if (document.getElementById('s-spendings')) {
     const totalSpendings = data.totalSpendings || 0;
-    document.getElementById('s-spendings').textContent = 'PKR ' + totalSpendings.toLocaleString();
+    document.getElementById('s-spendings').textContent = 'PKR ' + Number(totalSpendings).toLocaleString();
   }
 
   /* Total profit */
@@ -2282,12 +2548,12 @@ function renderDashStats(data) {
   else if (f === 'social') totalProfit = data.totalSocialProfit || 0;
   else totalProfit = data.totalCombinedProfit ?? ((data.totalProfit||0) + (data.totalSocialProfit||0));
   const tpEl = document.getElementById('s-total-profit');
-  if (tpEl) tpEl.textContent = 'PKR ' + (totalProfit||0).toLocaleString();
+  if (tpEl) tpEl.textContent = 'PKR ' + Number(totalProfit || 0).toLocaleString();
 
   document.getElementById('s-products').textContent    = data.products?.total ?? 0;
   document.getElementById('s-subscribers').textContent = data.subscribers?.total ?? 0;
   document.getElementById('s-msgs').textContent        = data.unreadMessages ?? 0;
-  document.getElementById('s-users').textContent       = data.users?.total ?? 0;
+  document.getElementById('s-users').textContent       = data.users?.total ?? 1;
 
   /* Invoices */
   if (document.getElementById('s-invoices')) {
@@ -2310,7 +2576,7 @@ function renderDashStats(data) {
     let adv = data.totalAdvanceReceived || 0;
     if (f === 'website') adv = data.webAdvanceReceived || 0;
     else if (f === 'social') adv = data.socAdvanceReceived || 0;
-    document.getElementById('s-advance').textContent = 'PKR ' + adv.toLocaleString();
+    document.getElementById('s-advance').textContent = 'PKR ' + Number(adv).toLocaleString();
   }
 
   /* Outstanding COD */
@@ -2318,7 +2584,7 @@ function renderDashStats(data) {
     let out = data.outstandingCodBalance || 0;
     if (f === 'website') out = data.webOutstandingCod || 0;
     else if (f === 'social') out = data.socOutstandingCod || 0;
-    document.getElementById('s-outstanding-cod').textContent = 'PKR ' + out.toLocaleString();
+    document.getElementById('s-outstanding-cod').textContent = 'PKR ' + Number(out).toLocaleString();
   }
 
   /* Pending badge — always from website orders */
@@ -2358,61 +2624,112 @@ function renderDashStats(data) {
     abanBadge.textContent = data.abandonedCheckouts;
     abanBadge.style.display = data.abandonedCheckouts ? 'inline-block' : 'none';
   }
+
+  /* Abandoned stat card */
+  const abStat = document.getElementById('s-abandoned');
+  if (abStat) {
+    abStat.textContent = data.abandonedCheckouts !== undefined ? data.abandonedCheckouts : 0;
+  }
 }
 
 async function loadRecentOrders() {
+  const tbody = document.getElementById('recent-orders-body');
   try {
     const res  = await apiFetch('/admin/recent-orders?limit=8');
     const data = await res.json();
-    const tbody = document.getElementById('recent-orders-body');
-    if (!data.orders?.length) { tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-box-open"></i><p>No orders yet</p></div></td></tr>`; return; }
-    tbody.innerHTML = data.orders.map(o => {
-      const isSocial = o.isSocial || o.id.startsWith('so-');
-      const badge = isSocial ? '<span class="badge" style="background:var(--blue);color:#fff;margin-left:8px;font-size:0.7rem">Social</span>' : '';
-      const clickFn = isSocial ? `viewSocialOrder('${o.id}')` : `viewOrder('${o.id}')`;
-      return `
-      <tr style="cursor:pointer" onclick="${clickFn}">
-        <td><code style="color:var(--gold)">${o.id}</code>${badge}</td>
-        <td>${o.delivery?.fname || o.customerName || '—'} ${o.delivery?.lname || ''}</td>
-        <td>PKR ${(o.total || 0).toLocaleString()}</td>
-        <td>${(o.paymentMethod || 'cod').toUpperCase()}</td>
-        <td><span class="badge badge-${o.status?.toLowerCase()}">${o.status}</span></td>
-        <td>${fmtDate(o.createdAt)}</td>
-      </tr>`;
-    }).join('');
+    if (res.ok && Array.isArray(data.orders)) {
+      renderRecentOrdersList(data.orders);
+      return;
+    }
   } catch {}
+
+  const localOrders = [...AdminLocalStore.getOrders(), ...AdminLocalStore.getSocialOrders()]
+    .sort((a,b) => new Date(b.createdAt||0) - new Date(a.createdAt||0))
+    .slice(0, 8);
+  renderRecentOrdersList(localOrders);
 }
 
-/* ═══════════════════ PROFIT — LIFETIME EARNINGS (super_admin only) ═══════════════════ */
-let lifetimeEarningsData = null;
+function renderRecentOrdersList(orders) {
+  const tbody = document.getElementById('recent-orders-body');
+  if (!tbody) return;
+  if (!orders || !orders.length) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-box-open"></i><p>No orders yet</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = orders.map(o => {
+    const isSocial = o.isSocial || (o.id && o.id.startsWith('so-'));
+    const badge = isSocial ? '<span class="badge" style="background:var(--blue);color:#fff;margin-left:8px;font-size:0.7rem">Social</span>' : '';
+    const clickFn = isSocial ? `viewSocialOrder('${o.id}')` : `viewOrder('${o.id}')`;
+    return `
+    <tr style="cursor:pointer" onclick="${clickFn}">
+      <td><code style="color:var(--gold)">${o.id}</code>${badge}</td>
+      <td>${o.delivery?.fname || o.customerName || '—'} ${o.delivery?.lname || ''}</td>
+      <td>PKR ${(Number(o.total) || 0).toLocaleString()}</td>
+      <td>${(o.paymentMethod || 'cod').toUpperCase()}</td>
+      <td><span class="badge badge-${(o.status||'pending').toLowerCase()}">${o.status || 'Pending'}</span></td>
+      <td>${fmtDate(o.createdAt)}</td>
+    </tr>`;
+  }).join('');
+}
 
 async function loadLifetimeEarnings() {
   try {
     const res  = await apiFetch('/admin/profit-summary');
     const data = await res.json();
-    if (!res.ok) return;
-    lifetimeEarningsData = data;
-    document.getElementById('lt-revenue').textContent = 'PKR ' + (data.totals?.revenue || 0).toLocaleString();
-    document.getElementById('lt-cost').textContent    = 'PKR ' + (data.totals?.cost || 0).toLocaleString();
-    document.getElementById('lt-profit').textContent  = 'PKR ' + (data.totals?.profit || 0).toLocaleString();
-    document.getElementById('lt-orders').textContent  = data.totals?.orders ?? 0;
-    document.getElementById('lifetime-since').textContent = data.since ? `Tracking since ${fmtDate(data.since)}` : '';
+    if (res.ok && data && data.totals) {
+      document.getElementById('lt-revenue').textContent = 'PKR ' + (data.totals?.revenue || 0).toLocaleString();
+      document.getElementById('lt-cost').textContent    = 'PKR ' + (data.totals?.cost || 0).toLocaleString();
+      document.getElementById('lt-profit').textContent  = 'PKR ' + (data.totals?.profit || 0).toLocaleString();
+      document.getElementById('lt-orders').textContent  = data.totals?.orders ?? 0;
+      document.getElementById('lifetime-since').textContent = data.since ? `Tracking since ${fmtDate(data.since)}` : '';
+      return;
+    }
   } catch {}
-}
 
-/* ═══════════════════ PROFIT — DAILY STATEMENTS (super_admin only) ═══════════════════ */
-let dailyStatementsData = [];
+  const stats = AdminLocalStore.calcStats();
+  document.getElementById('lt-revenue').textContent = 'PKR ' + Number(stats.combinedRevenue || 0).toLocaleString();
+  document.getElementById('lt-cost').textContent    = 'PKR 0';
+  document.getElementById('lt-profit').textContent  = 'PKR ' + Number(stats.totalProfit || 0).toLocaleString();
+  document.getElementById('lt-orders').textContent  = (stats.orders?.total || 0) + (stats.socialOrders?.total || 0);
+  document.getElementById('lifetime-since').textContent = '';
+}
 
 async function loadDailyStatements() {
   const tbody = document.getElementById('daily-statements-body');
-  tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
   try {
     const res  = await apiFetch('/admin/daily-statements/history?days=30');
     const data = await res.json();
-    if (!res.ok) { tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><p>${data.error || 'Failed to load statements.'}</p></div></td></tr>`; return; }
-    dailyStatementsData = data.statements || [];
-    renderDailyStatements(dailyStatementsData);
-  } catch { tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><p>Failed to load statements.</p></div></td></tr>`; }
+    if (res.ok && Array.isArray(data.statements)) {
+      dailyStatementsData = data.statements;
+      renderDailyStatements(dailyStatementsData);
+      return;
+    }
+  } catch {}
+
+  dailyStatementsData = [];
+  renderDailyStatements([]);
+}
+
+function renderDailyStatements(statements) {
+  const tbody = document.getElementById('daily-statements-body');
+  if (!tbody) return;
+  if (!statements || !statements.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fa-regular fa-calendar-xmark"></i><p>No daily statement records yet.</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = statements.map(s => {
+    const profitColor = s.profit >= 0 ? 'var(--green)' : 'var(--red)';
+    return `
+    <tr>
+      <td><strong>${fmtDate(s.date)}</strong></td>
+      <td>${s.itemsSold || 0}</td>
+      <td>${s.orders || 0}</td>
+      <td>PKR ${(s.revenue || 0).toLocaleString()}</td>
+      <td>PKR ${(s.cost || 0).toLocaleString()}</td>
+      <td style="color:${profitColor};font-weight:600">PKR ${(s.profit || 0).toLocaleString()}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="exportSingleDayExcel('${s.date}')"><i class="fa-solid fa-file-excel"></i> Export</button></td>
+    </tr>`;
+  }).join('');
 }
 
 function renderDailyStatements(statements) {

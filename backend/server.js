@@ -42,6 +42,8 @@ app.use(cors({
     'http://127.0.0.1:5500',
     'https://derazone.com',
     'https://www.derazone.com',
+    'https://velorrajewelry.store',
+    'https://www.velorrajewelry.store',
     'null',   /* file:// protocol */
   ],
   credentials: true,

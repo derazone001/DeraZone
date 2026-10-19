@@ -11,8 +11,6 @@ DirectoryIndex index.html index.php
 
   # Proxy /api/ requests to Node.js backend if mod_proxy is active
   <IfModule mod_proxy.c>
-    RewriteCond %{REQUEST_URI} ^/api/ [OR]
-    RewriteCond %{REQUEST_URI} ^/images/products/
     RewriteRule ^api/(.*)$ http://127.0.0.1:3001/api/$1 [P,L]
   </IfModule>
 

@@ -29,6 +29,7 @@ async function apiGet(endpoint) {
   try {
     const res = await fetch(`${derazone_API}${endpoint}`, {
       headers: apiHeaders(),
+      signal: AbortSignal.timeout(3500),
     });
     if (!res.ok) return null;
     const text = await res.text();
@@ -49,7 +50,7 @@ async function apiPost(endpoint, data, requireAuth = false) {
       method: 'POST',
       headers: apiHeaders(requireAuth),
       body: JSON.stringify(data),
-      signal: AbortSignal.timeout(75000),
+      signal: AbortSignal.timeout(15000),
     });
   } catch (err) {
     if (err.name === 'TimeoutError' || err.name === 'AbortError') {
@@ -174,6 +175,7 @@ async function apiGetCategories() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId, page }),
+      signal: AbortSignal.timeout(3000),
     }).catch(() => {}); /* silent fail — don't break site */
   }
 
