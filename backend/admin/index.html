@@ -2306,8 +2306,6 @@ function renderDashStats(data) {
   unreadBadge.textContent = unread;
   unreadBadge.style.display = unread ? 'inline-block' : 'none';
 
-  }
-
   /* Reviews badge */
   const revBadge = document.getElementById('reviews-badge');
   if (revBadge && data.pendingReviews !== undefined) {
@@ -3086,8 +3084,6 @@ function addSocialItem(prefill = null) {
   document.getElementById('soc-items-container').appendChild(row);
   if (isCustom) {
     document.getElementById(`si-pid-${idx}`).value = 'custom';
-  }
-}`).value = 'custom';
   }
 }
 
