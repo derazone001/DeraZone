@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // ── 2. Storage Setup ──
 $storeFile = __DIR__ . '/../data/store.json';
+$liveBackupFile = __DIR__ . '/../data/store_live.json';
 if (!file_exists($storeFile)) {
     if (file_exists(__DIR__ . '/../backend/data/store.json')) {
         $storeFile = __DIR__ . '/../backend/data/store.json';
@@ -26,15 +27,47 @@ if (!file_exists($storeFile)) {
 }
 
 function get_store() {
-    global $storeFile;
+    global $storeFile, $liveBackupFile;
     $raw = @file_get_contents($storeFile);
     $data = json_decode($raw, true);
-    return is_array($data) ? $data : [];
+    if (!is_array($data)) $data = [];
+
+    // If live backup exists, preserve live data (products, orders, reviews) if store.json was overwritten by a git pull
+    if (file_exists($liveBackupFile)) {
+        $liveRaw = @file_get_contents($liveBackupFile);
+        $liveData = json_decode($liveRaw, true);
+        if (is_array($liveData)) {
+            if (empty($data['products']) && !empty($liveData['products'])) {
+                $data['products'] = $liveData['products'];
+            }
+            if (empty($data['orders']) && !empty($liveData['orders'])) {
+                $data['orders'] = $liveData['orders'];
+            }
+            if (empty($data['socialOrders']) && !empty($liveData['socialOrders'])) {
+                $data['socialOrders'] = $liveData['socialOrders'];
+            }
+            if (empty($data['reviews']) && !empty($liveData['reviews'])) {
+                $data['reviews'] = $liveData['reviews'];
+            }
+            if (empty($data['pinned']) && !empty($liveData['pinned'])) {
+                $data['pinned'] = $liveData['pinned'];
+            }
+            if (empty($data['spotlight']) && !empty($liveData['spotlight'])) {
+                $data['spotlight'] = $liveData['spotlight'];
+            }
+            if (empty($data['reviewImages']) && !empty($liveData['reviewImages'])) {
+                $data['reviewImages'] = $liveData['reviewImages'];
+            }
+        }
+    }
+    return $data;
 }
 
 function save_store($data) {
-    global $storeFile;
-    @file_put_contents($storeFile, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), LOCK_EX);
+    global $storeFile, $liveBackupFile;
+    $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    @file_put_contents($storeFile, $json, LOCK_EX);
+    @file_put_contents($liveBackupFile, $json, LOCK_EX);
 }
 
 // ── 3. Parse Request ──

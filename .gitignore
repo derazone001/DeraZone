@@ -6,3 +6,4 @@ images/products/*
 !images/products/.gitkeep
 
 *.zip
+data/store_live.json
