@@ -1717,26 +1717,24 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
       <button class="btn btn-outline btn-sm" onclick="closeModal('hostinger-setup-modal')">✕</button>
     </div>
     <div class="modal-body" style="line-height:1.6;font-size:0.88rem;">
-      <div id="modal-server-status-box" style="padding:14px;border-radius:8px;background:rgba(234,179,8,0.1);border:1px solid rgba(234,179,8,0.3);margin-bottom:16px;">
-        <strong style="color:#eab308;display:flex;align-items:center;gap:6px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:#eab308;display:inline-block;"></span>
-          <span id="modal-server-status-title">Status: Local Mode Active (Server 503)</span>
+      <div id="modal-server-status-box" style="padding:14px;border-radius:8px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);margin-bottom:16px;">
+        <strong style="color:#22c55e;display:flex;align-items:center;gap:6px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
+          <span id="modal-server-status-title">Universal Hosting Engine Active</span>
         </strong>
-        <p style="margin:6px 0 0;font-size:0.8rem;color:var(--muted);" id="modal-server-status-desc">
-          Your admin panel is running in <strong>Local Storage Mode</strong>. You can view, add, and manage products, orders, and coupons safely without interruption.
+        <p style="margin:6px 0 0;font-size:0.8rem;color:var(--text);" id="modal-server-status-desc">
+          Your admin panel runs on a <strong>Universal Backend Engine</strong> (Native PHP API + Offline-First Local Storage). It runs automatically on <strong>any cPanel, Hostinger, or standard web hosting</strong> with zero Node.js requirements!
         </p>
       </div>
 
-      <h4 style="font-size:0.92rem;margin-bottom:8px;color:var(--text);">How to start Node.js Backend on Hostinger:</h4>
-      <ol style="margin:0 0 16px 20px;padding:0;color:var(--text);font-size:0.84rem;display:flex;flex-direction:column;gap:6px;">
-        <li>Log in to <strong>Hostinger hPanel</strong> &rarr; <strong>Websites</strong> &rarr; select <code>velorrajewelry.store</code>.</li>
-        <li>In the sidebar search for <strong>Node.js</strong> (under Advanced / Web Development).</li>
-        <li>Set <strong>Node.js Version:</strong> <code>18.x</code> or <code>20.x</code>.</li>
-        <li>Set <strong>Application Root:</strong> <code>public_html</code> (or <code>/</code>) and <strong>Startup File:</strong> <code>server.js</code>.</li>
-        <li>Click <strong>Run / Start Application</strong>, then click <strong>Install NPM Packages</strong> (or run <code>npm install</code> via SSH).</li>
-      </ol>
+      <h4 style="font-size:0.92rem;margin-bottom:8px;color:var(--text);">How DERA ZONE Runs Anywhere:</h4>
+      <ul style="margin:0 0 16px 20px;padding:0;color:var(--text);font-size:0.84rem;display:flex;flex-direction:column;gap:6px;">
+        <li><strong>Customer's cPanel &amp; Hostinger:</strong> Natively handled via <code>api/index.php</code> with persistent JSON data storage. No Node.js configuration needed.</li>
+        <li><strong>Offline-First Fallback:</strong> If hosting is temporarily offline, <code>AdminLocalStore</code> guarantees orders, products, and reports are fully accessible without spinners or 503 errors.</li>
+        <li><strong>Node.js (Optional):</strong> If you ever run <code>node backend/server.js</code> on a VPS or local dev machine, it connects seamlessly.</li>
+      </ul>
       <div style="background:var(--card2);padding:10px 14px;border-radius:6px;border:1px solid var(--border);font-size:0.8rem;color:var(--muted);">
-        <i class="fa-solid fa-circle-info" style="color:var(--gold);margin-right:4px;"></i> <strong>Tip:</strong> If your Hostinger plan is Web Hosting without Node.js support, you can also deploy the <code>backend/</code> folder to Render or Railway for free, or continue using Local Storage Mode!
+        <i class="fa-solid fa-circle-check" style="color:#22c55e;margin-right:4px;"></i> <strong>Zero Configuration:</strong> Simply upload files to your cPanel <code>public_html</code> and everything works immediately!
       </div>
     </div>
     <div class="modal-footer">

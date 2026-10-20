@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const abId = sessionStorage.getItem('derazone_abandoned_id');
       if (abId) { fetch(`${derazone_API}/abandoned/${abId}/converted`, { method: 'PATCH' }).catch(() => {}); sessionStorage.removeItem('derazone_abandoned_id'); }
       // Local Fallback (Should rarely happen)
-      const ref = 'ZH-' + Date.now().toString().slice(-8);
+      const ref = 'DZ-' + Date.now().toString().slice(-8);
       document.getElementById('order-ref-num').textContent = 'Order Reference: ' + ref;
       showBankDepositSuccessNote(payMethod, ref);
       localStorage.removeItem('derazone_cart');
