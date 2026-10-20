@@ -90,10 +90,11 @@ document.addEventListener('DOMContentLoaded', () => {
     saveCart(); updateCartUI();
   };
 
-  window.addToCart = (name, price, emoji, variant, image) => {
+  window.addToCart = (name, price, emoji, variant, image, qty = 1) => {
+    const quantity = Math.max(1, Number(qty) || 1);
     const existing = cart.find(i => i.name === name && i.variant === variant);
-    if (existing) existing.qty++;
-    else cart.push({ name, price, emoji: emoji || '🛍️', variant: variant || 'Standard', image: image || null, qty: 1 });
+    if (existing) existing.qty += quantity;
+    else cart.push({ name, price, emoji: emoji || '🛍️', variant: variant || 'Standard', image: image || null, qty: quantity });
     saveCart(); updateCartUI();
     showToast('Added to bag ✓');
     openCart();

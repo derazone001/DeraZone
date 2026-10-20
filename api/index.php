@@ -853,7 +853,7 @@ if ($endpoint === 'spotlight' || $endpoint === 'admin/spotlight') {
 }
 
 // ── REVIEW IMAGES ──
-if ($endpoint === 'admin/review-images' || preg_match('#^admin/review-images/(.+)$#', $endpoint, $m)) {
+if ($endpoint === 'review-images' || $endpoint === 'admin/review-images' || preg_match('#^(?:admin/)?review-images/(.+)$#', $endpoint, $m)) {
     $riId = $m[1] ?? null;
     $store = get_store();
     $reviewImages = $store['reviewImages'] ?? [];

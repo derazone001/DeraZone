@@ -82,9 +82,18 @@ function derazoneProductCardHTML(p) {
         <span style="font-size:0.75rem;font-weight:700;color:#64748b;margin-top:8px;text-transform:uppercase;letter-spacing:1px;">${dzCatLabel(normCat)}</span>
        </div>`;
 
-  const cleanName = p.name.replace(/'/g, "\\'");
+  const cleanName = (p.name || '').replace(/'/g, "\\'");
   const cleanEmoji = (p.emoji || '🛍️').replace(/'/g, "\\'");
   const cleanImg = primaryImg ? primaryImg.replace(/'/g, "\\'") : '';
+
+  const pSizes = Array.isArray(p.sizes) ? p.sizes : (typeof p.sizes === 'string' && p.sizes ? p.sizes.split(',').map(s=>s.trim()).filter(Boolean) : []);
+  const pColors = Array.isArray(p.colors) ? p.colors : (typeof p.colors === 'string' && p.colors ? p.colors.split(',').map(c=>c.trim()).filter(Boolean) : []);
+  const pVariants = Array.isArray(p.variants) ? p.variants : (typeof p.variants === 'string' && p.variants ? p.variants.split(',').map(v=>v.trim()).filter(Boolean) : []);
+  const hasOptions = (pSizes.length > 0) || (pColors.length > 0) || (pVariants.length > 0);
+
+  const addAction = hasOptions 
+    ? `derazoneOpenQuickSelect('${p.id}')` 
+    : `addToCart('${cleanName}', ${p.price}, '${cleanEmoji}', 'Standard', '${cleanImg}')`;
 
   return `
     <div class="product-card" data-cat="${normCat}" data-id="${p.id}" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.03);display:flex;flex-direction:column;transition:all 0.3s ease;">
@@ -92,7 +101,7 @@ function derazoneProductCardHTML(p) {
         ${badgeHTML}
         ${imgContent}
         <div class="product-actions" style="position:absolute;bottom:10px;left:10px;right:10px;display:flex;gap:8px;z-index:2;">
-          <button onclick="addToCart('${cleanName}', ${p.price}, '${cleanEmoji}', 'Standard', '${cleanImg}')" class="btn-primary" style="flex:1;padding:10px 14px;font-size:0.8rem;border-radius:8px;background:#7000ff;color:#fff;border:none;cursor:pointer;font-weight:700;box-shadow:0 4px 12px rgba(112,0,255,0.3);">
+          <button onclick="${addAction}" class="btn-primary" style="flex:1;padding:10px 14px;font-size:0.8rem;border-radius:8px;background:#7000ff;color:#fff;border:none;cursor:pointer;font-weight:700;box-shadow:0 4px 12px rgba(112,0,255,0.3);">
             <i class="fa-solid fa-bag-shopping"></i> Add to Bag
           </button>
         </div>
@@ -296,6 +305,7 @@ async function derazoneRenderShopGrid() {
     products = DERAZONE_CATALOG_PRODUCTS;
   }
 
+  window._dzAllProducts = products;
   derazoneSetupShopFilters(products, grid);
 }
 
@@ -314,6 +324,8 @@ async function derazoneRenderHomepageGrids() {
   if (!allProducts.length && DERAZONE_CATALOG_PRODUCTS.length) {
     allProducts = DERAZONE_CATALOG_PRODUCTS;
   }
+
+  window._dzAllProducts = allProducts;
 
   // --- 1 & 2. Render Trending Now & New Arrivals ---
   const trendingGrid = document.getElementById('trending-now-grid');
@@ -347,8 +359,6 @@ async function derazoneRenderHomepageGrids() {
       newArrivalsGrid.innerHTML = displayList.slice(0, 4).map(p => derazoneProductCardHTML(p)).join('');
     }
   }
-
-
 
   // --- 4A. Render Pinned Collections with Actual Collection Names ---
   const pinnedWrapper = document.getElementById('pinned-collections-wrapper');
@@ -394,22 +404,79 @@ async function derazoneRenderHomepageGrids() {
     }
   }
 
-  // --- 4B. Render Spotlight Products (Only when selected by Admin) ---
+  // --- 4B. Render Spotlight Products (2-Column Showcase Layout matching Reference Image 3) ---
   const spotlightSection = document.getElementById('spotlight-section');
-  const spotlightGrid = document.getElementById('spotlight-grid');
-  if (spotlightGrid && allProducts.length) {
+  const spotlightContainer = document.getElementById('spotlight-container') || document.getElementById('spotlight-grid');
+  if (spotlightContainer && allProducts.length) {
     try {
       const spotRes = await apiGet('/spotlight');
       const spotIds = (spotRes && spotRes.spotlight && Array.isArray(spotRes.spotlight)) ? spotRes.spotlight : [];
       
       let spotlightProducts = [];
       if (spotIds.length) {
-        spotlightProducts = allProducts.filter(p => spotIds.includes(p.id));
+        spotIds.forEach(id => {
+          const match = allProducts.find(p => String(p.id) === String(id));
+          if (match && !spotlightProducts.some(x => String(x.id) === String(match.id))) {
+            spotlightProducts.push(match);
+          }
+        });
       }
 
       if (spotlightProducts.length > 0) {
         if (spotlightSection) spotlightSection.style.display = 'block';
-        spotlightGrid.innerHTML = spotlightProducts.slice(0, 4).map(p => derazoneProductCardHTML(p)).join('');
+        spotlightContainer.innerHTML = spotlightProducts.slice(0, 3).map(p => {
+          const primaryImg = (p.images && p.images[0]) || p.image || '';
+          const hasOldPrice = p.priceOld && p.priceOld > p.price;
+          const cleanName = (p.name || '').replace(/'/g, "\\'");
+          const cleanEmoji = (p.emoji || '🛍️').replace(/'/g, "\\'");
+          const cleanImg = primaryImg ? primaryImg.replace(/'/g, "\\'") : '';
+          
+          const pSizes = Array.isArray(p.sizes) ? p.sizes : (typeof p.sizes === 'string' && p.sizes ? p.sizes.split(',').map(s=>s.trim()).filter(Boolean) : []);
+          const pColors = Array.isArray(p.colors) ? p.colors : (typeof p.colors === 'string' && p.colors ? p.colors.split(',').map(c=>c.trim()).filter(Boolean) : []);
+          const pVariants = Array.isArray(p.variants) ? p.variants : (typeof p.variants === 'string' && p.variants ? p.variants.split(',').map(v=>v.trim()).filter(Boolean) : []);
+          const hasOptions = (pSizes.length > 0) || (pColors.length > 0) || (pVariants.length > 0);
+          const addAction = hasOptions 
+            ? `derazoneOpenQuickSelect('${p.id}')` 
+            : `addToCart('${cleanName}', ${p.price}, '${cleanEmoji}', 'Standard', '${cleanImg}')`;
+
+          const desc = p.description 
+            ? (p.description.length > 260 ? p.description.slice(0, 260) + '...' : p.description) 
+            : 'Engineered for premium performance and modern aesthetics. Experience handpicked craftsmanship with 100% verified authentic quality.';
+
+          return `
+            <div class="spotlight-layout">
+              <div class="spotlight-image">
+                ${primaryImg 
+                  ? `<img src="${primaryImg}" alt="${p.name.replace(/"/g, '&quot;')}" loading="lazy">` 
+                  : `<div style="font-size:5rem;">${p.emoji || '🛍️'}</div>`}
+              </div>
+              <div class="spotlight-details">
+                <span class="spotlight-label">⭐ FEATURED SPOTLIGHT</span>
+                <h2 class="spotlight-name">
+                  <a href="product?id=${p.id}" style="color:inherit;text-decoration:none;">${p.name}</a>
+                </h2>
+                <div class="spotlight-price">
+                  <span>PKR ${Number(p.price).toLocaleString()}</span>
+                  ${hasOldPrice ? `<span class="spotlight-price-old">PKR ${Number(p.priceOld).toLocaleString()}</span>` : ''}
+                </div>
+                <p class="spotlight-desc">${desc}</p>
+                <div class="spotlight-badges">
+                  <span class="spotlight-badge-item"><i class="fa-solid fa-circle-check" style="color:#10b981;"></i> 100% Verified Genuine</span>
+                  <span class="spotlight-badge-item"><i class="fa-solid fa-truck-fast" style="color:#7000ff;"></i> Cash on Delivery Available</span>
+                  <span class="spotlight-badge-item"><i class="fa-solid fa-rotate-left" style="color:#f59e0b;"></i> Easy 7-Day Exchange</span>
+                </div>
+                <div class="spotlight-actions">
+                  <a href="product?id=${p.id}" class="spotlight-btn">
+                    SHOP NOW <i class="fa-solid fa-arrow-right"></i>
+                  </a>
+                  <button onclick="${addAction}" class="spotlight-btn-secondary">
+                    <i class="fa-solid fa-bag-shopping"></i> Add to Bag
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
       } else {
         if (spotlightSection) spotlightSection.style.display = 'none';
       }
@@ -454,6 +521,46 @@ async function derazoneRenderHomepageGrids() {
     } catch (err) {
       if (reviewsSection) reviewsSection.style.display = 'none';
       console.warn('Reviews fetch error:', err);
+    }
+  }
+
+  // --- 5B. Render Real Customer Review Screenshots (From /api/review-images) ---
+  const reviewImagesContainer = document.getElementById('review-images-container');
+  const reviewImagesSection = document.getElementById('review-images-section');
+  if (reviewImagesContainer) {
+    try {
+      const data = await apiGet('/review-images');
+      const images = (data && (data.images || data.reviews)) || [];
+      if (Array.isArray(images) && images.length > 0) {
+        if (reviewImagesSection) reviewImagesSection.style.display = 'block';
+        const sorted = images.slice().sort((a, b) => (Number(a.order) || 99) - (Number(b.order) || 99));
+        reviewImagesContainer.innerHTML = sorted.map(ri => {
+          const cleanUrl = (ri.url || '').replace(/'/g, "\\'");
+          const label = ri.label || 'Customer Feedback';
+          const cleanLabel = label.replace(/'/g, "\\'");
+          return `
+            <div class="dz-review-img-card" onclick="openReviewLightbox('${cleanUrl}', '${cleanLabel}')" title="Click to view full screenshot">
+              <div class="dz-review-img-wrap">
+                <img src="${ri.url}" alt="${label.replace(/"/g, '&quot;')}" loading="lazy" />
+                <div class="dz-review-img-zoom-hint">
+                  <i class="fa-solid fa-magnifying-glass-plus"></i> View Full Proof
+                </div>
+              </div>
+              <div class="dz-review-img-caption">
+                <strong style="color:#0f172a;font-weight:700;">${label}</strong>
+                <span style="color:#10b981;font-weight:700;display:inline-flex;align-items:center;gap:4px;font-size:0.75rem;">
+                  <i class="fa-solid fa-circle-check"></i> Verified
+                </span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        if (reviewImagesSection) reviewImagesSection.style.display = 'none';
+      }
+    } catch (err) {
+      if (reviewImagesSection) reviewImagesSection.style.display = 'none';
+      console.warn('Review images fetch error:', err);
     }
   }
 }
@@ -566,7 +673,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('shop-products-grid') || document.querySelector('.shop-layout')) {
     derazoneRenderShopGrid();
   }
-  if (document.getElementById('new-arrivals-grid') || document.getElementById('trending-now-grid') || document.getElementById('spotlight-grid')) {
+  if (document.getElementById('new-arrivals-grid') || document.getElementById('trending-now-grid') || document.getElementById('spotlight-grid') || document.getElementById('spotlight-container') || document.getElementById('review-images-container')) {
     derazoneRenderHomepageGrids();
   }
 });
@@ -575,3 +682,236 @@ document.addEventListener('DOMContentLoaded', () => {
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
   initCategoryCarousel();
 }
+
+/* ════════════════════════════════════════════════════════════
+   UNIVERSAL QUICK SELECT VARIANT MODAL (Homepage & Shop)
+   ════════════════════════════════════════════════════════════ */
+let _activeQuickProduct = null;
+let _selectedQuickSize = null;
+let _selectedQuickColor = null;
+let _selectedQuickVariant = null;
+
+function ensureQuickSelectModal() {
+  let modal = document.getElementById('dz-quick-select-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'dz-quick-select-modal';
+    modal.className = 'dz-quick-modal-overlay';
+    modal.innerHTML = `
+      <div class="dz-quick-modal-card">
+        <button type="button" class="dz-quick-modal-close" onclick="closeQuickSelectModal()" aria-label="Close">&times;</button>
+        <div class="dz-quick-modal-header">
+          <img id="qm-thumb" src="" alt="Product" />
+          <div style="flex:1;min-width:0;">
+            <h4 id="qm-title">Product Title</h4>
+            <div id="qm-price-wrap" class="qm-price-wrap"></div>
+          </div>
+        </div>
+        <div class="dz-quick-modal-body">
+          <div id="qm-sizes-wrap" class="qm-option-group" style="display:none;">
+            <label class="qm-option-label">Select Size: <span id="qm-selected-size-label" class="qm-selected-val"></span></label>
+            <div id="qm-sizes-list" class="qm-options-pills"></div>
+          </div>
+          <div id="qm-colors-wrap" class="qm-option-group" style="display:none;">
+            <label class="qm-option-label">Select Color: <span id="qm-selected-color-label" class="qm-selected-val"></span></label>
+            <div id="qm-colors-list" class="qm-options-pills"></div>
+          </div>
+          <div id="qm-variants-wrap" class="qm-option-group" style="display:none;">
+            <label class="qm-option-label">Select Model / Variant: <span id="qm-selected-variant-label" class="qm-selected-val"></span></label>
+            <div id="qm-variants-list" class="qm-options-pills"></div>
+          </div>
+          <div class="qm-option-group">
+            <label class="qm-option-label">Quantity</label>
+            <div class="qm-qty-stepper">
+              <button type="button" class="qm-qty-btn" onclick="stepQuickQty(-1)">&minus;</button>
+              <input type="text" id="qm-qty-input" value="1" readonly />
+              <button type="button" class="qm-qty-btn" onclick="stepQuickQty(1)">&plus;</button>
+            </div>
+          </div>
+        </div>
+        <div class="dz-quick-modal-footer">
+          <button type="button" id="qm-add-btn" class="qm-btn-primary" onclick="confirmQuickSelectAddToCart()">
+            <i class="fa-solid fa-bag-shopping"></i> Add to Bag
+          </button>
+          <a id="qm-details-link" href="#" class="qm-link-details">View Full Product Details &rarr;</a>
+        </div>
+      </div>
+    `;
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeQuickSelectModal();
+    });
+    document.body.appendChild(modal);
+  }
+  return modal;
+}
+
+window.stepQuickQty = function(delta) {
+  const input = document.getElementById('qm-qty-input');
+  if (!input) return;
+  let cur = parseInt(input.value) || 1;
+  cur = Math.max(1, Math.min(99, cur + delta));
+  input.value = cur;
+};
+
+window.closeQuickSelectModal = function() {
+  const modal = document.getElementById('dz-quick-select-modal');
+  if (modal) modal.classList.remove('open');
+  document.body.style.overflow = '';
+};
+
+window.derazoneOpenQuickSelect = async function(productId) {
+  const modal = ensureQuickSelectModal();
+  let product = (window._dzAllProducts || []).find(p => String(p.id) === String(productId));
+  
+  if (!product) {
+    try {
+      const data = await apiGet('/products');
+      if (data && data.products) {
+        window._dzAllProducts = data.products;
+        product = data.products.find(p => String(p.id) === String(productId));
+      }
+    } catch (err) {}
+  }
+
+  if (!product) {
+    window.location.href = `product?id=${productId}`;
+    return;
+  }
+
+  _activeQuickProduct = product;
+  _selectedQuickSize = null;
+  _selectedQuickColor = null;
+  _selectedQuickVariant = null;
+
+  // Header
+  const thumb = document.getElementById('qm-thumb');
+  const title = document.getElementById('qm-title');
+  const priceWrap = document.getElementById('qm-price-wrap');
+  const detailsLink = document.getElementById('qm-details-link');
+  const qtyInput = document.getElementById('qm-qty-input');
+
+  const primaryImg = (product.images && product.images[0]) || product.image || '';
+  if (thumb) {
+    thumb.src = primaryImg || 'images/placeholder.png';
+    thumb.alt = product.name || 'Product';
+  }
+  if (title) title.textContent = product.name || 'Product';
+  if (detailsLink) detailsLink.href = `product?id=${product.id}`;
+  if (qtyInput) qtyInput.value = '1';
+
+  if (priceWrap) {
+    const hasOld = product.priceOld && product.priceOld > product.price;
+    priceWrap.innerHTML = `
+      <span style="color:#7000ff;font-weight:800;font-size:1.15rem;">PKR ${Number(product.price).toLocaleString()}</span>
+      ${hasOld ? `<span style="color:#94a3b8;text-decoration:line-through;font-size:0.9rem;">PKR ${Number(product.priceOld).toLocaleString()}</span>` : ''}
+    `;
+  }
+
+  // Parse Options
+  const pSizes = Array.isArray(product.sizes) ? product.sizes : (typeof product.sizes === 'string' && product.sizes ? product.sizes.split(',').map(s=>s.trim()).filter(Boolean) : []);
+  const pColors = Array.isArray(product.colors) ? product.colors : (typeof product.colors === 'string' && product.colors ? product.colors.split(',').map(c=>c.trim()).filter(Boolean) : []);
+  const pVariants = Array.isArray(product.variants) ? product.variants : (typeof product.variants === 'string' && product.variants ? product.variants.split(',').map(v=>v.trim()).filter(Boolean) : []);
+
+  // 1. Sizes
+  const sizesWrap = document.getElementById('qm-sizes-wrap');
+  const sizesList = document.getElementById('qm-sizes-list');
+  const sizeLabel = document.getElementById('qm-selected-size-label');
+  if (pSizes.length > 0) {
+    _selectedQuickSize = pSizes[0];
+    if (sizeLabel) sizeLabel.textContent = _selectedQuickSize;
+    sizesList.innerHTML = pSizes.map((s, idx) => `
+      <div class="qm-pill ${idx === 0 ? 'active' : ''}" data-size="${s}">${s}</div>
+    `).join('');
+    sizesList.querySelectorAll('.qm-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        sizesList.querySelectorAll('.qm-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        _selectedQuickSize = btn.dataset.size;
+        if (sizeLabel) sizeLabel.textContent = _selectedQuickSize;
+      });
+    });
+    sizesWrap.style.display = 'block';
+  } else {
+    sizesWrap.style.display = 'none';
+  }
+
+  // 2. Colors
+  const colorsWrap = document.getElementById('qm-colors-wrap');
+  const colorsList = document.getElementById('qm-colors-list');
+  const colorLabel = document.getElementById('qm-selected-color-label');
+  if (pColors.length > 0) {
+    _selectedQuickColor = (typeof pColors[0] === 'object' ? pColors[0].name : pColors[0]) || '';
+    if (colorLabel) colorLabel.textContent = _selectedQuickColor;
+    colorsList.innerHTML = pColors.map((c, idx) => {
+      const cName = typeof c === 'object' ? c.name : c;
+      return `<div class="qm-pill ${idx === 0 ? 'active' : ''}" data-color="${cName}">${cName}</div>`;
+    }).join('');
+    colorsList.querySelectorAll('.qm-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        colorsList.querySelectorAll('.qm-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        _selectedQuickColor = btn.dataset.color;
+        if (colorLabel) colorLabel.textContent = _selectedQuickColor;
+      });
+    });
+    colorsWrap.style.display = 'block';
+  } else {
+    colorsWrap.style.display = 'none';
+  }
+
+  // 3. Variants
+  const variantsWrap = document.getElementById('qm-variants-wrap');
+  const variantsList = document.getElementById('qm-variants-list');
+  const variantLabel = document.getElementById('qm-selected-variant-label');
+  if (pVariants.length > 0) {
+    _selectedQuickVariant = (typeof pVariants[0] === 'object' ? pVariants[0].name : pVariants[0]) || '';
+    if (variantLabel) variantLabel.textContent = _selectedQuickVariant;
+    variantsList.innerHTML = pVariants.map((v, idx) => {
+      const vName = typeof v === 'object' ? v.name : v;
+      return `<div class="qm-pill ${idx === 0 ? 'active' : ''}" data-variant="${vName}">${vName}</div>`;
+    }).join('');
+    variantsList.querySelectorAll('.qm-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        variantsList.querySelectorAll('.qm-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        _selectedQuickVariant = btn.dataset.variant;
+        if (variantLabel) variantLabel.textContent = _selectedQuickVariant;
+      });
+    });
+    variantsWrap.style.display = 'block';
+  } else {
+    variantsWrap.style.display = 'none';
+  }
+
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+};
+
+window.confirmQuickSelectAddToCart = function() {
+  if (!_activeQuickProduct) return;
+  const p = _activeQuickProduct;
+  const variantParts = [_selectedQuickVariant, _selectedQuickSize, _selectedQuickColor].filter(Boolean);
+  const finalVariant = variantParts.length > 0 ? variantParts.join(' - ') : 'Standard';
+  const qty = parseInt(document.getElementById('qm-qty-input')?.value) || 1;
+  const primaryImg = (p.images && p.images[0]) || p.image || '';
+
+  window.addToCart(p.name, Number(p.price), p.emoji || '🛍️', finalVariant, primaryImg, qty);
+  closeQuickSelectModal();
+};
+
+/* ── Lightbox Helpers ── */
+window.openReviewLightbox = function(url, caption = '') {
+  const lb = document.getElementById('review-lightbox');
+  const img = document.getElementById('review-lightbox-img');
+  const cap = document.getElementById('review-lightbox-caption');
+  if (img) img.src = url;
+  if (cap) cap.textContent = caption || '';
+  if (lb) lb.classList.add('active');
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeReviewLightbox = function() {
+  const lb = document.getElementById('review-lightbox');
+  if (lb) lb.classList.remove('active');
+  document.body.style.overflow = '';
+};
