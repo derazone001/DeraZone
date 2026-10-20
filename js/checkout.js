@@ -225,7 +225,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <div style="width:48px;height:48px;border-radius:8px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid #e2e8f0;">
             ${i.image ? `<img src="${i.image}" alt="${(i.name||'').replace(/"/g, '&quot;')}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:1.4rem;">${i.emoji || '🛍️'}</span>`}
           </div>
-          <span style="flex:1;font-size:0.9rem;font-weight:500;color:#1e293b;">${i.name} × ${i.qty}</span>
+          <div style="flex:1;">
+            <span style="font-size:0.9rem;font-weight:600;color:#1e293b;display:block;">${i.name} × ${i.qty}</span>
+            ${i.variant && i.variant !== 'Standard' ? `<span style="font-size:0.75rem;color:#7000ff;font-weight:700;display:inline-block;margin-top:2px;background:rgba(112,0,255,0.08);padding:1px 6px;border-radius:4px;">${i.variant}</span>` : ''}
+          </div>
           <span style="font-weight:700;font-size:0.9rem;color:#0f172a;">PKR ${(i.price*i.qty).toLocaleString()}</span>
         </div>`).join('')}
       </div>
@@ -254,7 +257,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let itemsText = '';
     if (Array.isArray(items) && items.length) {
-      itemsText = items.map(it => `• ${it.name} (Qty: ${it.qty || 1}) - PKR ${((it.price || 0) * (it.qty || 1)).toLocaleString()}`).join('\n');
+      itemsText = items.map(it => {
+        const v = it.variant && it.variant !== 'Standard' ? ` [${it.variant}]` : '';
+        return `• ${it.name}${v} (Qty: ${it.qty || 1}) - PKR ${((it.price || 0) * (it.qty || 1)).toLocaleString()}`;
+      }).join('\n');
     }
 
     const msgLines = [
@@ -296,7 +302,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let itemsText = '';
     if (cart.length) {
-      itemsText = cart.map(it => `• ${it.name} (Qty: ${it.qty || 1}) - PKR ${((it.price || 0) * (it.qty || 1)).toLocaleString()}`).join('\n');
+      itemsText = cart.map(it => {
+        const v = it.variant && it.variant !== 'Standard' ? ` [${it.variant}]` : '';
+        return `• ${it.name}${v} (Qty: ${it.qty || 1}) - PKR ${((it.price || 0) * (it.qty || 1)).toLocaleString()}`;
+      }).join('\n');
     }
 
     const msgLines = [

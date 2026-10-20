@@ -2922,12 +2922,18 @@ function renderSocialOrders(orders) {
     const profit = calcOrderProfit(o);
     const profitColor = profit >= 0 ? 'var(--green)' : 'var(--red)';
     const profitLabel = (profit >= 0 ? '+' : '') + 'PKR ' + profit.toLocaleString();
+    const socItemsSummary = (o.items || []).map(it => {
+      const v = it.variant || it.selectedVariant || (it.size || it.color ? `${it.size||''} ${it.color||''}`.trim() : '');
+      const vBadge = v && v !== 'Standard' ? ` <span style="display:inline-block;background:rgba(112,0,255,0.08);color:#7000ff;padding:1px 6px;border-radius:4px;font-size:0.72rem;font-weight:700;">${esc(v)}</span>` : '';
+      return `<div style="margin-bottom:3px;line-height:1.3;"><strong>${esc(it.name)}</strong>${vBadge} <span style="color:var(--muted);font-size:0.75rem;">×${it.qty||1}</span></div>`;
+    }).join('') || '<span style="color:var(--muted)">0 item(s)</span>';
+
     return `
     <tr>
       <td><code style="color:#e1306c;cursor:pointer" onclick="viewSocialOrder('${o.id}')">${o.id}</code></td>
       <td>${socSourceBadge(o.source)}</td>
       <td><strong>${esc(o.customerName || '—')}</strong><br><small style="color:var(--muted)">${esc(o.phone || '')}</small></td>
-      <td style="color:var(--muted)">${(o.items || []).length} item(s)</td>
+      <td style="min-width:180px;font-size:0.82rem;">${socItemsSummary}</td>
       <td style="color:var(--gold);font-weight:600">PKR ${(o.total || 0).toLocaleString()}</td>
       ${isSupervisor ? '' : `<td style="color:${profitColor};font-weight:600">${profitLabel}</td>`}
       <td>${(o.paymentMethod || 'cod').toUpperCase()}</td>
@@ -2995,13 +3001,13 @@ function viewSocialOrder(id) {
       if (v && v !== 'Standard') meta.push(`Variant: ${esc(v)}`);
       if (s) meta.push(`Size: ${esc(s)}`);
       if (c) meta.push(`Color: ${esc(c)}`);
-      const metaHtml = meta.length ? `<div style="font-size:0.75rem;color:var(--gold);margin-top:2px;">${meta.map(m => `<span style="background:rgba(184,136,58,0.12);padding:2px 6px;border-radius:4px;margin-right:4px;">${m}</span>`).join('')}</div>` : '';
-      return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.85rem">
+      const metaHtml = meta.length ? `<div style="font-size:0.78rem;color:#7000ff;font-weight:700;margin-top:4px;">${meta.map(m => `<span style="background:rgba(112,0,255,0.08);border:1px solid rgba(112,0,255,0.25);padding:3px 8px;border-radius:5px;margin-right:6px;">${m}</span>`).join('')}</div>` : '';
+      return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);font-size:0.88rem">
         <div>
-          <span>🛍️ <strong>${esc(i.name)}</strong> (x${i.qty})</span>
+          <span>🛍️ <strong>${esc(i.name)}</strong> <span style="color:var(--muted);font-weight:600;">(x${i.qty})</span></span>
           ${metaHtml}
         </div>
-        <span style="font-weight:600">PKR ${(i.price*i.qty).toLocaleString()}</span>
+        <span style="font-weight:700;color:var(--gold);">PKR ${(i.price*i.qty).toLocaleString()}</span>
       </div>`;
     }).join('')}
     <div style="display:flex;justify-content:space-between;padding:10px 0"><span style="color:var(--muted)">Subtotal</span><span>PKR ${(o.subtotal||0).toLocaleString()}</span></div>
@@ -3189,6 +3195,7 @@ function addSocialItem(prefill = null) {
   row.className = 'soc-item-row';
   const pid = prefill ? prefill.productId : '';
   const name = prefill ? prefill.name : '';
+  const variant = prefill ? (prefill.variant || prefill.selectedVariant || (prefill.size || prefill.color ? `${prefill.size||''} ${prefill.color||''}`.trim() : '')) : '';
   const qty = prefill ? prefill.qty : 1;
   const cost = prefill ? prefill.purchasePrice : 0;
   const sale = prefill ? prefill.price : 0;
@@ -3214,6 +3221,7 @@ function addSocialItem(prefill = null) {
              oninput="recalcSocialTotal()"/>
       <div class="soc-product-dropdown" id="si-dropdown-${idx}" style="display:none"></div>
     </div>
+    <input type="text" placeholder="Variant/Size/Color" id="si-variant-${idx}" value="${esc(variant)}" style="flex:1.2;font-size:0.8rem;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);" title="Variant / Size / Color"/>
     <input type="number" placeholder="Qty" min="0.01" step="any" id="si-qty-${idx}" value="${qty}" oninput="recalcSocialTotal()" title="Quantity"/>
     <input type="number" placeholder="Cost" id="si-cost-${idx}" value="${cost}" oninput="recalcSocialTotal()" title="Unit Purchase Price" style="${isSupervisor ? 'display:none;' : ''}"/>
     <input type="number" placeholder="Sale" id="si-price-${idx}" value="${sale}" oninput="recalcSocialTotal()" title="Unit Sale Price" ${isPriceLocked ? 'readonly' : ''} style="${isPriceLocked ? 'background:rgba(255,255,255,0.05);cursor:not-allowed;' : ''}"/>
@@ -3526,7 +3534,8 @@ async function saveSocialOrder() {
        treat as custom rather than blocking the save */
     const effectivelyCustom = isCustom || (!pid && name && price > 0);
     if (!effectivelyCustom && !pid) { hasUnselectedRow = true; return; } /* typed name but never picked */
-    items.push({ productId: effectivelyCustom ? '' : pid, name, qty, price, purchasePrice });
+    const variant = (document.getElementById(`si-variant-${rowId}`)?.value || '').trim();
+    items.push({ productId: effectivelyCustom ? '' : pid, name, variant, qty, price, purchasePrice });
   });
   if (hasUnselectedRow) { toast('Please pick a product from the search list for every item.', 'error'); return; }
   if (!items.length) { toast('Add at least one item.', 'error'); return; }
@@ -3794,11 +3803,17 @@ function renderOrders(orders) {
     const profit = calcOrderProfit(o);
     const profitColor = profit >= 0 ? 'var(--green)' : 'var(--red)';
     const profitLabel = (profit >= 0 ? '+' : '') + 'PKR ' + profit.toLocaleString();
+    const itemsSummary = (o.items || []).map(it => {
+      const v = it.variant || it.selectedVariant || (it.size || it.color ? `${it.size||''} ${it.color||''}`.trim() : '');
+      const vBadge = v && v !== 'Standard' ? ` <span style="display:inline-block;background:rgba(112,0,255,0.08);color:#7000ff;padding:1px 6px;border-radius:4px;font-size:0.72rem;font-weight:700;">${esc(v)}</span>` : '';
+      return `<div style="margin-bottom:3px;line-height:1.3;"><strong>${esc(it.name)}</strong>${vBadge} <span style="color:var(--muted);font-size:0.75rem;">×${it.qty||1}</span></div>`;
+    }).join('') || '<span style="color:var(--muted)">0 item(s)</span>';
+
     return `
     <tr>
       <td><code style="color:var(--gold);cursor:pointer" onclick="viewOrder('${o.id}')">${o.id}</code></td>
       <td>${esc(o.delivery?.fname || '')} ${esc(o.delivery?.lname || '')}<br><small style="color:var(--muted)">${esc(o.delivery?.email || '')}</small></td>
-      <td style="color:var(--muted)">${(o.items || []).length} item(s)</td>
+      <td style="min-width:180px;font-size:0.82rem;">${itemsSummary}</td>
       <td>PKR ${(o.total || 0).toLocaleString()}</td>
       ${isSupervisor ? '' : `<td style="color:${profitColor};font-weight:600">${profitLabel}</td>`}
       <td>${(o.paymentMethod || 'cod').toUpperCase()}</td>
@@ -3882,13 +3897,13 @@ function viewOrder(id) {
       if (v && v !== 'Standard') meta.push(`Variant: ${esc(v)}`);
       if (s) meta.push(`Size: ${esc(s)}`);
       if (c) meta.push(`Color: ${esc(c)}`);
-      const metaHtml = meta.length ? `<div style="font-size:0.75rem;color:var(--gold);margin-top:2px;">${meta.map(m => `<span style="background:rgba(184,136,58,0.12);padding:2px 6px;border-radius:4px;margin-right:4px;">${m}</span>`).join('')}</div>` : '';
-      return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.85rem">
+      const metaHtml = meta.length ? `<div style="font-size:0.78rem;color:#7000ff;font-weight:700;margin-top:4px;">${meta.map(m => `<span style="background:rgba(112,0,255,0.08);border:1px solid rgba(112,0,255,0.25);padding:3px 8px;border-radius:5px;margin-right:6px;">${m}</span>`).join('')}</div>` : '';
+      return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);font-size:0.88rem">
         <div>
-          <span>${i.emoji||'📦'} <strong>${esc(i.name)}</strong> (x${i.qty})</span>
+          <span>${i.emoji||'📦'} <strong>${esc(i.name)}</strong> <span style="color:var(--muted);font-weight:600;">(x${i.qty})</span></span>
           ${metaHtml}
         </div>
-        <span style="font-weight:600">PKR ${(i.price * i.qty).toLocaleString()}</span>
+        <span style="font-weight:700;color:var(--gold);">PKR ${(i.price * i.qty).toLocaleString()}</span>
       </div>`;
     }).join('')}
     <div style="display:flex;justify-content:space-between;padding:10px 0"><span style="color:var(--muted)">Subtotal</span><span>PKR ${(o.subtotal||0).toLocaleString()}</span></div>
@@ -5413,7 +5428,7 @@ function renderAbandoned(list) {
       if (v && v !== 'Standard') meta.push(`Variant: ${esc(v)}`);
       if (s) meta.push(`Size: ${esc(s)}`);
       if (c) meta.push(`Color: ${esc(c)}`);
-      const metaHtml = meta.length ? `<span style="display:block;font-size:0.72rem;color:var(--muted);margin-top:2px;">${meta.join(' &bull; ')}</span>` : '';
+      const metaHtml = meta.length ? `<span style="display:inline-block;background:rgba(112,0,255,0.08);color:#7000ff;padding:1px 6px;border-radius:4px;font-size:0.72rem;font-weight:700;margin-top:2px;">${meta.join(' • ')}</span>` : '';
       return `<div style="margin-bottom:6px;line-height:1.35;"><strong>${esc(it.name)}</strong> ×${it.qty || 1}${metaHtml}</div>`;
     }).join('') || '—';
     const statusBadge = a.status === 'converted'

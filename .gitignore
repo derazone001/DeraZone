@@ -6,4 +6,7 @@ images/products/*
 !images/products/.gitkeep
 
 *.zip
-data/store_live.json
+data/store.json
+data/store_*.json
+data/*.bak
+backend/data/store.json

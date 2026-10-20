@@ -19,7 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $storeFile = __DIR__ . '/../data/store.json';
 $liveBackupFile = __DIR__ . '/../data/store_live.json';
 if (!file_exists($storeFile)) {
-    if (file_exists(__DIR__ . '/../backend/data/store.json')) {
+    if (file_exists(__DIR__ . '/../data/store.json.example')) {
+        @copy(__DIR__ . '/../data/store.json.example', $storeFile);
+    } elseif (file_exists(__DIR__ . '/../backend/data/store.json')) {
         $storeFile = __DIR__ . '/../backend/data/store.json';
     } else {
         @mkdir(__DIR__ . '/../data', 0755, true);
@@ -32,34 +34,37 @@ function get_store() {
     $data = json_decode($raw, true);
     if (!is_array($data)) $data = [];
 
-    // If live backup exists, preserve live data (products, orders, reviews) if store.json was overwritten by a git pull
-    if (file_exists($liveBackupFile)) {
-        $liveRaw = @file_get_contents($liveBackupFile);
-        $liveData = json_decode($liveRaw, true);
-        if (is_array($liveData)) {
-            if (empty($data['products']) && !empty($liveData['products'])) {
-                $data['products'] = $liveData['products'];
-            }
-            if (empty($data['orders']) && !empty($liveData['orders'])) {
-                $data['orders'] = $liveData['orders'];
-            }
-            if (empty($data['socialOrders']) && !empty($liveData['socialOrders'])) {
-                $data['socialOrders'] = $liveData['socialOrders'];
-            }
-            if (empty($data['reviews']) && !empty($liveData['reviews'])) {
-                $data['reviews'] = $liveData['reviews'];
-            }
-            if (empty($data['pinned']) && !empty($liveData['pinned'])) {
-                $data['pinned'] = $liveData['pinned'];
-            }
-            if (empty($data['spotlight']) && !empty($liveData['spotlight'])) {
-                $data['spotlight'] = $liveData['spotlight'];
-            }
-            if (empty($data['reviewImages']) && !empty($liveData['reviewImages'])) {
-                $data['reviewImages'] = $liveData['reviewImages'];
+    // Check all possible backup sources to prevent accidental data loss on git pull or zip extract
+    $backupFiles = [
+        $liveBackupFile,
+        __DIR__ . '/../data/store_backup_latest.json',
+        __DIR__ . '/../data/store_backup_daily.json',
+        __DIR__ . '/../data/store_live.json.bak',
+        __DIR__ . '/../data/store.json.bak'
+    ];
+
+    $restoredAny = false;
+    foreach ($backupFiles as $bf) {
+        if (!file_exists($bf)) continue;
+        $bRaw = @file_get_contents($bf);
+        $bData = json_decode($bRaw, true);
+        if (!is_array($bData)) continue;
+
+        $keysToRestore = ['products', 'orders', 'socialOrders', 'reviews', 'pinned', 'spotlight', 'reviewImages', 'coupons', 'settings', 'adminUsers'];
+        foreach ($keysToRestore as $k) {
+            if (empty($data[$k]) && !empty($bData[$k])) {
+                $data[$k] = $bData[$k];
+                $restoredAny = true;
             }
         }
     }
+
+    // If restored from backup, immediately write back to store.json so file on disk is preserved
+    if ($restoredAny) {
+        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        @file_put_contents($storeFile, $json, LOCK_EX);
+    }
+
     return $data;
 }
 
@@ -68,6 +73,11 @@ function save_store($data) {
     $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     @file_put_contents($storeFile, $json, LOCK_EX);
     @file_put_contents($liveBackupFile, $json, LOCK_EX);
+
+    // Keep an immutable non-empty backup that is NEVER overwritten with empty data
+    if (!empty($data['products']) || !empty($data['orders']) || !empty($data['socialOrders'])) {
+        @file_put_contents(__DIR__ . '/../data/store_backup_latest.json', $json, LOCK_EX);
+    }
 }
 
 // ── 3. Parse Request ──
@@ -123,9 +133,18 @@ function send_admin_new_order_alert($order) {
     $itemRows = '';
     foreach (($order['items'] ?? []) as $it) {
         $pName = htmlspecialchars($it['name'] ?? 'Item');
-        $qty = $it['qty'] ?? 1;
+        $qty = (int)($it['qty'] ?? 1);
         $price = number_format(($it['price'] ?? 0) * $qty);
-        $itemRows .= "<tr><td style='padding:8px;border-bottom:1px solid #eee;'>{$pName} × {$qty}</td><td style='padding:8px;border-bottom:1px solid #eee;text-align:right;'>PKR {$price}</td></tr>";
+        
+        $v = trim($it['variant'] ?? '');
+        if (!$v || strcasecmp($v, 'Standard') === 0) {
+            $v = trim(($it['size'] ?? '') . ' ' . ($it['color'] ?? ''));
+        }
+        $vStr = ($v && strcasecmp($v, 'Standard') !== 0) 
+            ? "<br><span style='display:inline-block;margin-top:3px;padding:2px 8px;background:rgba(112,0,255,0.08);color:#7000ff;border-radius:4px;font-size:12px;font-weight:bold;'>Variant: " . htmlspecialchars($v) . "</span>" 
+            : "";
+
+        $itemRows .= "<tr><td style='padding:10px 8px;border-bottom:1px solid #eee;'><strong>{$pName}</strong>{$vStr} <span style='color:#64748b;'>× {$qty}</span></td><td style='padding:10px 8px;border-bottom:1px solid #eee;text-align:right;font-weight:600;'>PKR {$price}</td></tr>";
     }
     
     $html = "
@@ -175,9 +194,18 @@ function send_customer_order_placed($order) {
     $itemRows = '';
     foreach (($order['items'] ?? []) as $it) {
         $pName = htmlspecialchars($it['name'] ?? 'Item');
-        $qty = $it['qty'] ?? 1;
+        $qty = (int)($it['qty'] ?? 1);
         $price = number_format(($it['price'] ?? 0) * $qty);
-        $itemRows .= "<tr><td style='padding:8px;border-bottom:1px solid #eee;'>{$pName} × {$qty}</td><td style='padding:8px;border-bottom:1px solid #eee;text-align:right;'>PKR {$price}</td></tr>";
+        
+        $v = trim($it['variant'] ?? '');
+        if (!$v || strcasecmp($v, 'Standard') === 0) {
+            $v = trim(($it['size'] ?? '') . ' ' . ($it['color'] ?? ''));
+        }
+        $vStr = ($v && strcasecmp($v, 'Standard') !== 0) 
+            ? "<br><span style='display:inline-block;margin-top:3px;padding:2px 8px;background:rgba(112,0,255,0.08);color:#7000ff;border-radius:4px;font-size:12px;font-weight:bold;'>Variant: " . htmlspecialchars($v) . "</span>" 
+            : "";
+
+        $itemRows .= "<tr><td style='padding:10px 8px;border-bottom:1px solid #eee;'><strong>{$pName}</strong>{$vStr} <span style='color:#64748b;'>× {$qty}</span></td><td style='padding:10px 8px;border-bottom:1px solid #eee;text-align:right;font-weight:600;'>PKR {$price}</td></tr>";
     }
     
     $html = "
@@ -227,9 +255,18 @@ function send_customer_order_confirmed($order) {
     $itemRows = '';
     foreach (($order['items'] ?? []) as $it) {
         $pName = htmlspecialchars($it['name'] ?? 'Item');
-        $qty = $it['qty'] ?? 1;
+        $qty = (int)($it['qty'] ?? 1);
         $price = number_format(($it['price'] ?? 0) * $qty);
-        $itemRows .= "<tr><td style='padding:8px;border-bottom:1px solid #eee;'>{$pName} × {$qty}</td><td style='padding:8px;border-bottom:1px solid #eee;text-align:right;'>PKR {$price}</td></tr>";
+        
+        $v = trim($it['variant'] ?? '');
+        if (!$v || strcasecmp($v, 'Standard') === 0) {
+            $v = trim(($it['size'] ?? '') . ' ' . ($it['color'] ?? ''));
+        }
+        $vStr = ($v && strcasecmp($v, 'Standard') !== 0) 
+            ? "<br><span style='display:inline-block;margin-top:3px;padding:2px 8px;background:rgba(112,0,255,0.08);color:#7000ff;border-radius:4px;font-size:12px;font-weight:bold;'>Variant: " . htmlspecialchars($v) . "</span>" 
+            : "";
+
+        $itemRows .= "<tr><td style='padding:10px 8px;border-bottom:1px solid #eee;'><strong>{$pName}</strong>{$vStr} <span style='color:#64748b;'>× {$qty}</span></td><td style='padding:10px 8px;border-bottom:1px solid #eee;text-align:right;font-weight:600;'>PKR {$price}</td></tr>";
     }
     
     $html = "
@@ -1351,9 +1388,16 @@ if ($endpoint === 'invoices' || $endpoint === 'invoices/generate' || preg_match(
             <tbody>";
         foreach (($targetOrder['items'] ?? []) as $it) {
             $pName = htmlspecialchars($it['name'] ?? 'Product');
+            $v = trim($it['variant'] ?? '');
+            if (!$v || strcasecmp($v, 'Standard') === 0) {
+                $v = trim(($it['size'] ?? '') . ' ' . ($it['color'] ?? ''));
+            }
+            $vHTML = ($v && strcasecmp($v, 'Standard') !== 0) 
+                ? "<br><span style='display:inline-block;margin-top:2px;font-size:12px;color:#7000ff;font-weight:700;'>Variant / Size / Color: " . htmlspecialchars($v) . "</span>" 
+                : "";
             $q = (int)($it['qty'] ?? 1);
             $p = number_format(($it['price'] ?? 0) * $q);
-            echo "<tr><td>{$pName}</td><td style='text-align:center;'>{$q}</td><td style='text-align:right;'>PKR {$p}</td></tr>";
+            echo "<tr><td><strong>{$pName}</strong>{$vHTML}</td><td style='text-align:center;'>{$q}</td><td style='text-align:right;'>PKR {$p}</td></tr>";
         }
         echo "<tr><td colspan='2' class='total-row' style='padding-top:20px;'>Total Amount Due:</td><td class='total-row' style='text-align:right;padding-top:20px;'>PKR {$total}</td></tr>
             </tbody>
