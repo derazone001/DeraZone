@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="cart-empty">
           <i class="fa-solid fa-bag-shopping"></i>
           <p>Your shopping bag is empty.</p>
-          <a href="shop.html" class="btn-primary" onclick="if(window.closeCart) window.closeCart();">
+          <a href="shop" class="btn-primary" onclick="if(window.closeCart) window.closeCart();">
             <i class="fa-solid fa-arrow-right"></i> Start Shopping
           </a>
         </div>
@@ -64,7 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     itemsEl.innerHTML = cart.map((item, idx) => `
       <div class="cart-item">
-        <div class="cart-item-img" style="${item.image ? 'padding:0;' : ''}">${item.image ? `<img src="${item.image}" alt="${item.name.replace(/"/g, '&quot;')}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">` : (item.emoji || '🛍️')}</div>
+        <div class="cart-item-img" style="width:72px;height:72px;border-radius:10px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid #e5e7eb;padding:0;">
+          ${item.image ? `<img src="${item.image}" alt="${item.name.replace(/"/g, '&quot;')}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:2rem;">${item.emoji || '🛍️'}</span>`}
+        </div>
         <div class="cart-item-details">
           <div class="cart-item-name">${item.name}</div>
           <div class="cart-item-variant">${item.variant || 'Standard'}</div>
@@ -108,14 +110,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const buyNowCart = [{ name, price, emoji: emoji || '🛍️', variant: variant || 'Standard', image: image || null, qty: 1 }];
     localStorage.setItem('derazone_cart', JSON.stringify(buyNowCart));
-    window.location.href = 'checkout.html';
+    window.location.href = 'checkout';
   };
 
   /* ── Buy It Now: restore stashed bag if the customer left checkout
      without completing the order (i.e. they're on any page other
      than checkout.html and a stash exists) ── */
   const stashedCart = localStorage.getItem('derazone_cart_stashed');
-  if (stashedCart && !window.location.pathname.endsWith('checkout') && !window.location.pathname.endsWith('checkout.html')) {
+  if (stashedCart && !window.location.pathname.endsWith('checkout') && !window.location.pathname.endsWith('checkout')) {
     localStorage.setItem('derazone_cart', stashedCart);
     localStorage.removeItem('derazone_cart_stashed');
     cart = JSON.parse(stashedCart);

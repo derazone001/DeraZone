@@ -49,7 +49,7 @@ Still in `js/whatsapp-config.js`:
 ```javascript
 instagram: 'https://www.instagram.com/derazone.pk',
 facebook:  'https://www.facebook.com/derazone',
-email:     'derazone@gmail.com',
+email:     'info@derazone.com',
 phone:     '+92 329 4551652',
 location:  'Pakistan',
 hours:     'Monday – Saturday: 10:00am – 8:00pm',

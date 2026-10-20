@@ -84,6 +84,7 @@ function derazoneProductCardHTML(p) {
 
   const cleanName = p.name.replace(/'/g, "\\'");
   const cleanEmoji = (p.emoji || '🛍️').replace(/'/g, "\\'");
+  const cleanImg = primaryImg ? primaryImg.replace(/'/g, "\\'") : '';
 
   return `
     <div class="product-card" data-cat="${normCat}" data-id="${p.id}" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.03);display:flex;flex-direction:column;transition:all 0.3s ease;">
@@ -91,7 +92,7 @@ function derazoneProductCardHTML(p) {
         ${badgeHTML}
         ${imgContent}
         <div class="product-actions" style="position:absolute;bottom:10px;left:10px;right:10px;display:flex;gap:8px;z-index:2;">
-          <button onclick="addToCart('${cleanName}', ${p.price}, '${cleanEmoji}', 'Standard')" class="btn-primary" style="flex:1;padding:10px 14px;font-size:0.8rem;border-radius:8px;background:#7000ff;color:#fff;border:none;cursor:pointer;font-weight:700;box-shadow:0 4px 12px rgba(112,0,255,0.3);">
+          <button onclick="addToCart('${cleanName}', ${p.price}, '${cleanEmoji}', 'Standard', '${cleanImg}')" class="btn-primary" style="flex:1;padding:10px 14px;font-size:0.8rem;border-radius:8px;background:#7000ff;color:#fff;border:none;cursor:pointer;font-weight:700;box-shadow:0 4px 12px rgba(112,0,255,0.3);">
             <i class="fa-solid fa-bag-shopping"></i> Add to Bag
           </button>
         </div>
@@ -99,7 +100,7 @@ function derazoneProductCardHTML(p) {
       <div class="product-info" style="padding:16px;display:flex;flex-direction:column;flex:1;">
         <p class="product-cat" style="font-size:0.75rem;color:#7000ff;text-transform:uppercase;font-weight:700;letter-spacing:1px;margin-bottom:6px;">${dzCatLabel(normCat)}</p>
         <h3 class="product-name" style="font-size:0.95rem;font-weight:700;color:#0f172a;line-height:1.35;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em;">
-          <a href="product.html?id=${p.id}" style="color:inherit;text-decoration:none;">${p.name}</a>
+          <a href="product?id=${p.id}" style="color:inherit;text-decoration:none;">${p.name}</a>
         </h3>
         <div class="product-pricing" style="margin-top:auto;display:flex;align-items:baseline;">
           ${pricingHTML}
@@ -432,11 +433,13 @@ async function derazoneRenderHomepageGrids() {
 
   // --- 5. Render Verified Reviews Dynamically (From /api/reviews) ---
   const reviewsContainer = document.getElementById('reviews-container');
+  const reviewsSection = document.getElementById('reviews-section');
   if (reviewsContainer) {
     try {
       const data = await apiGet('/reviews');
       const reviews = (data && data.reviews) || [];
       if (reviews.length > 0) {
+        if (reviewsSection) reviewsSection.style.display = 'block';
         reviewsContainer.innerHTML = reviews.map(r => {
           const starsCount = Math.max(1, Math.min(5, Number(r.rating) || 5));
           const starsHTML = '<i class="fa-solid fa-star" style="color:#f59e0b;"></i>'.repeat(starsCount);
@@ -458,21 +461,10 @@ async function derazoneRenderHomepageGrids() {
           `;
         }).join('');
       } else {
-        // Clean elegant invite card - NO FAKE REVIEWS
-        reviewsContainer.innerHTML = `
-          <div style="grid-column:1/-1;text-align:center;padding:50px 20px;background:#ffffff;border:1.5px dashed #e5e7eb;border-radius:16px;max-width:620px;margin:0 auto;">
-            <i class="fa-regular fa-star" style="font-size:2.5rem;color:#7000ff;margin-bottom:12px;"></i>
-            <h3 style="font-size:1.15rem;font-weight:700;color:#111827;margin-bottom:6px;">No Customer Reviews Yet</h3>
-            <p style="color:#6b7280;font-size:0.9rem;line-height:1.5;margin-bottom:18px;">
-              Be the first to share your experience with DERA ZONE. Customer reviews published from our Admin panel will automatically appear here.
-            </p>
-            <a href="https://wa.me/923294551652?text=Hello%20DERA%20ZONE,%20I%20would%20like%20to%20share%20my%20feedback" target="_blank" class="btn-hero-whatsapp" style="display:inline-flex;padding:10px 22px;border-radius:10px;text-decoration:none;font-weight:700;background:#25D366;color:#fff;align-items:center;gap:8px;">
-              <i class="fa-brands fa-whatsapp"></i> Share Feedback on WhatsApp
-            </a>
-          </div>
-        `;
+        if (reviewsSection) reviewsSection.style.display = 'none';
       }
     } catch (err) {
+      if (reviewsSection) reviewsSection.style.display = 'none';
       console.warn('Reviews fetch error:', err);
     }
   }

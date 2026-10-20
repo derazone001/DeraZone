@@ -9,18 +9,28 @@ DirectoryIndex index.html index.php
   RewriteEngine On
   RewriteBase /
 
-  # Universal API Router for cPanel & Hostinger (Native PHP, zero Node.js dependency)
+  # 1. Universal API Router for cPanel & Hostinger (Native PHP, zero Node.js dependency)
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteRule ^api/(.*)$ api/index.php?endpoint=$1 [QSA,L]
 
-  # Route /admin and /admin/ cleanly to admin.html
+  # 2. Route /admin and /admin/ cleanly to admin.html
   RewriteRule ^admin/?$ admin.html [L,QSA]
 
-  # Clean URLs: Map /page to /page.html if the .html file exists
+  # 3. Clean URLs: Redirect /index.html to /
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+index\.html(?:\s|\?|$) [NC]
+  RewriteRule ^index\.html$ / [R=301,L]
+
+  # 4. Clean URLs: 301 Redirect direct requests for *.html -> extensionless URL
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+([^.?\s]+)\.html(?:\s|\?|$) [NC]
+  RewriteCond %{REQUEST_URI} !^/api/ [NC]
+  RewriteRule ^ %1 [R=301,L,QSA]
+
+  # 5. Clean URLs: Internally map /page to /page.html if page.html exists
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{DOCUMENT_ROOT}/$1.html -f [OR]
   RewriteCond %{REQUEST_FILENAME}.html -f
-  RewriteRule ^(.*)$ $1.html [L,QSA]
+  RewriteRule ^(.+?)/?$ $1.html [L,QSA]
 </IfModule>
 
 # Security Headers

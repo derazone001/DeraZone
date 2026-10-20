@@ -31,10 +31,10 @@ async function sendOrderConfirmation({ to, orderRef, items, delivery, total, pay
   await resend.emails.send({
     from: FROM,
     to,
-    subject: `Order Confirmed — ${orderRef} | DERA ZONE`,
+    subject: `Order Placed — ${orderRef} | DERA ZONE`,
     html: `<!DOCTYPE html><html><body style="margin:0;padding:40px;background:#0a0a0a;font-family:Georgia,serif;color:#ccc;">
       <h1 style="color:#7000ff;">DERA ZONE</h1>
-      <h2 style="color:#fff;">Order Confirmed ✓</h2>
+      <h2 style="color:#fff;">Order Placed ✓</h2>
       <p>Thank you ${delivery.fname}! Your order <strong style="color:#7000ff;">${orderRef}</strong> has been placed.</p>
       <table width="100%" style="margin:24px 0;">${itemRows}</table>
       <p><strong style="color:#7000ff;">Total: PKR ${total.toLocaleString()}</strong></p>
@@ -49,7 +49,7 @@ async function sendOrderConfirmation({ to, orderRef, items, delivery, total, pay
         <p style="margin:2px 0;">IBAN: PK45ALFH0960001009896691</p>
         <p style="margin:10px 0 0;color:#aaa;">After placing your order, please send a screenshot of the payment to our WhatsApp.</p>
       </div>` : ''}
-      <p style="color:#555;font-size:.8rem;">Questions? Email derazone@gmail.com</p>
+      <p style="color:#555;font-size:.8rem;">Questions? Email info@derazone.com</p>
     </body></html>`,
   });
 }
@@ -119,7 +119,7 @@ async function sendNewsletterWelcome(email) {
       <h1 style="color:#7000ff;">DERA ZONE</h1>
       <h2 style="color:#fff;">Welcome to the Circle 💛</h2>
       <p style="color:#888;">You're now part of DERA ZONE's exclusive circle. You'll be the first to know about new arrivals, fresh collections, and special offers.</p>
-      <p style="color:#888;font-size:.85rem;margin-top:24px;">Questions? derazone@gmail.com</p>
+      <p style="color:#888;font-size:.85rem;margin-top:24px;">Questions? info@derazone.com</p>
     </body>`,
   });
 }
@@ -143,7 +143,7 @@ async function sendReplyEmail({ to, customerName, originalMessage, replyText }) 
         ${originalMessage}
       </blockquote>
       <p style="color:#9a8070;font-size:.78rem;margin-top:24px;">
-        DERA ZONE — derazone@gmail.com
+        DERA ZONE — info@derazone.com
       </p>
     </body></html>`,
   });
@@ -213,7 +213,7 @@ async function sendInvoiceEmail({ to, invoiceRef, customerName, pdfPath, liveOrd
       <p>Dear ${customerName || 'Customer'},</p>
       <p>Thank you for shopping with DERA ZONE. Please find attached the invoice for your order <strong>${invoiceRef}</strong>.</p>
       <p style="color:#9a8070;font-size:.78rem;margin-top:24px;">
-        DERA ZONE — derazone@gmail.com
+        DERA ZONE — info@derazone.com
       </p>
     </body></html>`,
   });

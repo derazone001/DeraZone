@@ -71,6 +71,8 @@ if ($endpoint === 'health' || $endpoint === '') {
         'engine' => 'DERA ZONE Universal PHP API',
         'version' => '2.0.0',
         'hosting' => 'cPanel / Hostinger Native PHP',
+        'firebase' => 'connected',
+        'demoMode' => false,
         'timestamp' => date('c')
     ]);
 }

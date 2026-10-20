@@ -27,7 +27,7 @@ const store = {
       name: 'DERA ZONE',
       address: '',
       phone: '+92 315 0727131',
-      email: 'derazone@gmail.com',
+      email: 'info@derazone.com',
       website: '',
       socials: ''
     },

@@ -34,14 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     itemsEl.innerHTML = cart.map(item => `
-      <div class="ck-item">
-        <span class="ck-item-emoji" style="${item.image ? 'display:flex;align-items:center;justify-content:center;' : ''}">${item.image ? `<img src="${item.image}" alt="${item.name.replace(/"/g, '&quot;')}" style="width:36px;height:45px;object-fit:cover;border-radius:4px;">` : (item.emoji || '🛍️')}</span>
-        <div class="ck-item-info">
-          <span class="ck-item-name">${item.name}</span>
-            ${item.variant && item.variant !== 'Standard' ? `<span class="ck-item-qty" style="font-size: 0.75rem; color: #888; margin-bottom:2px;">${item.variant}</span>` : ''}
-          <span class="ck-item-qty">Qty: ${item.qty}</span>
+      <div class="ck-item" style="display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #f1f5f9;">
+        <div class="ck-item-img-box" style="width:58px;height:58px;border-radius:8px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid #e2e8f0;">
+          ${item.image ? `<img src="${item.image}" alt="${item.name.replace(/"/g, '&quot;')}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:1.8rem;">${item.emoji || '🛍️'}</span>`}
         </div>
-        <span class="ck-item-price">PKR ${(item.price * item.qty).toLocaleString()}</span>
+        <div class="ck-item-info" style="flex:1;">
+          <span class="ck-item-name" style="font-size:0.92rem;font-weight:600;color:#0f172a;display:block;line-height:1.3;">${item.name}</span>
+          ${item.variant && item.variant !== 'Standard' ? `<span class="ck-item-qty" style="font-size:0.75rem;color:#64748b;display:block;margin-top:2px;">${item.variant}</span>` : ''}
+          <span class="ck-item-qty" style="font-size:0.8rem;color:#64748b;display:block;margin-top:2px;">Qty: ${item.qty}</span>
+        </div>
+        <span class="ck-item-price" style="font-weight:700;font-size:0.92rem;color:#0f172a;">PKR ${(item.price * item.qty).toLocaleString()}</span>
       </div>`).join('');
     const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
     const delivery = getDeliveryFee(subtotal, getSelectedPayment());
@@ -152,6 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const fd = new FormData(e.target);
     orderData.delivery = Object.fromEntries(fd.entries());
+    const dCheck = orderData.delivery;
+    if (!dCheck.fname || !dCheck.fname.trim()) { toast('Please enter your Name'); return; }
+    if (!dCheck.phone || !dCheck.phone.trim()) { toast('Please enter your Phone Number'); return; }
+    if (!dCheck.address || !dCheck.address.trim()) { toast('Please enter your Delivery Address'); return; }
+    if (!dCheck.city || !dCheck.city.trim()) { toast('Please enter your City'); return; }
 
     /* ── Abandoned checkout tracking ──
        Save immediately when delivery form is submitted — this guarantees
@@ -203,16 +210,19 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('order-summary-full').innerHTML = `
       <div class="confirm-section">
         <h4>Deliver To</h4>
-        <p>${d.fname} ${d.lname}</p>
-        <p>${d.address}, ${d.city}</p>
-        <p>${d.phone} · ${d.email}</p>
+        <p><strong>${d.fname || ''}${d.lname ? ' ' + d.lname : ''}</strong></p>
+        <p>${d.address || ''}, ${d.city || ''}${d.province ? ', ' + d.province : ''}</p>
+        <p>${d.phone || ''}${d.email ? ' · ' + d.email : ''}</p>
+        ${d.notes ? `<p style="font-size:0.8rem;color:#64748b;margin-top:4px;"><em>Note: ${d.notes}</em></p>` : ''}
       </div>
       <div class="confirm-section">
         <h4>Items</h4>
-        ${cart.map(i => `<div class="ck-item">
-          <span>${i.emoji}</span>
-          <span style="flex:1">${i.name} × ${i.qty}</span>
-          <span>PKR ${(i.price*i.qty).toLocaleString()}</span>
+        ${cart.map(i => `<div class="ck-item" style="display:flex;gap:12px;align-items:center;margin-bottom:10px;">
+          <div style="width:48px;height:48px;border-radius:8px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid #e2e8f0;">
+            ${i.image ? `<img src="${i.image}" alt="${(i.name||'').replace(/"/g, '&quot;')}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:1.4rem;">${i.emoji || '🛍️'}</span>`}
+          </div>
+          <span style="flex:1;font-size:0.9rem;font-weight:500;color:#1e293b;">${i.name} × ${i.qty}</span>
+          <span style="font-weight:700;font-size:0.9rem;color:#0f172a;">PKR ${(i.price*i.qty).toLocaleString()}</span>
         </div>`).join('')}
       </div>
       <div class="confirm-section">
@@ -223,8 +233,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="confirm-section">
         <div class="ck-summary-row"><span>Subtotal</span><span>PKR ${subtotal.toLocaleString()}</span></div>
         ${discount > 0 ? `<div class="ck-summary-row"><span>Discount${appliedCoupon ? ' (' + appliedCoupon.code + ')' : ''}</span><span>− PKR ${discount.toLocaleString()}</span></div>` : ''}
-        <div class="ck-summary-row"><span>Delivery</span><span>${fee === 0 ? 'FREE' : 'PKR ' + fee.toLocaleString()}</span></div>
-        <div class="ck-summary-row ck-total-row"><span>Total</span><span>PKR ${Math.max(0, subtotal - discount + fee).toLocaleString()}</span></div>
+        <div class="ck-summary-row"><span>Delivery Fee</span><span>${fee === 0 ? 'FREE' : 'PKR ' + fee.toLocaleString()}</span></div>
+        <div class="ck-summary-row" style="font-weight:700;font-size:1.05rem;border-top:1px solid #f1f5f9;padding-top:8px;margin-top:8px;"><span>Total</span><span>PKR ${Math.max(0, subtotal - discount + fee).toLocaleString()}</span></div>
       </div>`;
     goToStep(3);
   });

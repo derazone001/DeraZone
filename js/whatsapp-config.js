@@ -16,7 +16,7 @@ const DERAZONE_CONFIG = {
   },
   /* ── Contact ── */
   contact: {
-    email:    'derazone001@gmail.com',
+    email:    'info@derazone.com',
     phone:    '+92 329 4551652',
     location: 'Pakistan',
     hours:    'Monday – Saturday: 10am – 7pm',
