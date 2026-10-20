@@ -810,23 +810,25 @@ if ($endpoint === 'admin/recent-orders') {
 }
 
 // ── REVIEWS ENDPOINTS ──
-if ($endpoint === 'reviews' || $endpoint === 'reviews/all' || preg_match('#^reviews/([^/]+)(?:/(approve))?$#', $endpoint, $m)) {
+if ($endpoint === 'reviews' || $endpoint === 'admin/reviews' || $endpoint === 'reviews/all' || $endpoint === 'admin/reviews/all' || preg_match('#^(?:admin/)?reviews/([^/]+)(?:/(approve))?$#', $endpoint, $m)) {
     $revId = $m[1] ?? null;
     $isApprove = ($m[2] ?? '') === 'approve';
     $store = get_store();
     $reviews = $store['reviews'] ?? [];
 
     if ($method === 'GET') {
-        if ($endpoint === 'reviews/all') {
+        if ($endpoint === 'reviews/all' || $endpoint === 'admin/reviews/all') {
             json_ok(['reviews' => $reviews]);
         }
-        $approved = array_filter($reviews, function($r) { return !empty($r['approved']); });
+        $approved = array_filter($reviews, function($r) {
+            return !isset($r['approved']) || !empty($r['approved']) || $r['approved'] === true || $r['approved'] === 'true' || $r['approved'] === 1 || $r['approved'] === '1';
+        });
         json_ok(['reviews' => array_values($approved)]);
     }
 
     if ($method === 'POST') {
         $newRev = $body;
-        $newRev['id'] = 'rev-' . time() . '-' . rand(10, 99);
+        $newRev['id'] = $newRev['id'] ?? ('rev-' . time() . '-' . rand(10, 99));
         $newRev['approved'] = isset($body['approved']) ? (bool)$body['approved'] : true;
         $newRev['createdAt'] = $newRev['createdAt'] ?? date('c');
         $reviews[] = $newRev;
@@ -836,19 +838,21 @@ if ($endpoint === 'reviews' || $endpoint === 'reviews/all' || preg_match('#^revi
     }
 
     if ($method === 'PATCH' && $isApprove) {
+        $updatedRev = null;
         foreach ($reviews as &$r) {
-            if ($r['id'] == $revId) {
-                $r['approved'] = true;
+            if (($r['id'] ?? '') == $revId) {
+                $r['approved'] = isset($body['approved']) ? (bool)$body['approved'] : true;
+                $updatedRev = $r;
                 break;
             }
         }
         $store['reviews'] = $reviews;
         save_store($store);
-        json_ok(['review' => $r]);
+        json_ok(['review' => $updatedRev]);
     }
 
     if ($method === 'DELETE') {
-        $reviews = array_filter($reviews, function($r) use ($revId) { return $r['id'] != $revId; });
+        $reviews = array_filter($reviews, function($r) use ($revId) { return ($r['id'] ?? '') != $revId; });
         $store['reviews'] = array_values($reviews);
         save_store($store);
         json_ok(['deleted' => true]);

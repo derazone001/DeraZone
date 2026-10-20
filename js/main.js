@@ -64,8 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     itemsEl.innerHTML = cart.map((item, idx) => `
       <div class="cart-item">
-        <div class="cart-item-img" style="width:72px;height:72px;border-radius:10px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid #e5e7eb;padding:0;">
-          ${item.image ? `<img src="${item.image}" alt="${item.name.replace(/"/g, '&quot;')}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:2rem;">${item.emoji || '🛍️'}</span>`}
+        <div class="cart-item-img" style="width:72px;height:72px;border-radius:10px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid #e5e7eb;padding:4px;">
+          ${item.image ? `<img src="${item.image}" alt="${item.name.replace(/"/g, '&quot;')}" style="max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;">` : `<span style="font-size:2rem;">${item.emoji || '🛍️'}</span>`}
         </div>
         <div class="cart-item-details">
           <div class="cart-item-name">${item.name}</div>

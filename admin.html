@@ -884,7 +884,6 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
         <option value="newest">Newest First</option>
         <option value="oldest">Oldest First</option>
       </select>
-      <button class="btn btn-outline" onclick="exportProductsExcel()" title="Export to Excel"><i class="fa-solid fa-file-excel"></i> Export</button>
       <button class="btn btn-outline" onclick="openPinnedModal()"><i class="fa-solid fa-thumbtack"></i> Pinned Collections</button>
         <button class="btn btn-outline" onclick="openSpotlightModal()"><i class="fa-solid fa-star"></i> Spotlight Products</button>
       <button class="btn btn-gold" id="btn-add-product" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> Add Product</button>
@@ -938,7 +937,6 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
     <h1>Subscribers</h1>
     <div class="ml-auto">
       <button class="btn btn-outline" onclick="loadSubscribers()"><i class="fa-solid fa-rotate"></i> Refresh</button>
-      <button class="btn btn-outline" onclick="exportExcel('subscribers')"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
       <button class="btn btn-gold" onclick="openPromoModal()" style="background:var(--gold);color:#fff;"><i class="fa-solid fa-paper-plane"></i> Send Promotion Email</button>
     </div>
   </div>
@@ -1049,7 +1047,6 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
         <option value="all">Show All</option>
       </select>
       <button class="btn btn-outline" onclick="loadAbandoned()"><i class="fa-solid fa-rotate"></i> Refresh</button>
-      <button class="btn btn-gold" onclick="exportAbandonedExcel()"><i class="fa-solid fa-file-excel"></i> Export</button>
     </div>
   </div>
 
@@ -1174,15 +1171,6 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
   <div class="settings-section" id="sys-info-section">
     <h3><i class="fa-solid fa-server" style="color:var(--gold);margin-right:8px"></i>System Info</h3>
     <div id="sys-info" style="font-size:0.84rem;color:var(--muted);line-height:2;"></div>
-  </div>
-
-  <div class="settings-section" id="export-data-section">
-    <h3><i class="fa-solid fa-file-export" style="color:var(--gold);margin-right:8px"></i>Export Data</h3>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <button class="btn btn-outline" onclick="exportExcel('orders')"><i class="fa-solid fa-file-excel"></i> Orders Excel</button>
-      <button class="btn btn-outline" onclick="exportExcel('subscribers')"><i class="fa-solid fa-file-excel"></i> Subscribers Excel</button>
-      <button class="btn btn-outline" onclick="exportExcel('messages')"><i class="fa-solid fa-file-excel"></i> Messages Excel</button>
-    </div>
   </div>
 
   <div class="settings-section" id="settings-restricted-box" style="display:none;text-align:center;padding:40px 20px;background:rgba(255,255,255,0.02);border:1px dashed var(--border);border-radius:8px;">
@@ -2233,7 +2221,7 @@ function apiFetch(path, options = {}) {
   if (!options.method || options.method === 'GET') {
     finalPath += (path.includes('?') ? '&' : '?') + '_t=' + Date.now();
   }
-  const timeoutMs = options.timeout || (path.includes('/auth/login') ? 2000 : 2800);
+  const timeoutMs = options.timeout || (path.includes('/auth/login') ? 5000 : 10000);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 

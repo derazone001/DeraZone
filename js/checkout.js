@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     itemsEl.innerHTML = cart.map(item => `
       <div class="ck-item" style="display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #f1f5f9;">
-        <div class="ck-item-img-box" style="width:58px;height:58px;border-radius:8px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid #e2e8f0;">
-          ${item.image ? `<img src="${item.image}" alt="${item.name.replace(/"/g, '&quot;')}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:1.8rem;">${item.emoji || '🛍️'}</span>`}
+        <div class="ck-item-img-box" style="width:58px;height:58px;border-radius:8px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid #e2e8f0;padding:3px;">
+          ${item.image ? `<img src="${item.image}" alt="${item.name.replace(/"/g, '&quot;')}" style="max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;">` : `<span style="font-size:1.8rem;">${item.emoji || '🛍️'}</span>`}
         </div>
         <div class="ck-item-info" style="flex:1;">
           <span class="ck-item-name" style="font-size:0.92rem;font-weight:600;color:#0f172a;display:block;line-height:1.3;">${item.name}</span>
@@ -222,8 +222,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="confirm-section">
         <h4>Items</h4>
         ${cart.map(i => `<div class="ck-item" style="display:flex;gap:12px;align-items:center;margin-bottom:10px;">
-          <div style="width:48px;height:48px;border-radius:8px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid #e2e8f0;">
-            ${i.image ? `<img src="${i.image}" alt="${(i.name||'').replace(/"/g, '&quot;')}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:1.4rem;">${i.emoji || '🛍️'}</span>`}
+          <div style="width:48px;height:48px;border-radius:8px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid #e2e8f0;padding:2px;">
+            ${i.image ? `<img src="${i.image}" alt="${(i.name||'').replace(/"/g, '&quot;')}" style="max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;">` : `<span style="font-size:1.4rem;">${i.emoji || '🛍️'}</span>`}
           </div>
           <div style="flex:1;">
             <span style="font-size:0.9rem;font-weight:600;color:#1e293b;display:block;">${i.name} × ${i.qty}</span>

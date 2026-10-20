@@ -76,7 +76,7 @@ function derazoneProductCardHTML(p) {
 
   const primaryImg = (p.images && p.images[0]) || p.image || null;
   const imgContent = primaryImg
-    ? `<img src="${primaryImg}" alt="${p.name.replace(/"/g, '&quot;')}" loading="lazy" style="width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">`
+    ? `<img src="${primaryImg}" alt="${p.name.replace(/"/g, '&quot;')}" loading="lazy" style="max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;transition:transform 0.4s ease;padding:8px;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">`
     : `<div class="product-img-placeholder" style="background:#f8fafc;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#7000ff;font-size:3.5rem;">
         <span>${p.emoji || '🛍️'}</span>
         <span style="font-size:0.75rem;font-weight:700;color:#64748b;margin-top:8px;text-transform:uppercase;letter-spacing:1px;">${dzCatLabel(normCat)}</span>
@@ -97,7 +97,7 @@ function derazoneProductCardHTML(p) {
 
   return `
     <div class="product-card" data-cat="${normCat}" data-id="${p.id}" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.03);display:flex;flex-direction:column;transition:all 0.3s ease;">
-      <div class="product-img-wrap" style="position:relative;aspect-ratio:1/1;width:100%;overflow:hidden;background:#f8fafc;">
+      <div class="product-img-wrap" style="position:relative;aspect-ratio:1/1;width:100%;overflow:hidden;background:#f8fafc;display:flex;align-items:center;justify-content:center;">
         ${badgeHTML}
         ${imgContent}
         <div class="product-actions" style="position:absolute;bottom:10px;left:10px;right:10px;display:flex;gap:8px;z-index:2;">
@@ -422,6 +422,12 @@ async function derazoneRenderHomepageGrids() {
         });
       }
 
+      // Auto fallback if no manual spotlight products are configured yet in admin:
+      if (spotlightProducts.length === 0 && allProducts.length > 0) {
+        const fallback = allProducts.find(p => p.is_featured || p.badge) || allProducts[0];
+        if (fallback) spotlightProducts.push(fallback);
+      }
+
       if (spotlightProducts.length > 0) {
         if (spotlightSection) spotlightSection.style.display = 'block';
         spotlightContainer.innerHTML = spotlightProducts.slice(0, 3).map(p => {
@@ -447,7 +453,7 @@ async function derazoneRenderHomepageGrids() {
             <div class="spotlight-layout">
               <div class="spotlight-image">
                 ${primaryImg 
-                  ? `<img src="${primaryImg}" alt="${p.name.replace(/"/g, '&quot;')}" loading="lazy">` 
+                  ? `<img src="${primaryImg}" alt="${p.name.replace(/"/g, '&quot;')}" loading="lazy" style="max-width:100%;max-height:420px;width:auto;height:auto;object-fit:contain;display:block;margin:0 auto;">` 
                   : `<div style="font-size:5rem;">${p.emoji || '🛍️'}</div>`}
               </div>
               <div class="spotlight-details">
