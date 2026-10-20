@@ -361,6 +361,44 @@ router.patch('/:id/status', requireAdmin, async (req, res) => {
     });
 
     store.emit('order_status_changed', { id: req.params.id, status });
+
+    /* ── Auto-generate invoice & email customer when order is Confirmed ── */
+    if (status === 'Confirmed') {
+      const liveOrder = store.orders.find(o => o.id === req.params.id);
+      if (liveOrder) {
+        const invId = liveOrder.id;
+        const invoiceRecord = {
+          id: invId,
+          orderId: liveOrder.id,
+          type: 'standard',
+          pdfUrl: `/api/invoices/${invId}/download`,
+          customerName: liveOrder.customerName || `${liveOrder.delivery?.fname || ''} ${liveOrder.delivery?.lname || ''}`.trim(),
+          total: liveOrder.total,
+          snapshot: liveOrder,
+          status: 'Generated',
+          emailStatus: liveOrder.delivery?.email ? 'Sent' : 'Not Sent',
+          createdAt: new Date().toISOString(),
+          createdBy: 'Auto-Confirm'
+        };
+        const existingInvIdx = store.invoices.findIndex(i => i.orderId === liveOrder.id);
+        if (existingInvIdx === -1) store.invoices.unshift(invoiceRecord);
+
+        if (liveOrder.delivery?.email) {
+          try {
+            const { sendOrderConfirmation } = require('../utils/email');
+            sendOrderConfirmation({
+              to: liveOrder.delivery.email,
+              orderRef: liveOrder.id,
+              items: liveOrder.items || [],
+              delivery: liveOrder.delivery,
+              total: liveOrder.total || 0,
+              paymentMethod: liveOrder.paymentMethod || 'cod'
+            }).catch(e => console.warn('Email send error:', e.message));
+          } catch(e) {}
+        }
+      }
+    }
+
     return res.json({ message: `Order updated to "${status}".`, status });
   } catch (err) {
     return res.status(500).json({ error: 'Failed to update order.' });

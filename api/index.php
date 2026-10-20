@@ -62,6 +62,210 @@ function json_err($msg = 'An error occurred', $code = 400) {
     exit();
 }
 
+// ── EMAIL HELPER (Native cPanel / PHP Mail with info@derazone.com) ──
+function send_derazone_email($to, $subject, $htmlBody, $replyTo = 'info@derazone.com') {
+    if (empty($to)) return false;
+    $headers  = "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $headers .= "From: DERA ZONE <info@derazone.com>\r\n";
+    $headers .= "Reply-To: " . $replyTo . "\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+    return @mail($to, $subject, $htmlBody, $headers);
+}
+
+function send_admin_new_order_alert($order) {
+    $to = 'info@derazone.com';
+    $orderId = $order['id'] ?? 'DZ-0000';
+    $subject = "🛒 New Order Received [{$orderId}] — PKR " . number_format($order['total'] ?? 0);
+    $d = $order['delivery'] ?? [];
+    $name = trim(($d['fname'] ?? '') . ' ' . ($d['lname'] ?? ''));
+    $phone = $d['phone'] ?? 'N/A';
+    $email = $d['email'] ?? 'Not provided';
+    $address = $d['address'] ?? 'N/A';
+    $city = $d['city'] ?? 'N/A';
+    $notes = $d['notes'] ?? 'None';
+    $pay = strtoupper($order['paymentMethod'] ?? $order['payment'] ?? 'COD');
+    
+    $itemRows = '';
+    foreach (($order['items'] ?? []) as $it) {
+        $pName = htmlspecialchars($it['name'] ?? 'Item');
+        $qty = $it['qty'] ?? 1;
+        $price = number_format(($it['price'] ?? 0) * $qty);
+        $itemRows .= "<tr><td style='padding:8px;border-bottom:1px solid #eee;'>{$pName} × {$qty}</td><td style='padding:8px;border-bottom:1px solid #eee;text-align:right;'>PKR {$price}</td></tr>";
+    }
+    
+    $html = "
+    <div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#1e293b;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;'>
+      <div style='background:#7000ff;padding:20px;text-align:center;color:#ffffff;'>
+        <h2 style='margin:0;font-size:20px;'>New Order Received</h2>
+        <p style='margin:4px 0 0;font-size:14px;'>Order Reference: <strong>{$orderId}</strong></p>
+      </div>
+      <div style='padding:24px;'>
+        <h3 style='margin-top:0;color:#0f172a;border-bottom:2px solid #f1f5f9;padding-bottom:8px;'>Customer Details</h3>
+        <p style='margin:4px 0;'><strong>Name:</strong> {$name}</p>
+        <p style='margin:4px 0;'><strong>Phone:</strong> {$phone}</p>
+        <p style='margin:4px 0;'><strong>Email:</strong> {$email}</p>
+        <p style='margin:4px 0;'><strong>Address:</strong> {$address}, {$city}</p>
+        <p style='margin:4px 0;'><strong>Payment Method:</strong> {$pay}</p>
+        <p style='margin:4px 0;'><strong>Notes:</strong> {$notes}</p>
+        
+        <h3 style='margin-top:20px;color:#0f172a;border-bottom:2px solid #f1f5f9;padding-bottom:8px;'>Order Items</h3>
+        <table style='width:100%;border-collapse:collapse;'>
+          {$itemRows}
+          <tr>
+            <td style='padding:12px 8px;font-weight:bold;font-size:16px;'>Grand Total:</td>
+            <td style='padding:12px 8px;font-weight:bold;font-size:16px;text-align:right;color:#7000ff;'>PKR " . number_format($order['total'] ?? 0) . "</td>
+          </tr>
+        </table>
+        
+        <div style='margin-top:24px;text-align:center;'>
+          <a href='https://derazone.com/admin' style='background:#7000ff;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:bold;display:inline-block;'>Open Admin Dashboard</a>
+        </div>
+      </div>
+    </div>";
+    
+    send_derazone_email($to, $subject, $html, $email !== 'Not provided' ? $email : 'info@derazone.com');
+}
+
+function send_customer_order_placed($order) {
+    $d = $order['delivery'] ?? [];
+    $to = trim($d['email'] ?? '');
+    if (empty($to)) return;
+    
+    $orderId = $order['id'] ?? 'DZ-0000';
+    $name = trim(($d['fname'] ?? '') . ' ' . ($d['lname'] ?? ''));
+    $subject = "Order Placed — {$orderId} | DERA ZONE";
+    $total = number_format($order['total'] ?? 0);
+    $pay = strtoupper($order['paymentMethod'] ?? $order['payment'] ?? 'COD');
+    
+    $itemRows = '';
+    foreach (($order['items'] ?? []) as $it) {
+        $pName = htmlspecialchars($it['name'] ?? 'Item');
+        $qty = $it['qty'] ?? 1;
+        $price = number_format(($it['price'] ?? 0) * $qty);
+        $itemRows .= "<tr><td style='padding:8px;border-bottom:1px solid #eee;'>{$pName} × {$qty}</td><td style='padding:8px;border-bottom:1px solid #eee;text-align:right;'>PKR {$price}</td></tr>";
+    }
+    
+    $html = "
+    <div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#1e293b;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;'>
+      <div style='background:#7000ff;padding:24px;text-align:center;color:#ffffff;'>
+        <h1 style='margin:0;font-size:24px;letter-spacing:1px;'>DERA ZONE</h1>
+        <h2 style='margin:8px 0 0;font-size:18px;'>Order Placed ✓</h2>
+        <p style='margin:4px 0 0;font-size:14px;'>Order Reference: <strong>{$orderId}</strong></p>
+      </div>
+      <div style='padding:24px;'>
+        <p style='font-size:15px;line-height:1.5;'>Thank you <strong>{$name}</strong>! Your order has been placed into our dispatch queue. Our customer care team will keep you updated via WhatsApp and email.</p>
+        
+        <h3 style='margin-top:20px;color:#0f172a;border-bottom:2px solid #f1f5f9;padding-bottom:8px;'>Order Summary</h3>
+        <table style='width:100%;border-collapse:collapse;'>
+          {$itemRows}
+          <tr>
+            <td style='padding:12px 8px;font-weight:bold;font-size:16px;'>Grand Total:</td>
+            <td style='padding:12px 8px;font-weight:bold;font-size:16px;text-align:right;color:#7000ff;'>PKR {$total}</td>
+          </tr>
+        </table>
+        
+        <div style='margin-top:20px;padding:14px;background:#f8fafc;border-radius:8px;'>
+          <p style='margin:0 0 4px;'><strong>Delivery Address:</strong> {$d['address']}, {$d['city']}</p>
+          <p style='margin:0;'><strong>Payment Method:</strong> {$pay}</p>
+        </div>
+        
+        <p style='color:#64748b;font-size:13px;margin-top:24px;text-align:center;'>
+          Questions or assistance? Reply to this email or contact us at <a href='mailto:info@derazone.com' style='color:#7000ff;'>info@derazone.com</a> / WhatsApp: +92 329 4551652.
+        </p>
+      </div>
+    </div>";
+    
+    send_derazone_email($to, $subject, $html);
+}
+
+function send_customer_order_confirmed($order) {
+    $d = $order['delivery'] ?? [];
+    $to = trim($d['email'] ?? '');
+    if (empty($to)) return;
+    
+    $orderId = $order['id'] ?? 'DZ-0000';
+    $name = trim(($d['fname'] ?? '') . ' ' . ($d['lname'] ?? ''));
+    $subject = "Order Confirmed & Preparing for Dispatch — {$orderId} | DERA ZONE";
+    $total = number_format($order['total'] ?? 0);
+    $pay = strtoupper($order['paymentMethod'] ?? $order['payment'] ?? 'COD');
+    
+    $itemRows = '';
+    foreach (($order['items'] ?? []) as $it) {
+        $pName = htmlspecialchars($it['name'] ?? 'Item');
+        $qty = $it['qty'] ?? 1;
+        $price = number_format(($it['price'] ?? 0) * $qty);
+        $itemRows .= "<tr><td style='padding:8px;border-bottom:1px solid #eee;'>{$pName} × {$qty}</td><td style='padding:8px;border-bottom:1px solid #eee;text-align:right;'>PKR {$price}</td></tr>";
+    }
+    
+    $html = "
+    <div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#1e293b;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;'>
+      <div style='background:#10b981;padding:24px;text-align:center;color:#ffffff;'>
+        <h1 style='margin:0;font-size:24px;letter-spacing:1px;'>DERA ZONE</h1>
+        <h2 style='margin:8px 0 0;font-size:18px;'>Order Confirmed ✓</h2>
+        <p style='margin:4px 0 0;font-size:14px;'>Invoice / Reference: <strong>{$orderId}</strong></p>
+      </div>
+      <div style='padding:24px;'>
+        <p style='font-size:15px;line-height:1.5;'>Dear <strong>{$name}</strong>,</p>
+        <p style='font-size:15px;line-height:1.5;color:#334155;'>
+          Great news! Your order has been officially confirmed by our team and is now being packed for dispatch.
+        </p>
+        
+        <h3 style='margin-top:20px;color:#0f172a;border-bottom:2px solid #f1f5f9;padding-bottom:8px;'>Invoice &amp; Order Details</h3>
+        <table style='width:100%;border-collapse:collapse;'>
+          {$itemRows}
+          <tr>
+            <td style='padding:12px 8px;font-weight:bold;font-size:16px;'>Grand Total:</td>
+            <td style='padding:12px 8px;font-weight:bold;font-size:16px;text-align:right;color:#10b981;'>PKR {$total}</td>
+          </tr>
+        </table>
+        
+        <div style='margin-top:20px;padding:14px;background:#f8fafc;border-radius:8px;'>
+          <p style='margin:0 0 4px;'><strong>Delivery Address:</strong> {$d['address']}, {$d['city']}</p>
+          <p style='margin:0 0 4px;'><strong>Contact:</strong> {$d['phone']}</p>
+          <p style='margin:0;'><strong>Status:</strong> Confirmed &amp; In Packing Queue</p>
+        </div>
+        
+        <p style='color:#64748b;font-size:13px;margin-top:24px;text-align:center;'>
+          Thank you for trusting DERA ZONE. Questions? Contact us at <a href='mailto:info@derazone.com' style='color:#7000ff;'>info@derazone.com</a>.
+        </p>
+      </div>
+    </div>";
+    
+    send_derazone_email($to, $subject, $html);
+}
+
+function send_admin_contact_alert($msg) {
+    $to = 'info@derazone.com';
+    $name = htmlspecialchars($msg['name'] ?? 'Website Visitor');
+    $email = htmlspecialchars($msg['email'] ?? 'Not provided');
+    $phone = htmlspecialchars($msg['phone'] ?? 'Not provided');
+    $subjectLine = htmlspecialchars($msg['subject'] ?? 'New Message');
+    $bodyText = nl2br(htmlspecialchars($msg['message'] ?? ''));
+    
+    $subject = "📩 New Website Message from {$name} — {$subjectLine}";
+    $html = "
+    <div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#1e293b;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;'>
+      <div style='background:#7000ff;padding:20px;text-align:center;color:#ffffff;'>
+        <h2 style='margin:0;font-size:20px;'>New Contact Message</h2>
+        <p style='margin:4px 0 0;font-size:14px;'>via derazone.com</p>
+      </div>
+      <div style='padding:24px;'>
+        <p style='margin:4px 0;'><strong>From:</strong> {$name}</p>
+        <p style='margin:4px 0;'><strong>Email:</strong> {$email}</p>
+        <p style='margin:4px 0;'><strong>Phone:</strong> {$phone}</p>
+        <p style='margin:4px 0;'><strong>Subject:</strong> {$subjectLine}</p>
+        <h4 style='margin-top:16px;margin-bottom:8px;color:#0f172a;'>Message:</h4>
+        <div style='padding:14px;background:#f8fafc;border-left:4px solid #7000ff;border-radius:4px;font-size:14px;line-height:1.6;'>
+          {$bodyText}
+        </div>
+      </div>
+    </div>";
+    
+    send_derazone_email($to, $subject, $html, $email !== 'Not provided' ? $email : 'info@derazone.com');
+}
+
+
 // ── 4. Router ──
 
 // Health Check
@@ -241,6 +445,9 @@ if ($endpoint === 'orders' || preg_match('#^orders/([^/]+)(?:/(status))?$#', $en
         array_unshift($orders, $newOrder);
         $store['orders'] = $orders;
         save_store($store);
+        // Send email notifications
+        @send_admin_new_order_alert($newOrder);
+        @send_customer_order_placed($newOrder);
         json_ok(['order' => $newOrder, 'orderRef' => $newOrder['id']]);
     }
 
@@ -248,9 +455,41 @@ if ($endpoint === 'orders' || preg_match('#^orders/([^/]+)(?:/(status))?$#', $en
         $updated = false;
         foreach ($orders as &$o) {
             if ($o['id'] == $orderId) {
+                $oldStatus = $o['status'] ?? '';
                 if (isset($body['status'])) $o['status'] = $body['status'];
                 if (isset($body['advanceStatus'])) $o['advanceStatus'] = $body['advanceStatus'];
                 $updated = true;
+                
+                // When order is Confirmed: auto-generate invoice & send confirmation email if customer has email
+                if (strcasecmp($o['status'] ?? '', 'Confirmed') === 0) {
+                    if (!isset($store['invoices'])) $store['invoices'] = [];
+                    $hasInv = false;
+                    foreach ($store['invoices'] as $existingInv) {
+                        if (($existingInv['orderId'] ?? '') === $o['id']) { $hasInv = true; break; }
+                    }
+                    if (!$hasInv) {
+                        $custName = trim(($o['delivery']['fname'] ?? '') . ' ' . ($o['delivery']['lname'] ?? ''));
+                        $invRecord = [
+                            'id' => $o['id'],
+                            'orderId' => $o['id'],
+                            'type' => 'standard',
+                            'pdfUrl' => '/api/invoices/' . $o['id'] . '/download',
+                            'customerName' => $custName ?: 'Customer',
+                            'total' => $o['total'] ?? 0,
+                            'snapshot' => $o,
+                            'status' => 'Generated',
+                            'emailStatus' => !empty($o['delivery']['email']) ? 'Sent' : 'Not Sent',
+                            'createdAt' => date('c'),
+                            'createdBy' => 'Admin Auto-Confirm'
+                        ];
+                        array_unshift($store['invoices'], $invRecord);
+                    }
+                    
+                    // Send customer email if provided
+                    if (!empty($o['delivery']['email'])) {
+                        @send_customer_order_confirmed($o);
+                    }
+                }
                 break;
             }
         }
@@ -581,6 +820,7 @@ if ($endpoint === 'contact') {
         $msgs[] = $newMsg;
         $store['messages'] = $msgs;
         save_store($store);
+        @send_admin_contact_alert($newMsg);
         json_ok(['received' => true]);
     }
 }
@@ -610,6 +850,206 @@ if ($endpoint === 'notifications/stream') {
         exit();
     }
     json_ok(['notifications' => []]);
+}
+
+
+// ── UPLOAD ENDPOINT (Cloudinary + Local Fallback) ──
+if ($endpoint === 'upload') {
+    if ($method !== 'POST') json_err('Method not allowed', 405);
+    if (empty($_FILES['file'])) json_err('No file provided', 400);
+
+    $file = $_FILES['file'];
+    $cloudName = 'wmatsmvz';
+    $apiKey    = '954698529562277';
+    $apiSecret = 'ClHSwc11_pKj3Wx5ckNW1_7Ncc0';
+
+    // 1. Try Cloudinary REST API
+    $timestamp = time();
+    $paramsToSign = "folder=DERA ZONE/products&timestamp=" . $timestamp . $apiSecret;
+    $signature = sha1($paramsToSign);
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "https://api.cloudinary.com/v1_1/{$cloudName}/auto/upload");
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, [
+        'file' => new CURLFile($file['tmp_name'], $file['type'], $file['name']),
+        'api_key' => $apiKey,
+        'timestamp' => $timestamp,
+        'folder' => 'DERA ZONE/products',
+        'signature' => $signature
+    ]);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    $result = json_decode($response, true);
+    if ($httpCode === 200 && !empty($result['secure_url'])) {
+        json_ok([
+            'url' => $result['secure_url'],
+            'type' => $result['resource_type'] ?? 'image',
+            'publicId' => $result['public_id'] ?? ''
+        ]);
+    }
+
+    // 2. Fallback: Save to local directory
+    $uploadDir = __DIR__ . '/../images/products/';
+    if (!is_dir($uploadDir)) @mkdir($uploadDir, 0755, true);
+    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $newName = 'product-' . time() . '-' . rand(100, 999) . ($ext ? '.' . $ext : '');
+    $targetPath = $uploadDir . $newName;
+
+    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+        json_ok([
+            'url' => 'images/products/' . $newName,
+            'type' => 'image',
+            'publicId' => $newName
+        ]);
+    }
+
+    json_err('Upload failed: ' . ($result['error']['message'] ?? 'Could not write file'), 500);
+}
+
+// ── INVOICES ENDPOINTS ──
+if ($endpoint === 'invoices' || $endpoint === 'invoices/generate' || preg_match('#^invoices/([^/]+)(?:/(download|email))?$#', $endpoint, $m)) {
+    $invId = $m[1] ?? null;
+    $action = $m[2] ?? '';
+    $store = get_store();
+    $invoices = $store['invoices'] ?? [];
+
+    if ($method === 'GET' && empty($invId)) {
+        json_ok(['invoices' => $invoices]);
+    }
+
+    if ($method === 'POST' && $endpoint === 'invoices/generate') {
+        $orderId = trim($body['orderId'] ?? '');
+        $allOrders = array_merge($store['orders'] ?? [], $store['socialOrders'] ?? []);
+        $targetOrder = null;
+        foreach ($allOrders as $o) {
+            if ($o['id'] == $orderId) { $targetOrder = $o; break; }
+        }
+        if (!$targetOrder) json_err('Order not found', 404);
+
+        $custName = trim(($targetOrder['delivery']['fname'] ?? '') . ' ' . ($targetOrder['delivery']['lname'] ?? ''));
+        $invRecord = [
+            'id' => $orderId,
+            'orderId' => $orderId,
+            'type' => 'standard',
+            'pdfUrl' => '/api/invoices/' . $orderId . '/download',
+            'customerName' => $custName ?: 'Customer',
+            'total' => $targetOrder['total'] ?? 0,
+            'snapshot' => $targetOrder,
+            'status' => 'Generated',
+            'emailStatus' => !empty($targetOrder['delivery']['email']) ? 'Sent' : 'Not Sent',
+            'createdAt' => date('c'),
+            'createdBy' => 'Admin'
+        ];
+
+        $invoices = array_filter($invoices, function($i) use ($orderId) { return $i['orderId'] != $orderId; });
+        array_unshift($invoices, $invRecord);
+        $store['invoices'] = array_values($invoices);
+        save_store($store);
+
+        json_ok(['message' => 'Invoice generated successfully', 'invoice' => $invRecord]);
+    }
+
+    if ($action === 'download' && $invId) {
+        // Printable HTML invoice
+        $allOrders = array_merge($store['orders'] ?? [], $store['socialOrders'] ?? []);
+        $targetOrder = null;
+        foreach ($allOrders as $o) {
+            if ($o['id'] == $invId) { $targetOrder = $o; break; }
+        }
+        if (!$targetOrder) {
+            foreach ($invoices as $i) {
+                if ($i['id'] == $invId) { $targetOrder = $i['snapshot'] ?? null; break; }
+            }
+        }
+        if (!$targetOrder) json_err('Invoice / Order not found', 404);
+
+        $d = $targetOrder['delivery'] ?? [];
+        $name = htmlspecialchars(trim(($d['fname'] ?? '') . ' ' . ($d['lname'] ?? '')));
+        $phone = htmlspecialchars($d['phone'] ?? '');
+        $address = htmlspecialchars($d['address'] ?? '');
+        $city = htmlspecialchars($d['city'] ?? '');
+        $total = number_format($targetOrder['total'] ?? 0);
+        $pay = strtoupper($targetOrder['paymentMethod'] ?? 'COD');
+        $date = date('F d, Y', strtotime($targetOrder['createdAt'] ?? 'now'));
+
+        header('Content-Type: text/html; charset=UTF-8');
+        echo "<!DOCTYPE html><html><head><title>Invoice {$invId} — DERA ZONE</title><style>
+          body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; color: #1e293b; background: #fff; margin:0; }
+          .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 12px; }
+          .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #7000ff; padding-bottom: 20px; }
+          .logo { font-size: 26px; font-weight: 800; color: #7000ff; letter-spacing: 1px; }
+          .inv-title { text-align: right; }
+          .inv-title h2 { margin: 0; color: #0f172a; font-size: 22px; }
+          .grid { display: flex; justify-content: space-between; margin: 30px 0; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th { background: #f8fafc; color: #475569; font-weight: 700; text-align: left; padding: 12px; border-bottom: 2px solid #e2e8f0; }
+          td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
+          .total-row { font-size: 18px; font-weight: 800; color: #7000ff; }
+          .print-btn { background: #7000ff; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-bottom: 20px; }
+          @media print { .print-btn { display: none; } }
+        </style></head><body>
+        <div class='invoice-box'>
+          <button class='print-btn' onclick='window.print()'>🖨️ Print / Save as PDF</button>
+          <div class='header'>
+            <div class='logo'>DERA ZONE</div>
+            <div class='inv-title'>
+              <h2>INVOICE</h2>
+              <p style='margin:4px 0;color:#64748b;'>Reference: <strong>{$invId}</strong></p>
+              <p style='margin:0;color:#64748b;'>Date: {$date}</p>
+            </div>
+          </div>
+          <div class='grid'>
+            <div>
+              <h4 style='margin:0 0 8px;color:#475569;'>Billed To:</h4>
+              <p style='margin:0 0 4px;font-weight:700;'>{$name}</p>
+              <p style='margin:0 0 4px;'>{$phone}</p>
+              <p style='margin:0;'>{$address}, {$city}</p>
+            </div>
+            <div style='text-align:right;'>
+              <h4 style='margin:0 0 8px;color:#475569;'>Issued By:</h4>
+              <p style='margin:0 0 4px;font-weight:700;'>DERA ZONE</p>
+              <p style='margin:0 0 4px;'>Pakistan</p>
+              <p style='margin:0;'>info@derazone.com</p>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Item</th><th style='text-align:center;'>Qty</th><th style='text-align:right;'>Price</th></tr></thead>
+            <tbody>";
+        foreach (($targetOrder['items'] ?? []) as $it) {
+            $pName = htmlspecialchars($it['name'] ?? 'Product');
+            $q = (int)($it['qty'] ?? 1);
+            $p = number_format(($it['price'] ?? 0) * $q);
+            echo "<tr><td>{$pName}</td><td style='text-align:center;'>{$q}</td><td style='text-align:right;'>PKR {$p}</td></tr>";
+        }
+        echo "<tr><td colspan='2' class='total-row' style='padding-top:20px;'>Total Amount Due:</td><td class='total-row' style='text-align:right;padding-top:20px;'>PKR {$total}</td></tr>
+            </tbody>
+          </table>
+          <div style='margin-top:30px;padding:16px;background:#f8fafc;border-radius:8px;font-size:13px;color:#64748b;text-align:center;'>
+            Payment Method: <strong>{$pay}</strong> &nbsp;|&nbsp; Thank you for shopping with DERA ZONE!
+          </div>
+        </div></body></html>";
+        exit();
+    }
+
+    if ($action === 'email' && $invId) {
+        $allOrders = array_merge($store['orders'] ?? [], $store['socialOrders'] ?? []);
+        $targetOrder = null;
+        foreach ($allOrders as $o) {
+            if ($o['id'] == $invId) { $targetOrder = $o; break; }
+        }
+        if (!$targetOrder) json_err('Order not found', 404);
+        $custEmail = trim($targetOrder['delivery']['email'] ?? '');
+        if (empty($custEmail)) json_err('Customer did not provide an email address for this order', 400);
+
+        send_customer_order_confirmed($targetOrder);
+        json_ok(['message' => "Invoice email sent successfully to {$custEmail}"]);
+    }
 }
 
 // Default fallback for any unhandled /api/* endpoint
