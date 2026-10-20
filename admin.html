@@ -2065,13 +2065,16 @@ async function doLogin() {
     }
 
     const data = await res.json();
-    if (!data.user?.isAdmin) {
+    const role = (data.user?.role || '').toLowerCase();
+    const isStaff = data.user?.isAdmin || ['ceo', 'admin', 'support', 'supervisor', 'super_admin'].includes(role);
+    if (!isStaff) {
       errEl.textContent = 'Access denied. Administrator privileges required.';
       errEl.style.display = 'block';
       btn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right"></i>';
       btn.disabled  = false;
       return;
     }
+    if (data.user) data.user.isAdmin = true;
 
     setServerStatus(true);
     adminToken  = data.token;
