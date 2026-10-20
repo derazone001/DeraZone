@@ -270,19 +270,22 @@
     </div>
   </section>
 
-  <!-- 4. PINNED COLLECTIONS (Spotlight from Admin) -->
-  <section id="spotlight-section" class="dz-section section-gray">
+  <!-- 4. PINNED COLLECTIONS (Dynamically Rendered with Actual Collection Names) -->
+  <div id="pinned-collections-wrapper"></div>
+
+  <!-- 4B. FEATURED SPOTLIGHT PRODUCTS (Admin Managed) -->
+  <section id="spotlight-section" class="dz-section section-gray" style="display:none;">
     <div class="container">
       <div class="section-header-row">
         <div>
-          <h2 class="section-title">Pinned Collections</h2>
-          <p class="section-subtitle">Curated picks spotlighted by DERA ZONE</p>
+          <span class="section-badge" style="background:rgba(112,0,255,0.08);color:#7000ff;padding:4px 10px;border-radius:20px;font-size:0.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Curated Picks</span>
+          <h2 class="section-title">Featured Spotlight</h2>
+          <p class="section-subtitle">Specially highlighted products chosen by DERA ZONE</p>
         </div>
         <a href="shop" class="see-all-link">Browse Full Shop <i class="fa-solid fa-arrow-right"></i></a>
       </div>
 
       <div class="product-grid-4" id="spotlight-grid">
-        <p style="grid-column:1/-1;text-align:center;padding:40px 0;opacity:0.5;">Loading spotlight products…</p>
       </div>
     </div>
   </section>

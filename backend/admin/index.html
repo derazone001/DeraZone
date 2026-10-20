@@ -1291,34 +1291,15 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
       
       <div style="display:flex;gap:10px;margin-bottom:20px;">
         <select id="pinned-sel" class="form-control" style="flex:1;">
-
-        <option value="">-- Select Collection --</option>
-        <optgroup label="Jewelry">
-          <option value="bracelets">Bracelets</option>
-          <option value="rings">Rings</option>
-          <option value="earrings">Earrings</option>
-          <option value="necklace">Necklace</option>
-          <option value="bangles">Bangles</option>
-          <option value="jewelry-sets">Jewelry Sets</option>
-        </optgroup>
-        <optgroup label="Cosmetics">
-          <option value="face-cosmetics">Face Cosmetics</option>
-          <option value="eye-makeup">Eye Makeup</option>
-          <option value="lip-makeup">Lip Makeup</option>
-          <option value="nail-cosmetics">Nail Cosmetics</option>
-          <option value="skin-care">Skin Care</option>
-          <option value="hand-foot-care">Hand & Foot Care</option>
-          <option value="makeup-tools">Makeup Tools & Brushes</option>
-          <option value="makeup-accessories">Makeup Accessories</option>
-        </optgroup>
-        <optgroup label="Deals">
-          <option value="deals">Deals</option>
-        </optgroup>
-        <optgroup label="Add-on Boxes">
-          <option value="ring-boxes">Ring Boxes</option>
-          <option value="jewelry-boxes">Jewelry Boxes</option>
-        </optgroup>
-
+          <option value="">-- Select Collection --</option>
+          <option value="accessories">Accessories</option>
+          <option value="gadgets">Gadgets</option>
+          <option value="wireless-earbuds-audio">Wireless Earbuds & Audio</option>
+          <option value="jewellery">Jewellery</option>
+          <option value="fashion-lifestyle">Fashion & Lifestyle</option>
+          <option value="footwear">Footwear</option>
+          <option value="clothing-apparel">Clothing & Apparel</option>
+          <option value="winter-collection">Winter Collection</option>
         </select>
         <button class="btn btn-outline" onclick="addPinnedCollection()">Add</button>
       </div>
@@ -1376,19 +1357,7 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
       <input type="hidden" id="product-edit-id"/>
       <div class="form-row">
         <div class="form-group"><label>Product Name *</label><input id="p-name" placeholder="e.g. Ivory Silk Gown"/></div>
-        <div class="form-group">
-          <label>Brand</label>
-          <select id="p-brand">
-            <option value="">No Brand</option>
-            <option value="Vaseline">Vaseline</option>
-            <option value="Medora">Medora</option>
-            <option value="Rivaj">Rivaj</option>
-            <option value="Huda beauty">Huda beauty</option>
-            <option value="Mac Cosmetics">Mac Cosmetics</option>
-            <option value="Miss Rose">Miss Rose</option>
-            <option value="Maybelline">Maybelline</option>
-          </select>
-        </div>
+        <div class="form-group" style="display:none;"><input type="hidden" id="p-brand" value=""/></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label>Product Icon</label>
@@ -1717,26 +1686,24 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
       <button class="btn btn-outline btn-sm" onclick="closeModal('hostinger-setup-modal')">✕</button>
     </div>
     <div class="modal-body" style="line-height:1.6;font-size:0.88rem;">
-      <div id="modal-server-status-box" style="padding:14px;border-radius:8px;background:rgba(234,179,8,0.1);border:1px solid rgba(234,179,8,0.3);margin-bottom:16px;">
-        <strong style="color:#eab308;display:flex;align-items:center;gap:6px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:#eab308;display:inline-block;"></span>
-          <span id="modal-server-status-title">Status: Local Mode Active (Server 503)</span>
+      <div id="modal-server-status-box" style="padding:14px;border-radius:8px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);margin-bottom:16px;">
+        <strong style="color:#22c55e;display:flex;align-items:center;gap:6px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
+          <span id="modal-server-status-title">Universal Hosting Engine Active</span>
         </strong>
-        <p style="margin:6px 0 0;font-size:0.8rem;color:var(--muted);" id="modal-server-status-desc">
-          Your admin panel is running in <strong>Local Storage Mode</strong>. You can view, add, and manage products, orders, and coupons safely without interruption.
+        <p style="margin:6px 0 0;font-size:0.8rem;color:var(--text);" id="modal-server-status-desc">
+          Your admin panel runs on a <strong>Universal Backend Engine</strong> (Native PHP API + Offline-First Local Storage). It runs automatically on <strong>any cPanel, Hostinger, or standard web hosting</strong> with zero Node.js requirements!
         </p>
       </div>
 
-      <h4 style="font-size:0.92rem;margin-bottom:8px;color:var(--text);">How to start Node.js Backend on Hostinger:</h4>
-      <ol style="margin:0 0 16px 20px;padding:0;color:var(--text);font-size:0.84rem;display:flex;flex-direction:column;gap:6px;">
-        <li>Log in to <strong>Hostinger hPanel</strong> &rarr; <strong>Websites</strong> &rarr; select <code>velorrajewelry.store</code>.</li>
-        <li>In the sidebar search for <strong>Node.js</strong> (under Advanced / Web Development).</li>
-        <li>Set <strong>Node.js Version:</strong> <code>18.x</code> or <code>20.x</code>.</li>
-        <li>Set <strong>Application Root:</strong> <code>public_html</code> (or <code>/</code>) and <strong>Startup File:</strong> <code>server.js</code>.</li>
-        <li>Click <strong>Run / Start Application</strong>, then click <strong>Install NPM Packages</strong> (or run <code>npm install</code> via SSH).</li>
-      </ol>
+      <h4 style="font-size:0.92rem;margin-bottom:8px;color:var(--text);">How DERA ZONE Runs Anywhere:</h4>
+      <ul style="margin:0 0 16px 20px;padding:0;color:var(--text);font-size:0.84rem;display:flex;flex-direction:column;gap:6px;">
+        <li><strong>Customer's cPanel &amp; Hostinger:</strong> Natively handled via <code>api/index.php</code> with persistent JSON data storage. No Node.js configuration needed.</li>
+        <li><strong>Offline-First Fallback:</strong> If hosting is temporarily offline, <code>AdminLocalStore</code> guarantees orders, products, and reports are fully accessible without spinners or 503 errors.</li>
+        <li><strong>Node.js (Optional):</strong> If you ever run <code>node backend/server.js</code> on a VPS or local dev machine, it connects seamlessly.</li>
+      </ul>
       <div style="background:var(--card2);padding:10px 14px;border-radius:6px;border:1px solid var(--border);font-size:0.8rem;color:var(--muted);">
-        <i class="fa-solid fa-circle-info" style="color:var(--gold);margin-right:4px;"></i> <strong>Tip:</strong> If your Hostinger plan is Web Hosting without Node.js support, you can also deploy the <code>backend/</code> folder to Render or Railway for free, or continue using Local Storage Mode!
+        <i class="fa-solid fa-circle-check" style="color:#22c55e;margin-right:4px;"></i> <strong>Zero Configuration:</strong> Simply upload files to your cPanel <code>public_html</code> and everything works immediately!
       </div>
     </div>
     <div class="modal-footer">
@@ -2067,13 +2034,16 @@ async function doLogin() {
     }
 
     const data = await res.json();
-    if (!data.user?.isAdmin) {
+    const role = (data.user?.role || '').toLowerCase();
+    const isStaff = data.user?.isAdmin || ['ceo', 'admin', 'support', 'supervisor', 'super_admin'].includes(role);
+    if (!isStaff) {
       errEl.textContent = 'Access denied. Administrator privileges required.';
       errEl.style.display = 'block';
       btn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right"></i>';
       btn.disabled  = false;
       return;
     }
+    if (data.user) data.user.isAdmin = true;
 
     setServerStatus(true);
     adminToken  = data.token;
@@ -2266,10 +2236,21 @@ function apiFetch(path, options = {}) {
   if (!options.method || options.method === 'GET') {
     finalPath += (path.includes('?') ? '&' : '?') + '_t=' + Date.now();
   }
+  const timeoutMs = options.timeout || (path.includes('/auth/login') ? 2000 : 2800);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
   return fetch(`${API}${finalPath}`, {
     ...options,
+    signal: options.signal || controller.signal,
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}`, ...(options.headers || {}) },
   }).then(async res => {
+    clearTimeout(timer);
+    if (res.status === 503) {
+      if (typeof setServerStatus === 'function') setServerStatus(false);
+    } else if (res.ok) {
+      if (typeof setServerStatus === 'function') setServerStatus(true);
+    }
     if (res.status === 401 && !path.includes('/auth/change-password') && !path.includes('/auth/login')) {
       if (currentUser && !adminToken?.startsWith('local-admin-token')) {
         clearSession();
@@ -2287,6 +2268,8 @@ function apiFetch(path, options = {}) {
     };
     return res;
   }).catch(() => {
+    clearTimeout(timer);
+    if (typeof setServerStatus === 'function') setServerStatus(false);
     return {
       ok: false,
       status: 503,
@@ -3056,18 +3039,47 @@ async function loadSocialOrders() {
   const source = document.getElementById('soc-source-filter')?.value || '';
   const status = document.getElementById('soc-status-filter')?.value || '';
   const tbody  = document.getElementById('social-orders-body');
-  tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
+
+  // Instant local store rendering (offline-first)
+  const cached = AdminLocalStore.getSocialOrders();
+  if (cached && cached.length) {
+    allSocialOrders = cached.filter(o => {
+      if (source && o.source !== source) return false;
+      if (status && o.status !== status) return false;
+      return true;
+    });
+    renderSocialOrders(allSocialOrders);
+    updateSocialPageStats(allSocialOrders);
+  } else {
+    tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
+  }
+
   try {
     let qs = [];
     if (source) qs.push('source=' + source);
     if (status) qs.push('status=' + status);
     const res  = await apiFetch('/social-orders' + (qs.length ? '?' + qs.join('&') : ''));
-    const data = await res.json();
-    allSocialOrders = data.orders || [];
-    renderSocialOrders(allSocialOrders);
-    updateSocialPageStats(allSocialOrders);
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.orders)) {
+        allSocialOrders = data.orders;
+        AdminLocalStore.saveSocialOrders(data.orders);
+        renderSocialOrders(allSocialOrders);
+        updateSocialPageStats(allSocialOrders);
+      }
+    } else {
+      if (!allSocialOrders || !allSocialOrders.length) {
+        allSocialOrders = AdminLocalStore.getSocialOrders();
+        renderSocialOrders(allSocialOrders);
+        updateSocialPageStats(allSocialOrders);
+      }
+    }
   } catch {
-    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><p>Failed to load social orders.</p></div></td></tr>`;
+    if (!allSocialOrders || !allSocialOrders.length) {
+      allSocialOrders = AdminLocalStore.getSocialOrders();
+      renderSocialOrders(allSocialOrders);
+      updateSocialPageStats(allSocialOrders);
+    }
   }
 }
 
@@ -3799,13 +3811,30 @@ async function saveSocialOrder() {
 /* ═══════════════════ COUPONS (super_admin only) ═══════════════════ */
 async function loadCoupons() {
   const tbody = document.getElementById('coupons-body');
-  tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
+  const cached = AdminLocalStore.getCoupons ? AdminLocalStore.getCoupons() : [];
+  if (cached && cached.length) {
+    allCoupons = cached;
+    renderCoupons(allCoupons);
+  } else {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
+  }
   try {
     const res  = await apiFetch('/coupons');
-    const data = await res.json();
-    allCoupons = data.coupons || [];
-    renderCoupons(allCoupons);
-  } catch { tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><p>Failed to load coupons.</p></div></td></tr>`; }
+    if (res.ok) {
+      const data = await res.json();
+      allCoupons = data.coupons || [];
+      if (AdminLocalStore.saveCoupons) AdminLocalStore.saveCoupons(allCoupons);
+      renderCoupons(allCoupons);
+    } else if (!allCoupons || !allCoupons.length) {
+      allCoupons = cached;
+      renderCoupons(allCoupons);
+    }
+  } catch {
+    if (!allCoupons || !allCoupons.length) {
+      allCoupons = cached;
+      renderCoupons(allCoupons);
+    }
+  }
 }
 
 function renderCoupons(coupons) {
@@ -3938,15 +3967,39 @@ async function deleteCoupon(id, code) {
   } catch { toast('Network error.', 'error'); }
 }
 async function loadOrders() {
-  const status = document.getElementById('order-status-filter').value;
+  const status = document.getElementById('order-status-filter')?.value || '';
   const tbody  = document.getElementById('orders-body');
-  tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
+  
+  // Instant render from local store first (offline-first, zero spinner delay)
+  const cached = AdminLocalStore.getOrders();
+  if (cached && cached.length) {
+    allOrders = status ? cached.filter(o => o.status === status) : cached;
+    renderOrders(allOrders);
+  } else {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px"><div class="spinner"></div></td></tr>`;
+  }
+
   try {
     const res  = await apiFetch(`/orders${status ? '?status=' + status : ''}`);
-    const data = await res.json();
-    allOrders = data.orders || [];
-    renderOrders(allOrders);
-  } catch { tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><p>Failed to load orders.</p></div></td></tr>`; }
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.orders)) {
+        allOrders = data.orders;
+        AdminLocalStore.saveOrders(data.orders);
+        renderOrders(allOrders);
+      }
+    } else {
+      if (!allOrders || !allOrders.length) {
+        allOrders = AdminLocalStore.getOrders();
+        renderOrders(allOrders);
+      }
+    }
+  } catch {
+    if (!allOrders || !allOrders.length) {
+      allOrders = AdminLocalStore.getOrders();
+      renderOrders(allOrders);
+    }
+  }
 }
 
 function filterOrdersTable() {
@@ -4494,17 +4547,32 @@ function exportProductsExcel() {
 
 async function loadProducts() {
   const tbody = document.getElementById('products-body');
-  tbody.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:50px;"><div class="spinner"></div></div>`;
+  
+  // Instant local store rendering (offline-first)
+  const cached = AdminLocalStore.getProducts();
+  if (cached && cached.length) {
+    allProducts = cached;
+    filterProductsTable();
+  } else {
+    tbody.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:50px;"><div class="spinner"></div></div>`;
+  }
+
   try {
     const res  = await apiFetch('/products?admin=true');
-    const data = await res.json();
-    allProducts = (data.products || []).map(p => {
-      if (p.category === 'catchers') p.category = 'clips';
-      if (p.subcategory === 'catchers') p.subcategory = 'clips';
-      return p;
-    });
+    if (res.ok) {
+      const data = await res.json();
+      allProducts = Array.isArray(data.products) ? data.products : [];
+      AdminLocalStore.saveProducts(allProducts);
+      filterProductsTable();
+    } else {
+      allProducts = AdminLocalStore.getProducts() || [];
+      filterProductsTable();
+    }
+  } catch (err) {
+    console.warn('loadProducts fetch error:', err);
+    allProducts = AdminLocalStore.getProducts() || [];
     filterProductsTable();
-  } catch { toast('Failed to load products', 'error'); }
+  }
 }
 
 function filterProductsTable() {
@@ -5509,13 +5577,21 @@ function today() {
 let allAbandoned = [];
 
 async function loadAbandoned() {
+  const cached = AdminLocalStore.getAbandoned ? AdminLocalStore.getAbandoned() : [];
+  if (cached && cached.length) {
+    allAbandoned = cached;
+    filterAbandoned();
+  }
   try {
     const res  = await apiFetch('/abandoned');
-    const data = await res.json();
-    allAbandoned = data.abandoned || [];
-    /* Default: show only abandoned (not converted/resolved) */
+    if (res.ok) {
+      const data = await res.json();
+      allAbandoned = data.abandoned || [];
+      if (AdminLocalStore.saveAbandoned) AdminLocalStore.saveAbandoned(allAbandoned);
+    } else if (!allAbandoned.length) {
+      allAbandoned = cached;
+    }
     filterAbandoned();
-    /* Update dashboard stat */
     const onlyAbandoned = allAbandoned.filter(a => a.status === 'abandoned');
     const converted     = allAbandoned.filter(a => a.status === 'converted');
     const lostVal       = onlyAbandoned.reduce((s, a) => s + (a.total || 0), 0);
@@ -5524,10 +5600,15 @@ async function loadAbandoned() {
     document.getElementById('ab-total') && (document.getElementById('ab-total').textContent = onlyAbandoned.length);
     document.getElementById('ab-converted') && (document.getElementById('ab-converted').textContent = converted.length);
     document.getElementById('ab-lost-value') && (document.getElementById('ab-lost-value').textContent = 'PKR ' + lostVal.toLocaleString());
-    /* Badge */
     const badge = document.getElementById('abandoned-badge');
     if (badge) { if (onlyAbandoned.length > 0) { badge.style.display = 'flex'; badge.textContent = onlyAbandoned.length; } else badge.style.display = 'none'; }
-  } catch (err) { console.error('Abandoned load error:', err); }
+  } catch (err) {
+    console.warn('Abandoned load offline fallback:', err);
+    if (!allAbandoned.length) {
+      allAbandoned = cached;
+      filterAbandoned();
+    }
+  }
 }
 
 function filterAbandoned() {
@@ -5592,6 +5673,12 @@ async function convertAbandonedToOrder(id) {
   const rec = allAbandoned.find(a => a.id === id);
   if (!rec) { toast('Record not found in local list', 'error'); return; }
   
+  // Mark abandoned checkout as converted/recovered
+  try {
+    await apiFetch('/abandoned/' + id + '/converted', { method: 'PATCH' });
+    loadAbandoned();
+  } catch(e) {}
+
   openSocialOrderModal(null, rec);
   showPage('social-orders');
 }
@@ -5685,17 +5772,29 @@ function updateVisitorCount(count) {
 }
 
 async function loadVisitors() {
+  const cached = AdminLocalStore.getVisitors ? AdminLocalStore.getVisitors() : [];
+  if (cached && cached.length) {
+    updateVisitorCount(cached.length);
+    renderVisitors(cached);
+  }
   try {
     const res  = await apiFetch('/visitors');
-    const data = await res.json();
-    const count = data.count ?? 0;
-    const visitors = data.visitors || [];
-    updateVisitorCount(count);
-    renderVisitors(visitors);
+    if (res.ok) {
+      const data = await res.json();
+      const count = data.count ?? (data.visitors || []).length;
+      const visitors = data.visitors || [];
+      updateVisitorCount(count);
+      renderVisitors(visitors);
+      if (AdminLocalStore.saveVisitors) AdminLocalStore.saveVisitors(visitors);
+    } else {
+      updateVisitorCount(cached.length);
+      renderVisitors(cached);
+    }
     const lu = document.getElementById('v-last-update');
     if (lu) lu.textContent = new Date().toLocaleTimeString('en-PK');
   } catch (err) {
-    console.error('Visitors load error:', err);
+    updateVisitorCount(cached.length);
+    renderVisitors(cached);
   }
 }
 
@@ -5872,26 +5971,74 @@ function bktConfirm({ title = 'Are you sure?', message = 'This action cannot be 
 }
 
 /* ═══════════════════ REVIEWS ═══════════════════ */
+
+function openAddReviewModal() {
+  const nameEl = document.getElementById('rev-add-name');
+  const cityEl = document.getElementById('rev-add-city');
+  const rateEl = document.getElementById('rev-add-rating');
+  const textEl = document.getElementById('rev-add-text');
+  if (nameEl) nameEl.value = '';
+  if (cityEl) cityEl.value = '';
+  if (rateEl) rateEl.value = '5';
+  if (textEl) textEl.value = '';
+  openModal('add-review-modal');
+}
+
+async function saveAdminReview() {
+  const customerName = document.getElementById('rev-add-name')?.value.trim();
+  const city = document.getElementById('rev-add-city')?.value.trim();
+  const rating = Number(document.getElementById('rev-add-rating')?.value) || 5;
+  const text = document.getElementById('rev-add-text')?.value.trim();
+
+  if (!customerName) return toast('Please enter customer name', 'error');
+  if (!text) return toast('Please write the review text', 'error');
+
+  try {
+    const res = await apiFetch('/reviews', {
+      method: 'POST',
+      body: JSON.stringify({
+        customerName,
+        city,
+        rating,
+        text,
+        approved: true
+      })
+    });
+    if (res.ok) {
+      toast('Review published successfully ✓', 'success');
+      closeModal('add-review-modal');
+      loadReviews();
+    } else {
+      toast('Failed to publish review', 'error');
+    }
+  } catch(e) {
+    toast('Error publishing review', 'error');
+  }
+}
+
 async function loadReviews() {
   const tbody = document.getElementById('reviews-body');
   if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">Loading…</td></tr>';
+  const cached = AdminLocalStore.getReviews ? AdminLocalStore.getReviews() : [];
+  if (!cached.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">Loading…</td></tr>';
+  }
   try {
     const filter = document.getElementById('reviews-filter')?.value || 'all';
     const raw = await apiFetch('/reviews/all');
-    const res = await raw.json();
-
-    if (!raw.ok) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">${res.error || 'Could not load reviews (status ' + raw.status + ').'}</td></tr>`;
-      return;
+    let reviews = [];
+    if (raw.ok) {
+      const res = await raw.json();
+      reviews = res.reviews || [];
+      if (AdminLocalStore.saveReviews) AdminLocalStore.saveReviews(reviews);
+    } else {
+      reviews = cached;
     }
-
-    let reviews = res.reviews || [];
 
     if (filter === 'pending')  reviews = reviews.filter(r => !r.approved);
     if (filter === 'approved') reviews = reviews.filter(r =>  r.approved);
 
-    const pendingCount = (res.reviews || []).filter(r => !r.approved).length;
+    const pendingCount = reviews.filter(r => !r.approved).length;
     const badge = document.getElementById('reviews-badge');
     if (badge) { badge.textContent = pendingCount; badge.style.display = pendingCount ? 'inline-block' : 'none'; }
 
@@ -6058,7 +6205,7 @@ async function deleteReviewImage(id) {
       const sel = document.getElementById('spotlight-sel');
       sel.innerHTML = '<option value="">-- Select Product --</option>';
       allProductsList.forEach(p => {
-        sel.innerHTML += `<option value="${p.id}">${p.title} (${p.price} PKR)</option>`;
+        sel.innerHTML += `<option value="${p.id}">${p.name || p.title || "Product"} (${p.price || 0} PKR)</option>`;
       });
 
       const res = await apiFetch('/admin/spotlight');
@@ -6082,12 +6229,12 @@ async function deleteReviewImage(id) {
       return;
     }
     tbody.innerHTML = adminSpotlightProducts.map((pId, i) => {
-      const p = allProductsList.find(x => x.id === pId) || { title: 'Unknown Product', id: pId };
+      const p = allProductsList.find(x => x.id === pId) || { name: "Unknown Product", title: "Unknown Product", id: pId };
       return `
       <tr style="border-bottom:1px solid var(--border);">
         <td style="padding:10px 8px;vertical-align:middle;">
           <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--gold);color:#000;font-size:0.7rem;font-weight:700;margin-right:10px;">${i + 1}</span>
-          <strong style="font-size:0.9rem;">${p.title}</strong>
+          <strong style="font-size:0.9rem;">${p.name || p.title || "Product"}</strong>
           <span style="margin-left:8px;font-size:0.7rem;color:var(--muted);font-family:monospace;">${p.id}</span>
         </td>
         <td style="text-align:right;padding:10px 8px;white-space:nowrap;">

@@ -69,8 +69,9 @@ function send_derazone_email($to, $subject, $htmlBody, $replyTo = 'info@derazone
     $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
     $headers .= "From: DERA ZONE <info@derazone.com>\r\n";
     $headers .= "Reply-To: " . $replyTo . "\r\n";
+    $headers .= "Return-Path: info@derazone.com\r\n";
     $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
-    return @mail($to, $subject, $htmlBody, $headers);
+    return @mail($to, $subject, $htmlBody, $headers, "-f info@derazone.com");
 }
 
 function send_admin_new_order_alert($order) {
@@ -444,6 +445,21 @@ if ($endpoint === 'orders' || preg_match('#^orders/([^/]+)(?:/(status))?$#', $en
         $newOrder['profit'] = $newOrder['profit'] ?? ($newOrder['total'] - $newOrder['costTotal']);
         array_unshift($orders, $newOrder);
         $store['orders'] = $orders;
+
+        // Auto-mark any matching abandoned checkout as converted
+        $abCustPhone = preg_replace('/[^0-9]/', '', $newOrder['delivery']['phone'] ?? '');
+        $abCustEmail = strtolower(trim($newOrder['delivery']['email'] ?? ''));
+        if (!empty($store['abandoned']) && ($abCustPhone || $abCustEmail)) {
+            foreach ($store['abandoned'] as &$ab) {
+                $p = preg_replace('/[^0-9]/', '', $ab['delivery']['phone'] ?? $ab['phone'] ?? '');
+                $e = strtolower(trim($ab['delivery']['email'] ?? $ab['email'] ?? ''));
+                if (($abCustPhone && $p && $p === $abCustPhone) || ($abCustEmail && $e && $e === $abCustEmail)) {
+                    $ab['status'] = 'converted';
+                    $ab['convertedAt'] = date('c');
+                }
+            }
+        }
+
         save_store($store);
         // Send email notifications
         @send_admin_new_order_alert($newOrder);
@@ -551,6 +567,21 @@ if ($endpoint === 'social-orders' || preg_match('#^social-orders/([^/]+)(?:/(sta
         $newSO['profit'] = $newSO['profit'] ?? ($newSO['total'] - $newSO['costTotal']);
         array_unshift($socialOrders, $newSO);
         $store['socialOrders'] = $socialOrders;
+
+        // Auto-mark any matching abandoned checkout as converted
+        $abCustPhone = preg_replace('/[^0-9]/', '', $newSO['delivery']['phone'] ?? $newSO['phone'] ?? '');
+        $abCustEmail = strtolower(trim($newSO['delivery']['email'] ?? $newSO['email'] ?? ''));
+        if (!empty($store['abandoned']) && ($abCustPhone || $abCustEmail)) {
+            foreach ($store['abandoned'] as &$ab) {
+                $p = preg_replace('/[^0-9]/', '', $ab['delivery']['phone'] ?? $ab['phone'] ?? '');
+                $e = strtolower(trim($ab['delivery']['email'] ?? $ab['email'] ?? ''));
+                if (($abCustPhone && $p && $p === $abCustPhone) || ($abCustEmail && $e && $e === $abCustEmail)) {
+                    $ab['status'] = 'converted';
+                    $ab['convertedAt'] = date('c');
+                }
+            }
+        }
+
         save_store($store);
         json_ok(['order' => $newSO]);
     }
@@ -585,39 +616,87 @@ if ($endpoint === 'admin/stats') {
     $store = get_store();
     $orders = $store['orders'] ?? [];
     $social = $store['socialOrders'] ?? [];
+    $products = $store['products'] ?? [];
+    $subscribers = $store['subscribers'] ?? [];
+    $messages = $store['messages'] ?? [];
+    $abandoned = $store['abandoned'] ?? [];
+    $reviews = $store['reviews'] ?? [];
+    $invoices = $store['invoices'] ?? [];
+    $adminUsers = $store['adminUsers'] ?? [];
+    $visitors = $store['visitors'] ?? [];
 
-    $all = array_merge($orders, $social);
-    $activeOrders = array_filter($all, function($o) {
-        return ($o['status'] ?? '') !== 'Cancelled';
-    });
+    $webPending = count(array_filter($orders, fn($o) => strcasecmp($o['status'] ?? '', 'Pending') === 0));
+    $socPending = count(array_filter($social, fn($o) => strcasecmp($o['status'] ?? '', 'Pending') === 0));
 
-    $totalRev = array_reduce($activeOrders, function($carry, $o) {
-        return $carry + (float)($o['total'] ?? 0);
-    }, 0);
+    $webTotalRev = array_reduce($orders, fn($sum, $o) => $sum + ((strcasecmp($o['status'] ?? '', 'Cancelled') !== 0) ? (float)($o['total'] ?? 0) : 0), 0);
+    $socTotalRev = array_reduce($social, fn($sum, $o) => $sum + ((strcasecmp($o['status'] ?? '', 'Cancelled') !== 0) ? (float)($o['total'] ?? 0) : 0), 0);
+    $totalRev = $webTotalRev + $socTotalRev;
 
-    $totalProfit = array_reduce($activeOrders, function($carry, $o) {
-        return $carry + (float)($o['profit'] ?? 0);
-    }, 0);
+    $webProfit = array_reduce($orders, fn($sum, $o) => $sum + ((strcasecmp($o['status'] ?? '', 'Cancelled') !== 0) ? (float)($o['profit'] ?? ($o['total'] - ($o['costTotal'] ?? 0))) : 0), 0);
+    $socProfit = array_reduce($social, fn($sum, $o) => $sum + ((strcasecmp($o['status'] ?? '', 'Cancelled') !== 0) ? (float)($o['profit'] ?? ($o['total'] - ($o['costTotal'] ?? 0))) : 0), 0);
+    $totalProfit = $webProfit + $socProfit;
 
-    $pendingCount = count(array_filter($all, function($o) {
-        return in_array($o['status'] ?? '', ['Pending', 'Processing', 'Confirmed']);
-    }));
+    $webCodCount = count(array_filter($orders, fn($o) => strcasecmp($o['paymentMethod'] ?? $o['payment'] ?? '', 'cod') === 0));
+    $socCodCount = count(array_filter($social, fn($o) => strcasecmp($o['paymentMethod'] ?? $o['payment'] ?? '', 'cod') === 0));
 
-    $deliveredCount = count(array_filter($all, function($o) {
-        return ($o['status'] ?? '') === 'Delivered';
-    }));
+    $unreadMsgs = count(array_filter($messages, fn($m) => empty($m['read'])));
+    $pendingRevs = count(array_filter($reviews, fn($r) => empty($r['approved'])));
+    $activeAbandoned = count(array_filter($abandoned, fn($a) => ($a['status'] ?? 'abandoned') === 'abandoned'));
+
+    $now = time();
+    $activeVisitors = count(array_filter($visitors, fn($v) => ($now - (int)($v['lastSeen'] ?? 0)) <= 90));
 
     json_ok([
+        'orders' => [
+            'total' => count($orders),
+            'statuses' => [
+                'Pending' => $webPending,
+                'Processing' => count(array_filter($orders, fn($o) => strcasecmp($o['status'] ?? '', 'Processing') === 0)),
+                'Confirmed' => count(array_filter($orders, fn($o) => strcasecmp($o['status'] ?? '', 'Confirmed') === 0)),
+                'Delivered' => count(array_filter($orders, fn($o) => strcasecmp($o['status'] ?? '', 'Delivered') === 0)),
+                'Cancelled' => count(array_filter($orders, fn($o) => strcasecmp($o['status'] ?? '', 'Cancelled') === 0))
+            ]
+        ],
+        'socialOrders' => [
+            'total' => count($social),
+            'statuses' => [
+                'Pending' => $socPending
+            ]
+        ],
+        'totalRevenue' => $webTotalRev,
+        'socialRevenue' => $socTotalRev,
+        'combinedRevenue' => $totalRev,
+        'totalProfit' => $totalProfit,
+        'todayProfit' => 0,
+        'todayCombinedProfit' => 0,
+        'totalSpendings' => 0,
+        'products' => ['total' => count($products)],
+        'subscribers' => ['total' => count($subscribers)],
+        'unreadMessages' => $unreadMsgs,
+        'users' => ['total' => max(count($adminUsers), 1)],
+        'totalInvoices' => count($invoices),
+        'webInvoicesCount' => count(array_filter($invoices, fn($i) => empty($i['isSocial']))),
+        'socInvoicesCount' => count(array_filter($invoices, fn($i) => !empty($i['isSocial']))),
+        'totalCodOrders' => $webCodCount + $socCodCount,
+        'webCodOrders' => $webCodCount,
+        'socCodOrders' => $socCodCount,
+        'totalAdvanceReceived' => 0,
+        'outstandingCodBalance' => 0,
+        'pendingReviews' => $pendingRevs,
+        'unreadResellers' => 0,
+        'abandonedCheckouts' => $activeAbandoned,
+        'visitorsCount' => $activeVisitors,
+        'demoMode' => false,
         'stats' => [
             'totalRevenue' => $totalRev,
             'netProfit' => $totalProfit,
             'webOrders' => count($orders),
             'socialOrders' => count($social),
-            'pendingOrders' => $pendingCount,
-            'deliveredOrders' => $deliveredCount,
-            'totalOrders' => count($all),
-            'visitorsCount' => count($store['visitors'] ?? []) + 12,
-            'abandonedCount' => count($store['abandoned'] ?? [])
+            'pendingOrders' => $webPending + $socPending,
+            'deliveredOrders' => count(array_filter($orders, fn($o) => strcasecmp($o['status'] ?? '', 'Delivered') === 0)),
+            'totalOrders' => count($orders) + count($social),
+            'visitorsCount' => $activeVisitors,
+            'abandonedCount' => $activeAbandoned
         ]
     ]);
 }
@@ -678,8 +757,8 @@ if ($endpoint === 'reviews' || $endpoint === 'reviews/all' || preg_match('#^revi
     if ($method === 'POST') {
         $newRev = $body;
         $newRev['id'] = 'rev-' . time() . '-' . rand(10, 99);
-        $newRev['approved'] = false;
-        $newRev['createdAt'] = date('c');
+        $newRev['approved'] = isset($body['approved']) ? (bool)$body['approved'] : true;
+        $newRev['createdAt'] = $newRev['createdAt'] ?? date('c');
         $reviews[] = $newRev;
         $store['reviews'] = $reviews;
         save_store($store);
@@ -706,6 +785,74 @@ if ($endpoint === 'reviews' || $endpoint === 'reviews/all' || preg_match('#^revi
     }
 }
 
+// ── PINNED COLLECTIONS ──
+if ($endpoint === 'pinned' || $endpoint === 'admin/pinned') {
+    $store = get_store();
+    $pinned = $store['pinned'] ?? [];
+
+    if ($method === 'GET') {
+        json_ok(['pinned' => $pinned]);
+    }
+
+    if ($method === 'POST') {
+        $pinnedList = $body['pinned'] ?? $body ?? [];
+        $store['pinned'] = is_array($pinnedList) ? $pinnedList : [];
+        save_store($store);
+        json_ok(['message' => 'Pinned collections updated', 'pinned' => $store['pinned']]);
+    }
+}
+
+// ── SPOTLIGHT PRODUCTS ──
+if ($endpoint === 'spotlight' || $endpoint === 'admin/spotlight') {
+    $store = get_store();
+    $spotlight = $store['spotlight'] ?? [];
+
+    if ($method === 'GET') {
+        json_ok(['spotlight' => $spotlight]);
+    }
+
+    if ($method === 'POST') {
+        $spotList = $body['spotlight'] ?? $body ?? [];
+        $store['spotlight'] = is_array($spotList) ? $spotList : [];
+        save_store($store);
+        json_ok(['message' => 'Spotlight products updated', 'spotlight' => $store['spotlight']]);
+    }
+}
+
+// ── REVIEW IMAGES ──
+if ($endpoint === 'admin/review-images' || preg_match('#^admin/review-images/(.+)$#', $endpoint, $m)) {
+    $riId = $m[1] ?? null;
+    $store = get_store();
+    $reviewImages = $store['reviewImages'] ?? [];
+
+    if ($method === 'GET') {
+        json_ok(['images' => $reviewImages, 'reviews' => $reviewImages]);
+    }
+
+    if ($method === 'POST') {
+        $newRi = [
+            'id' => 'ri-' . time() . '-' . rand(10, 99),
+            'url' => trim($body['url'] ?? ''),
+            'label' => trim($body['label'] ?? ''),
+            'order' => (int)($body['order'] ?? 1),
+            'createdAt' => date('c')
+        ];
+        $reviewImages[] = $newRi;
+        $store['reviewImages'] = $reviewImages;
+        save_store($store);
+        json_ok(['image' => $newRi, 'message' => 'Review image added']);
+    }
+
+    if ($method === 'DELETE' && $riId) {
+        $reviewImages = array_filter($reviewImages, function($r) use ($riId) {
+            return ($r['id'] ?? '') != $riId && ($r['_id'] ?? '') != $riId;
+        });
+        $store['reviewImages'] = array_values($reviewImages);
+        save_store($store);
+        json_ok(['deleted' => true]);
+    }
+}
+
 // ── COUPONS ENDPOINTS ──
 if ($endpoint === 'coupons' || $endpoint === 'coupons/validate' || preg_match('#^coupons/([^/]+)$#', $endpoint, $m)) {
     $cpnId = $m[1] ?? null;
@@ -714,9 +861,19 @@ if ($endpoint === 'coupons' || $endpoint === 'coupons/validate' || preg_match('#
 
     if ($endpoint === 'coupons/validate' && $method === 'POST') {
         $code = strtoupper(trim($body['code'] ?? ''));
+        $subtotal = (float)($body['subtotal'] ?? 0);
         foreach ($coupons as $c) {
             if (strtoupper($c['code'] ?? '') === $code && !empty($c['active'])) {
-                json_ok(['valid' => true, 'coupon' => $c]);
+                if (!empty($c['minOrder']) && $subtotal > 0 && $subtotal < (float)$c['minOrder']) {
+                    json_err("Minimum order of PKR " . number_format($c['minOrder']) . " required for code " . $c['code'], 400);
+                }
+                json_ok([
+                    'valid' => true,
+                    'code' => $c['code'],
+                    'type' => $c['type'],
+                    'value' => (float)$c['value'],
+                    'coupon' => $c
+                ]);
             }
         }
         json_err('Invalid or expired coupon code', 400);
@@ -758,38 +915,115 @@ if ($endpoint === 'coupons' || $endpoint === 'coupons/validate' || preg_match('#
 }
 
 // ── ABANDONED CARTS ──
-if ($endpoint === 'abandoned') {
+if ($endpoint === 'abandoned' || preg_match('#^abandoned/([^/]+)(?:/(converted))?$#', $endpoint, $m)) {
+    $abId = $m[1] ?? null;
+    $isConverted = ($m[2] ?? '') === 'converted';
     $store = get_store();
     $abandoned = $store['abandoned'] ?? [];
+
     if ($method === 'GET') {
         json_ok(['abandoned' => $abandoned]);
     }
+
     if ($method === 'POST') {
         $item = $body;
-        $item['id'] = 'ab-' . time() . '-' . rand(10, 99);
+        $item['id'] = $item['id'] ?? ('ab-' . time() . '-' . rand(10, 99));
         $item['status'] = 'abandoned';
         $item['createdAt'] = date('c');
         $abandoned[] = $item;
         $store['abandoned'] = $abandoned;
         save_store($store);
-        json_ok(['abandoned' => $item]);
+        json_ok(['abandoned' => $item, 'id' => $item['id']]);
+    }
+
+    if ($method === 'PATCH' && $abId) {
+        $updated = false;
+        foreach ($abandoned as &$a) {
+            if (($a['id'] ?? '') === $abId) {
+                $a['status'] = 'converted';
+                $a['convertedAt'] = date('c');
+                $updated = true;
+                break;
+            }
+        }
+        $store['abandoned'] = $abandoned;
+        save_store($store);
+        json_ok(['success' => true, 'id' => $abId]);
+    }
+
+    if ($method === 'DELETE' && $abId) {
+        $abandoned = array_filter($abandoned, function($a) use ($abId) {
+            return ($a['id'] ?? '') !== $abId;
+        });
+        $store['abandoned'] = array_values($abandoned);
+        save_store($store);
+        json_ok(['deleted' => true]);
     }
 }
 
 // ── VISITORS ──
-if ($endpoint === 'visitors' || $endpoint === 'visitors/ping') {
+if ($endpoint === 'visitors' || $endpoint === 'visitors/ping' || $endpoint === 'visitors/leave') {
     $store = get_store();
     $visitors = $store['visitors'] ?? [];
-    if ($method === 'GET') {
-        json_ok(['count' => max(count($visitors), 5), 'visitors' => $visitors]);
+
+    if ($endpoint === 'visitors/leave' && $method === 'POST') {
+        $sid = $body['sessionId'] ?? '';
+        if ($sid) {
+            $visitors = array_filter($visitors, fn($v) => ($v['sessionId'] ?? '') !== $sid);
+            $store['visitors'] = array_values($visitors);
+            save_store($store);
+        }
+        json_ok(['left' => true]);
     }
-    if ($method === 'POST') {
+
+    if ($endpoint === 'visitors/ping' && $method === 'POST') {
+        $sid = $body['sessionId'] ?? ('v-' . time() . '-' . rand(100, 999));
+        $page = $body['page'] ?? '/';
+        $now = time();
+        $found = false;
+        foreach ($visitors as &$v) {
+            if (($v['sessionId'] ?? '') === $sid) {
+                $v['lastSeen'] = $now;
+                $v['page'] = $page;
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            $visitors[] = [
+                'sessionId' => $sid,
+                'page' => $page,
+                'lastSeen' => $now
+            ];
+        }
+        // Prune older than 90 seconds
+        $visitors = array_filter($visitors, fn($v) => ($now - (int)($v['lastSeen'] ?? 0)) <= 90);
+        $store['visitors'] = array_values($visitors);
+        save_store($store);
         json_ok(['pong' => true]);
+    }
+
+    if ($method === 'GET') {
+        $now = time();
+        // Prune older than 90 seconds
+        $visitors = array_filter($visitors, fn($v) => ($now - (int)($v['lastSeen'] ?? 0)) <= 90);
+        $resVisitors = [];
+        foreach ($visitors as $v) {
+            $secondsAgo = max(0, $now - (int)($v['lastSeen'] ?? $now));
+            $resVisitors[] = [
+                'sessionId' => $v['sessionId'] ?? '',
+                'page' => $v['page'] ?? '/',
+                'secondsAgo' => $secondsAgo
+            ];
+        }
+        $store['visitors'] = array_values($visitors);
+        save_store($store);
+        json_ok(['count' => count($resVisitors), 'visitors' => $resVisitors]);
     }
 }
 
 // ── SUBSCRIBERS ──
-if ($endpoint === 'subscribers' || $endpoint === 'newsletter/subscribe') {
+if ($endpoint === 'subscribers' || $endpoint === 'newsletter' || $endpoint === 'newsletter/subscribe') {
     $store = get_store();
     $subs = $store['subscribers'] ?? [];
     if ($method === 'GET') {
@@ -807,21 +1041,82 @@ if ($endpoint === 'subscribers' || $endpoint === 'newsletter/subscribe') {
 }
 
 // ── CONTACT MESSAGES ──
-if ($endpoint === 'contact') {
+if ($endpoint === 'contact' || preg_match('#^contact/([^/]+)(?:/(read|reply))?$#', $endpoint, $m)) {
+    $msgId = $m[1] ?? null;
+    $action = $m[2] ?? '';
     $store = get_store();
     $msgs = $store['messages'] ?? [];
-    if ($method === 'GET') {
+
+    if ($method === 'GET' && empty($msgId)) {
         json_ok(['messages' => $msgs]);
     }
-    if ($method === 'POST') {
+
+    if ($method === 'POST' && empty($msgId)) {
         $newMsg = $body;
         $newMsg['id'] = 'msg-' . time();
+        $newMsg['read'] = false;
         $newMsg['date'] = date('c');
         $msgs[] = $newMsg;
         $store['messages'] = $msgs;
         save_store($store);
         @send_admin_contact_alert($newMsg);
         json_ok(['received' => true]);
+    }
+
+    if ($method === 'PATCH' && $msgId && $action === 'read') {
+        foreach ($msgs as &$msg) {
+            if (($msg['id'] ?? '') === $msgId) {
+                $msg['read'] = true;
+                break;
+            }
+        }
+        $store['messages'] = $msgs;
+        save_store($store);
+        json_ok(['markedRead' => true]);
+    }
+
+    if ($method === 'POST' && $msgId && $action === 'reply') {
+        $replyText = trim($body['replyText'] ?? '');
+        $targetMsg = null;
+        foreach ($msgs as &$msg) {
+            if (($msg['id'] ?? '') === $msgId) {
+                $msg['replied'] = true;
+                $msg['repliedAt'] = date('c');
+                $targetMsg = $msg;
+                break;
+            }
+        }
+        if ($targetMsg && !empty($targetMsg['email']) && $replyText) {
+            $subj = "Re: " . ($targetMsg['subject'] ?? 'Your message to DERA ZONE');
+            $html = "
+            <div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#1e293b;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;'>
+              <div style='background:#7000ff;padding:20px;text-align:center;color:#ffffff;'>
+                <h2 style='margin:0;font-size:20px;'>DERA ZONE Support</h2>
+              </div>
+              <div style='padding:24px;'>
+                <p>Dear " . htmlspecialchars($targetMsg['name'] ?? 'Customer') . ",</p>
+                <div style='padding:16px;background:#f8fafc;border-radius:8px;font-size:15px;line-height:1.6;margin:16px 0;'>
+                  " . nl2br(htmlspecialchars($replyText)) . "
+                </div>
+                <hr style='border:none;border-top:1px solid #eee;margin:20px 0;'/>
+                <p style='color:#64748b;font-size:13px;'>Original Message:</p>
+                <blockquote style='color:#64748b;font-size:13px;border-left:3px solid #cbd5e1;padding-left:12px;margin:8px 0;'>
+                  " . nl2br(htmlspecialchars($targetMsg['message'] ?? '')) . "
+                </blockquote>
+              </div>
+            </div>";
+            send_derazone_email($targetMsg['email'], $subj, $html);
+        }
+        $store['messages'] = $msgs;
+        save_store($store);
+        json_ok(['replied' => true]);
+    }
+
+    if ($method === 'DELETE' && $msgId) {
+        $msgs = array_filter($msgs, fn($m) => ($m['id'] ?? '') !== $msgId);
+        $store['messages'] = array_values($msgs);
+        save_store($store);
+        json_ok(['deleted' => true]);
     }
 }
 

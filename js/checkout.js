@@ -92,18 +92,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const result = await apiValidateCoupon(code, subtotal);
-      if (result.ok && result.data.valid) {
-        appliedCoupon = { code: result.data.code, type: result.data.type, value: result.data.value };
+      const cpnData = result.data?.coupon || result.data;
+      if (result.ok && (result.data?.valid || cpnData?.code)) {
+        const val = Number(result.data?.value ?? cpnData?.value ?? 0);
+        const type = result.data?.type || cpnData?.type || 'percent';
+        const cCode = result.data?.code || cpnData?.code || code;
+        appliedCoupon = { code: cCode, type: type, value: val };
         if (couponMsgEl) {
           couponMsgEl.style.color = 'var(--gold)';
-          couponMsgEl.textContent = `✓ "${result.data.code}" applied — ${result.data.type === 'percent' ? result.data.value + '% off' : 'PKR ' + result.data.value.toLocaleString() + ' off'}`;
+          couponMsgEl.textContent = `✓ "${cCode}" applied — ${type === 'percent' ? val + '% off' : 'PKR ' + val.toLocaleString() + ' off'}`;
           couponMsgEl.style.display = 'block';
         }
       } else {
         appliedCoupon = null;
         if (couponMsgEl) {
           couponMsgEl.style.color = '#c0392b';
-          couponMsgEl.textContent = result.data?.error || 'Invalid coupon code.';
+          couponMsgEl.textContent = result.data?.error || 'Invalid or expired coupon code.';
           couponMsgEl.style.display = 'block';
         }
       }
@@ -111,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
       appliedCoupon = null;
       if (couponMsgEl) {
         couponMsgEl.style.color = '#c0392b';
-        couponMsgEl.textContent = 'Network error — could not check coupon.';
+        couponMsgEl.textContent = 'Invalid or expired coupon code.';
         couponMsgEl.style.display = 'block';
       }
     }
@@ -239,21 +243,75 @@ document.addEventListener('DOMContentLoaded', () => {
     goToStep(3);
   });
   /* ── Show "send screenshot to WhatsApp" reminder on success screen ── */
-  const showBankDepositSuccessNote = (payMethod, orderRef) => {
+  const showBankDepositSuccessNote = (payMethod, orderRef, items = [], totalAmount = 0) => {
     const note = document.getElementById('order-success-bank-note');
     if (!note) return;
     if (payMethod !== 'bank_deposit') { note.style.display = 'none'; return; }
-    const num = window.derazone_CONFIG?.whatsapp?.number;
-    const msg = encodeURIComponent(`Hi! I just placed order ${orderRef} on DERA ZONE and paid via Bank Deposit. Here is my payment screenshot:`);
+    const num = window.derazone_CONFIG?.whatsapp?.number || '923294551652';
+    const d = orderData.delivery || {};
+    const custName = `${d.fname || ''} ${d.lname || ''}`.trim() || 'Customer';
+    const phone = d.phone || 'N/A';
+    
+    let itemsText = '';
+    if (Array.isArray(items) && items.length) {
+      itemsText = items.map(it => `• ${it.name} (Qty: ${it.qty || 1}) - PKR ${((it.price || 0) * (it.qty || 1)).toLocaleString()}`).join('\n');
+    }
+
+    const msgLines = [
+      'Hi DERA ZONE! I have placed an order and paid via Advance Payment / Bank Deposit.',
+      '',
+      `Customer Name: ${custName}`,
+      `Phone: ${phone}`,
+      `Order Reference: ${orderRef}`,
+      totalAmount > 0 ? `Total Amount: PKR ${Number(totalAmount).toLocaleString()}` : '',
+      itemsText ? `\nOrdered Items:\n${itemsText}` : '',
+      '',
+      'Here is my payment screenshot:'
+    ].filter(Boolean).join('\n');
+
+    const msg = encodeURIComponent(msgLines);
     note.innerHTML = `
-      <p style="font-size:.85rem;color:var(--muted);margin-bottom:12px">
-        Please send a screenshot of your payment to our WhatsApp so we can confirm and ship your order.
+      <p style="font-size:.9rem;color:var(--text);margin-bottom:12px;font-weight:600;">
+        Please send a screenshot of your payment to our WhatsApp with your order details so we can confirm and ship your order immediately.
       </p>
       <a href="https://wa.me/${num}?text=${msg}" target="_blank" rel="noopener" class="btn-whatsapp">
-        <i class="fa-brands fa-whatsapp"></i> Send Payment Screenshot
+        <i class="fa-brands fa-whatsapp"></i> Send Payment Screenshot &amp; Order Details
       </a>`;
     note.style.display = 'block';
   };
+
+  /* Helper to update Step 2 Bank Deposit WhatsApp link */
+  const updateStep2WaBtn = () => {
+    const waBtn = document.getElementById('bank-whatsapp-btn');
+    if (!waBtn) return;
+    const num = window.derazone_CONFIG?.whatsapp?.number || '923294551652';
+    const cart = JSON.parse(localStorage.getItem('derazone_cart') || '[]');
+    const d = orderData.delivery || {};
+    const custName = `${d.fname || ''} ${d.lname || ''}`.trim();
+    const phone = d.phone || '';
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const fee = getDeliveryFee(subtotal, 'bank_deposit');
+    const discount = computeDiscount(subtotal);
+    const grandTotal = Math.max(0, subtotal - discount + fee);
+
+    let itemsText = '';
+    if (cart.length) {
+      itemsText = cart.map(it => `• ${it.name} (Qty: ${it.qty || 1}) - PKR ${((it.price || 0) * (it.qty || 1)).toLocaleString()}`).join('\n');
+    }
+
+    const msgLines = [
+      'Hi DERA ZONE! I am placing an order and paying via Advance Payment / Bank Deposit.',
+      custName ? `Customer Name: ${custName}` : '',
+      phone ? `Phone: ${phone}` : '',
+      grandTotal > 0 ? `Total: PKR ${grandTotal.toLocaleString()}` : '',
+      itemsText ? `\nOrdered Items:\n${itemsText}` : '',
+      '',
+      'Here is my payment screenshot:'
+    ].filter(Boolean).join('\n');
+
+    waBtn.href = `https://wa.me/${num}?text=${encodeURIComponent(msgLines)}`;
+  };
+
   /* ── Place order ── (real backend) */
   window.placeOrder = async () => {
     const btn = document.querySelector('[onclick="placeOrder()"]');
@@ -270,6 +328,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const delivMethod = orderData.delivery?.delivery || 'standard';
     const payMethod  = orderData.payment || 'cod';
     const fee        = getDeliveryFee(subtotal, payMethod);
+    const discount   = computeDiscount(subtotal);
+    const finalTotal = Math.max(0, subtotal - discount + fee);
 
     try {
       const result = await apiPlaceOrder({
@@ -295,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
         /* Success */
         const ref = result.data.orderRef;
         document.getElementById('order-ref-num').textContent = 'Order Reference: ' + ref;
-        showBankDepositSuccessNote(payMethod, ref);
+        showBankDepositSuccessNote(payMethod, ref, cart, finalTotal);
         localStorage.removeItem('derazone_cart');
         localStorage.removeItem('derazone_cart_stashed');
         document.querySelectorAll('.ck-panel').forEach(p => p.classList.add('hidden'));
@@ -317,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Local Fallback (Should rarely happen)
       const ref = 'DZ-' + Date.now().toString().slice(-8);
       document.getElementById('order-ref-num').textContent = 'Order Reference: ' + ref;
-      showBankDepositSuccessNote(payMethod, ref);
+      showBankDepositSuccessNote(payMethod, ref, cart, finalTotal);
       localStorage.removeItem('derazone_cart');
       localStorage.removeItem('derazone_cart_stashed');
       document.querySelectorAll('.ck-panel').forEach(p => p.classList.add('hidden'));
@@ -334,6 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (bf) bf.style.display = r.value === 'bank_deposit' ? 'block' : 'none';
       if (cf) cf.style.display = r.value === 'cod' ? 'block' : 'none';
       renderSummary();
+      updateStep2WaBtn();
     });
   });
   /* ── Bank Deposit: copy-to-clipboard for account number / IBAN ── */
@@ -347,12 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   /* ── Bank Deposit: WhatsApp "send screenshot" link ── */
-  const waBtn = document.getElementById('bank-whatsapp-btn');
-  if (waBtn && window.derazone_CONFIG) {
-    const num = window.derazone_CONFIG.whatsapp.number;
-    const msg = encodeURIComponent('Hi! I just placed an order on DERA ZONE and paid via Bank Deposit. Here is my payment screenshot:');
-    waBtn.href = `https://wa.me/${num}?text=${msg}`;
-  }
+  updateStep2WaBtn();
   /* ── Checkout 3D background (particles) ── */
   initCheckoutThree();
 });

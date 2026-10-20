@@ -1291,34 +1291,15 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
       
       <div style="display:flex;gap:10px;margin-bottom:20px;">
         <select id="pinned-sel" class="form-control" style="flex:1;">
-
-        <option value="">-- Select Collection --</option>
-        <optgroup label="Jewelry">
-          <option value="bracelets">Bracelets</option>
-          <option value="rings">Rings</option>
-          <option value="earrings">Earrings</option>
-          <option value="necklace">Necklace</option>
-          <option value="bangles">Bangles</option>
-          <option value="jewelry-sets">Jewelry Sets</option>
-        </optgroup>
-        <optgroup label="Cosmetics">
-          <option value="face-cosmetics">Face Cosmetics</option>
-          <option value="eye-makeup">Eye Makeup</option>
-          <option value="lip-makeup">Lip Makeup</option>
-          <option value="nail-cosmetics">Nail Cosmetics</option>
-          <option value="skin-care">Skin Care</option>
-          <option value="hand-foot-care">Hand & Foot Care</option>
-          <option value="makeup-tools">Makeup Tools & Brushes</option>
-          <option value="makeup-accessories">Makeup Accessories</option>
-        </optgroup>
-        <optgroup label="Deals">
-          <option value="deals">Deals</option>
-        </optgroup>
-        <optgroup label="Add-on Boxes">
-          <option value="ring-boxes">Ring Boxes</option>
-          <option value="jewelry-boxes">Jewelry Boxes</option>
-        </optgroup>
-
+          <option value="">-- Select Collection --</option>
+          <option value="accessories">Accessories</option>
+          <option value="gadgets">Gadgets</option>
+          <option value="wireless-earbuds-audio">Wireless Earbuds & Audio</option>
+          <option value="jewellery">Jewellery</option>
+          <option value="fashion-lifestyle">Fashion & Lifestyle</option>
+          <option value="footwear">Footwear</option>
+          <option value="clothing-apparel">Clothing & Apparel</option>
+          <option value="winter-collection">Winter Collection</option>
         </select>
         <button class="btn btn-outline" onclick="addPinnedCollection()">Add</button>
       </div>
@@ -1376,19 +1357,7 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
       <input type="hidden" id="product-edit-id"/>
       <div class="form-row">
         <div class="form-group"><label>Product Name *</label><input id="p-name" placeholder="e.g. Ivory Silk Gown"/></div>
-        <div class="form-group">
-          <label>Brand</label>
-          <select id="p-brand">
-            <option value="">No Brand</option>
-            <option value="Vaseline">Vaseline</option>
-            <option value="Medora">Medora</option>
-            <option value="Rivaj">Rivaj</option>
-            <option value="Huda beauty">Huda beauty</option>
-            <option value="Mac Cosmetics">Mac Cosmetics</option>
-            <option value="Miss Rose">Miss Rose</option>
-            <option value="Maybelline">Maybelline</option>
-          </select>
-        </div>
+        <div class="form-group" style="display:none;"><input type="hidden" id="p-brand" value=""/></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label>Product Icon</label>
@@ -5704,6 +5673,12 @@ async function convertAbandonedToOrder(id) {
   const rec = allAbandoned.find(a => a.id === id);
   if (!rec) { toast('Record not found in local list', 'error'); return; }
   
+  // Mark abandoned checkout as converted/recovered
+  try {
+    await apiFetch('/abandoned/' + id + '/converted', { method: 'PATCH' });
+    loadAbandoned();
+  } catch(e) {}
+
   openSocialOrderModal(null, rec);
   showPage('social-orders');
 }
@@ -5996,6 +5971,51 @@ function bktConfirm({ title = 'Are you sure?', message = 'This action cannot be 
 }
 
 /* ═══════════════════ REVIEWS ═══════════════════ */
+
+function openAddReviewModal() {
+  const nameEl = document.getElementById('rev-add-name');
+  const cityEl = document.getElementById('rev-add-city');
+  const rateEl = document.getElementById('rev-add-rating');
+  const textEl = document.getElementById('rev-add-text');
+  if (nameEl) nameEl.value = '';
+  if (cityEl) cityEl.value = '';
+  if (rateEl) rateEl.value = '5';
+  if (textEl) textEl.value = '';
+  openModal('add-review-modal');
+}
+
+async function saveAdminReview() {
+  const customerName = document.getElementById('rev-add-name')?.value.trim();
+  const city = document.getElementById('rev-add-city')?.value.trim();
+  const rating = Number(document.getElementById('rev-add-rating')?.value) || 5;
+  const text = document.getElementById('rev-add-text')?.value.trim();
+
+  if (!customerName) return toast('Please enter customer name', 'error');
+  if (!text) return toast('Please write the review text', 'error');
+
+  try {
+    const res = await apiFetch('/reviews', {
+      method: 'POST',
+      body: JSON.stringify({
+        customerName,
+        city,
+        rating,
+        text,
+        approved: true
+      })
+    });
+    if (res.ok) {
+      toast('Review published successfully ✓', 'success');
+      closeModal('add-review-modal');
+      loadReviews();
+    } else {
+      toast('Failed to publish review', 'error');
+    }
+  } catch(e) {
+    toast('Error publishing review', 'error');
+  }
+}
+
 async function loadReviews() {
   const tbody = document.getElementById('reviews-body');
   if (!tbody) return;
@@ -6185,7 +6205,7 @@ async function deleteReviewImage(id) {
       const sel = document.getElementById('spotlight-sel');
       sel.innerHTML = '<option value="">-- Select Product --</option>';
       allProductsList.forEach(p => {
-        sel.innerHTML += `<option value="${p.id}">${p.title} (${p.price} PKR)</option>`;
+        sel.innerHTML += `<option value="${p.id}">${p.name || p.title || "Product"} (${p.price || 0} PKR)</option>`;
       });
 
       const res = await apiFetch('/admin/spotlight');
@@ -6209,12 +6229,12 @@ async function deleteReviewImage(id) {
       return;
     }
     tbody.innerHTML = adminSpotlightProducts.map((pId, i) => {
-      const p = allProductsList.find(x => x.id === pId) || { title: 'Unknown Product', id: pId };
+      const p = allProductsList.find(x => x.id === pId) || { name: "Unknown Product", title: "Unknown Product", id: pId };
       return `
       <tr style="border-bottom:1px solid var(--border);">
         <td style="padding:10px 8px;vertical-align:middle;">
           <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--gold);color:#000;font-size:0.7rem;font-weight:700;margin-right:10px;">${i + 1}</span>
-          <strong style="font-size:0.9rem;">${p.title}</strong>
+          <strong style="font-size:0.9rem;">${p.name || p.title || "Product"}</strong>
           <span style="margin-left:8px;font-size:0.7rem;color:var(--muted);font-family:monospace;">${p.id}</span>
         </td>
         <td style="text-align:right;padding:10px 8px;white-space:nowrap;">

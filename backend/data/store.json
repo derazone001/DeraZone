@@ -35,5 +35,8 @@
   "socialOrders": [],
   "resellers": [],
   "activityLogs": [],
-  "abandoned": []
+  "abandoned": [],
+  "pinned": [],
+  "spotlight": [],
+  "reviewImages": []
 }

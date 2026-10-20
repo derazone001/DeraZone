@@ -403,31 +403,72 @@ async function derazoneRenderHomepageGrids() {
     }, 2200);
   }
 
-  // --- 4. Render Pinned Collections (Spotlight from Admin) ---
+  // --- 4A. Render Pinned Collections with Actual Collection Names ---
+  const pinnedWrapper = document.getElementById('pinned-collections-wrapper');
+  if (pinnedWrapper && allProducts.length) {
+    try {
+      const pinRes = await apiGet('/pinned');
+      const pinnedList = (pinRes && pinRes.pinned && Array.isArray(pinRes.pinned)) ? pinRes.pinned : [];
+      let sectionsHTML = '';
+
+      for (const col of pinnedList) {
+        const colId = (col.id || '').toLowerCase();
+        const colName = col.name || dzCatLabel(colId);
+        const colProducts = allProducts.filter(p => {
+          const pCat = (p.category || '').toLowerCase();
+          return pCat === colId || dzNormalizeCategory(pCat) === dzNormalizeCategory(colId);
+        });
+
+        if (colProducts.length > 0) {
+          sectionsHTML += `
+            <section class="dz-section" style="padding:60px 0;border-bottom:1px solid #f1f5f9;">
+              <div class="container">
+                <div class="section-header-row">
+                  <div>
+                    <span class="section-badge" style="background:rgba(112,0,255,0.08);color:#7000ff;padding:4px 10px;border-radius:20px;font-size:0.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Featured Collection</span>
+                    <h2 class="section-title" style="margin-top:6px;">${colName}</h2>
+                    <p class="section-subtitle">Curated picks from our ${colName} collection</p>
+                  </div>
+                  <a href="shop?cat=${col.id}" class="see-all-link">View All ${colName} <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+                <div class="product-grid-4">
+                  ${colProducts.slice(0, 4).map(p => derazoneProductCardHTML(p)).join('')}
+                </div>
+              </div>
+            </section>
+          `;
+        }
+      }
+
+      pinnedWrapper.innerHTML = sectionsHTML;
+    } catch (err) {
+      console.warn('Pinned collections render error:', err);
+      pinnedWrapper.innerHTML = '';
+    }
+  }
+
+  // --- 4B. Render Spotlight Products (Only when selected by Admin) ---
+  const spotlightSection = document.getElementById('spotlight-section');
   const spotlightGrid = document.getElementById('spotlight-grid');
   if (spotlightGrid && allProducts.length) {
     try {
-      let pinnedIds = [];
       const spotRes = await apiGet('/spotlight');
-      if (spotRes && spotRes.spotlight && spotRes.spotlight.length) {
-        pinnedIds = spotRes.spotlight;
-      }
+      const spotIds = (spotRes && spotRes.spotlight && Array.isArray(spotRes.spotlight)) ? spotRes.spotlight : [];
       
-      let pinnedProducts = [];
-      if (pinnedIds.length) {
-        pinnedProducts = allProducts.filter(p => pinnedIds.includes(p.id));
-      }
-      if (!pinnedProducts.length) {
-        // Fallback to featured products from catalog
-        pinnedProducts = allProducts.filter(p => p.featured === true).slice(0, 4);
-      }
-      if (!pinnedProducts.length) {
-        pinnedProducts = allProducts.slice(0, 4);
+      let spotlightProducts = [];
+      if (spotIds.length) {
+        spotlightProducts = allProducts.filter(p => spotIds.includes(p.id));
       }
 
-      spotlightGrid.innerHTML = pinnedProducts.slice(0, 4).map(p => derazoneProductCardHTML(p)).join('');
+      if (spotlightProducts.length > 0) {
+        if (spotlightSection) spotlightSection.style.display = 'block';
+        spotlightGrid.innerHTML = spotlightProducts.slice(0, 4).map(p => derazoneProductCardHTML(p)).join('');
+      } else {
+        if (spotlightSection) spotlightSection.style.display = 'none';
+      }
     } catch (err) {
-      spotlightGrid.innerHTML = allProducts.slice(0, 4).map(p => derazoneProductCardHTML(p)).join('');
+      if (spotlightSection) spotlightSection.style.display = 'none';
+      console.warn('Spotlight fetch error:', err);
     }
   }
 
