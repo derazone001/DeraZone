@@ -348,60 +348,7 @@ async function derazoneRenderHomepageGrids() {
     }
   }
 
-  // --- 3. Setup Categories Carousel (Single-Row Slideshow with Continuous Auto-Play & Next/Prev) ---
-  const catTrack = document.getElementById('categories-carousel-track');
-  const catPrev = document.getElementById('cat-prev-btn');
-  const catNext = document.getElementById('cat-next-btn');
-  if (catTrack) {
-    let isPaused = false;
 
-    function stepNext() {
-      const maxScroll = catTrack.scrollWidth - catTrack.clientWidth;
-      if (catTrack.scrollLeft >= maxScroll - 15) {
-        catTrack.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        catTrack.scrollBy({ left: 190, behavior: 'smooth' });
-      }
-    }
-
-    function stepPrev() {
-      if (catTrack.scrollLeft <= 15) {
-        catTrack.scrollTo({ left: catTrack.scrollWidth, behavior: 'smooth' });
-      } else {
-        catTrack.scrollBy({ left: -190, behavior: 'smooth' });
-      }
-    }
-
-    if (catNext) {
-      catNext.onclick = () => {
-        isPaused = true;
-        stepNext();
-        setTimeout(() => { isPaused = false; }, 3000);
-      };
-    }
-    if (catPrev) {
-      catPrev.onclick = () => {
-        isPaused = true;
-        stepPrev();
-        setTimeout(() => { isPaused = false; }, 3000);
-      };
-    }
-
-    catTrack.addEventListener('mouseenter', () => { isPaused = true; });
-    catTrack.addEventListener('mouseleave', () => { isPaused = false; });
-    catTrack.addEventListener('touchstart', () => { isPaused = true; }, { passive: true });
-    catTrack.addEventListener('touchend', () => {
-      setTimeout(() => { isPaused = false; }, 2500);
-    }, { passive: true });
-
-    // Auto-slide every 2.2 seconds automatically on phone & desktop
-    if (window._dzCatAutoSlide) clearInterval(window._dzCatAutoSlide);
-    window._dzCatAutoSlide = setInterval(() => {
-      if (!isPaused) {
-        stepNext();
-      }
-    }, 2200);
-  }
 
   // --- 4A. Render Pinned Collections with Actual Collection Names ---
   const pinnedWrapper = document.getElementById('pinned-collections-wrapper');
@@ -511,7 +458,111 @@ async function derazoneRenderHomepageGrids() {
   }
 }
 
+/* ── Categories Carousel (Works seamlessly on Phone, Tablet & Laptop) ── */
+function initCategoryCarousel() {
+  const catTrack = document.getElementById('categories-carousel-track');
+  const catPrev = document.getElementById('cat-prev-btn');
+  const catNext = document.getElementById('cat-next-btn');
+
+  if (!catTrack || catTrack.dataset.carouselInitialized === 'true') return;
+  catTrack.dataset.carouselInitialized = 'true';
+
+  // 1. On desktop/laptop, 8 categories fit into one viewport leaving 0 scrollable overflow.
+  // We duplicate the items so the carousel has ample scrollable content (infinite continuous track)
+  // on large desktop screens, laptops, tablets, and phones!
+  const originalItems = Array.from(catTrack.children);
+  if (originalItems.length > 0 && originalItems.length <= 10) {
+    originalItems.forEach(item => {
+      const clone = item.cloneNode(true);
+      clone.setAttribute('aria-hidden', 'true');
+      catTrack.appendChild(clone);
+    });
+  }
+
+  // Calculate dynamic step based on actual item width + gap
+  function getScrollStep() {
+    const item = catTrack.querySelector('.dz-circle-cat-item');
+    if (item) {
+      const w = item.offsetWidth || 135;
+      const isMobile = window.innerWidth <= 768;
+      // On mobile: scroll 1 item (~125px). On desktop: scroll 2 items (~320px)
+      return isMobile ? (w + 20) : ((w + 28) * 2);
+    }
+    return window.innerWidth <= 768 ? 130 : 320;
+  }
+
+  let isPaused = false;
+  let pauseTimer = null;
+
+  function pauseAuto(ms = 4000) {
+    isPaused = true;
+    if (pauseTimer) clearTimeout(pauseTimer);
+    pauseTimer = setTimeout(() => { isPaused = false; }, ms);
+  }
+
+  function doScrollNext() {
+    pauseAuto();
+    const step = getScrollStep();
+    const maxScroll = catTrack.scrollWidth - catTrack.clientWidth;
+    if (maxScroll <= 5) return;
+
+    if (catTrack.scrollLeft >= maxScroll - 25) {
+      catTrack.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      catTrack.scrollBy({ left: step, behavior: 'smooth' });
+    }
+  }
+
+  function doScrollPrev() {
+    pauseAuto();
+    const step = getScrollStep();
+    const maxScroll = catTrack.scrollWidth - catTrack.clientWidth;
+    if (maxScroll <= 5) return;
+
+    if (catTrack.scrollLeft <= 25) {
+      catTrack.scrollTo({ left: maxScroll, behavior: 'smooth' });
+    } else {
+      catTrack.scrollBy({ left: -step, behavior: 'smooth' });
+    }
+  }
+
+  if (catNext) {
+    catNext.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      doScrollNext();
+    });
+  }
+
+  if (catPrev) {
+    catPrev.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      doScrollPrev();
+    });
+  }
+
+  // Pause when hovered or touched
+  catTrack.addEventListener('mouseenter', () => { isPaused = true; });
+  catTrack.addEventListener('mouseleave', () => { isPaused = false; });
+  catTrack.addEventListener('touchstart', () => { pauseAuto(6000); }, { passive: true });
+
+  // Auto-sliding interval (every 2.6 seconds)
+  if (window._dzCatAutoSlide) clearInterval(window._dzCatAutoSlide);
+  window._dzCatAutoSlide = setInterval(() => {
+    if (!isPaused && catTrack.scrollWidth > catTrack.clientWidth) {
+      const maxScroll = catTrack.scrollWidth - catTrack.clientWidth;
+      if (catTrack.scrollLeft >= maxScroll - 25) {
+        catTrack.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        catTrack.scrollBy({ left: getScrollStep(), behavior: 'smooth' });
+      }
+    }
+  }, 2600);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  initCategoryCarousel();
   if (document.getElementById('shop-products-grid') || document.querySelector('.shop-layout')) {
     derazoneRenderShopGrid();
   }
@@ -519,3 +570,8 @@ document.addEventListener('DOMContentLoaded', () => {
     derazoneRenderHomepageGrids();
   }
 });
+
+// Run immediately if already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  initCategoryCarousel();
+}

@@ -2358,23 +2358,38 @@ button#mobile-menu-toggle {
 .carousel-nav-arrows {
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
+  gap: 12px !important;
+  position: relative !important;
+  z-index: 25 !important;
 }
 
 .carousel-arrow-btn {
-  width: 42px !important;
-  height: 42px !important;
+  width: 44px !important;
+  height: 44px !important;
   border-radius: 50% !important;
   background: #ffffff !important;
   border: 1.5px solid #e5e7eb !important;
   color: #0f172a !important;
-  font-size: 0.95rem !important;
+  font-size: 1rem !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   cursor: pointer !important;
-  transition: all 0.25s ease !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+  position: relative !important;
+  z-index: 25 !important;
+  touch-action: manipulation !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  outline: none !important;
+}
+
+.carousel-arrow-btn:active {
+  transform: scale(0.9) !important;
+  background: #7000ff !important;
+  border-color: #7000ff !important;
+  color: #ffffff !important;
 }
 
 .carousel-arrow-btn:hover {
