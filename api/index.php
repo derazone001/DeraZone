@@ -34,35 +34,49 @@ function get_store() {
     $data = json_decode($raw, true);
     if (!is_array($data)) $data = [];
 
-    // Check all possible backup sources to prevent accidental data loss on git pull or zip extract
-    $backupFiles = [
-        $liveBackupFile,
-        __DIR__ . '/../data/store_backup_latest.json',
-        __DIR__ . '/../data/store_backup_daily.json',
-        __DIR__ . '/../data/store_live.json.bak',
-        __DIR__ . '/../data/store.json.bak'
-    ];
+    // Only restore from backup if store.json is missing, blank, corrupted, or replaced with empty starter file
+    $needsRestore = (!file_exists($storeFile) || strlen(trim($raw ?? '')) < 10 || empty($data) || (!isset($data['_lastSaved']) && empty($data['products']) && empty($data['orders'])));
 
-    $restoredAny = false;
-    foreach ($backupFiles as $bf) {
-        if (!file_exists($bf)) continue;
-        $bRaw = @file_get_contents($bf);
-        $bData = json_decode($bRaw, true);
-        if (!is_array($bData)) continue;
+    if ($needsRestore) {
+        $backupFiles = [
+            $liveBackupFile,
+            __DIR__ . '/../data/store_backup_latest.json',
+            __DIR__ . '/../data/store_backup_daily.json',
+            __DIR__ . '/../data/store_live.json.bak',
+            __DIR__ . '/../data/store.json.bak'
+        ];
 
-        $keysToRestore = ['products', 'orders', 'socialOrders', 'reviews', 'pinned', 'spotlight', 'reviewImages', 'coupons', 'settings', 'adminUsers'];
-        foreach ($keysToRestore as $k) {
-            if (empty($data[$k]) && !empty($bData[$k])) {
-                $data[$k] = $bData[$k];
-                $restoredAny = true;
+        $restoredAny = false;
+        foreach ($backupFiles as $bf) {
+            if (!file_exists($bf)) continue;
+            $bRaw = @file_get_contents($bf);
+            $bData = json_decode($bRaw, true);
+            if (!is_array($bData)) continue;
+
+            $keysToRestore = ['products', 'orders', 'socialOrders', 'reviews', 'pinned', 'spotlight', 'reviewImages', 'coupons', 'settings', 'adminUsers', 'deletedProductIds'];
+            foreach ($keysToRestore as $k) {
+                if (empty($data[$k]) && !empty($bData[$k])) {
+                    $data[$k] = $bData[$k];
+                    $restoredAny = true;
+                }
             }
+        }
+
+        if ($restoredAny) {
+            $data['_lastSaved'] = time();
+            $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            @file_put_contents($storeFile, $json, LOCK_EX);
         }
     }
 
-    // If restored from backup, immediately write back to store.json so file on disk is preserved
-    if ($restoredAny) {
-        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        @file_put_contents($storeFile, $json, LOCK_EX);
+    // Always filter out any products whose IDs are in deletedProductIds tombstone list
+    if (!empty($data['deletedProductIds']) && is_array($data['deletedProductIds']) && !empty($data['products']) && is_array($data['products'])) {
+        $delMap = array_flip(array_map('strval', $data['deletedProductIds']));
+        $data['products'] = array_values(array_filter($data['products'], function($p) use ($delMap) {
+            $id1 = strval($p['id'] ?? '');
+            $id2 = strval($p['_id'] ?? '');
+            return !isset($delMap[$id1]) && !isset($delMap[$id2]);
+        }));
     }
 
     return $data;
@@ -70,18 +84,33 @@ function get_store() {
 
 function save_store($data) {
     global $storeFile, $liveBackupFile;
+    $data['_lastSaved'] = time();
     $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     @file_put_contents($storeFile, $json, LOCK_EX);
     @file_put_contents($liveBackupFile, $json, LOCK_EX);
-
-    // Keep an immutable non-empty backup that is NEVER overwritten with empty data
-    if (!empty($data['products']) || !empty($data['orders']) || !empty($data['socialOrders'])) {
-        @file_put_contents(__DIR__ . '/../data/store_backup_latest.json', $json, LOCK_EX);
-    }
+    @file_put_contents(__DIR__ . '/../data/store_backup_latest.json', $json, LOCK_EX);
 }
 
-// ── 3. Parse Request ──
-$method = $_SERVER['REQUEST_METHOD'];
+// ── 3. Parse Request & Support Method Tunneling (for cPanel / ModSecurity / Apache restrictions) ──
+$method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+$rawBody = file_get_contents('php://input');
+$body = json_decode($rawBody, true) ?? [];
+
+// Method tunneling headers / params
+$headerOverride = $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] ?? '';
+$queryOverride = $_GET['_method'] ?? '';
+if (!empty($headerOverride)) {
+    $method = strtoupper($headerOverride);
+} elseif (!empty($queryOverride)) {
+    $method = strtoupper($queryOverride);
+} elseif (!empty($body['_method'])) {
+    $method = strtoupper($body['_method']);
+} elseif (!empty($body['action']) && in_array(strtolower($body['action']), ['delete', 'destroy'])) {
+    $method = 'DELETE';
+} elseif (!empty($_GET['action']) && in_array(strtolower($_GET['action']), ['delete', 'destroy'])) {
+    $method = 'DELETE';
+}
+
 $endpoint = isset($_GET['endpoint']) ? trim($_GET['endpoint'], '/') : '';
 if (empty($endpoint)) {
     $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -90,8 +119,6 @@ if (empty($endpoint)) {
 // Strip query strings or trailing slashes
 $endpoint = explode('?', $endpoint)[0];
 $endpoint = trim($endpoint, '/');
-
-$body = json_decode(file_get_contents('php://input'), true) ?? [];
 
 // Helper responses
 function json_ok($payload = []) {
@@ -427,8 +454,13 @@ if ($endpoint === 'auth/change-password') {
 }
 
 // ── PRODUCTS ENDPOINTS ──
-if ($endpoint === 'products' || preg_match('#^products/(.+)$#', $endpoint, $m)) {
+if ($endpoint === 'products' || preg_match('#^(?:admin/)?products(?:/(.+))?$#', $endpoint, $m)) {
     $prodId = $m[1] ?? null;
+    if ($prodId && strpos($prodId, 'delete/') === 0) {
+        $prodId = substr($prodId, 7);
+        $method = 'DELETE';
+    }
+
     $store = get_store();
     $products = $store['products'] ?? [];
 
@@ -443,13 +475,18 @@ if ($endpoint === 'products' || preg_match('#^products/(.+)$#', $endpoint, $m)) 
     }
 
     if ($method === 'POST') {
-        $newProd = $body;
-        $newProd['id'] = $newProd['id'] ?? ('dz-prod-' . time() . '-' . rand(100, 999));
-        $newProd['createdAt'] = date('c');
-        $products[] = $newProd;
-        $store['products'] = $products;
-        save_store($store);
-        json_ok(['product' => $newProd]);
+        // Check if POST was tunneling a delete action
+        if (!empty($body['action']) && in_array(strtolower($body['action']), ['delete', 'destroy']) || !empty($_GET['action']) && in_array(strtolower($_GET['action']), ['delete', 'destroy'])) {
+            $method = 'DELETE';
+        } else {
+            $newProd = $body;
+            $newProd['id'] = $newProd['id'] ?? ('dz-prod-' . time() . '-' . rand(100, 999));
+            $newProd['createdAt'] = date('c');
+            $products[] = $newProd;
+            $store['products'] = $products;
+            save_store($store);
+            json_ok(['product' => $newProd]);
+        }
     }
 
     if ($method === 'PUT' || $method === 'PATCH') {
@@ -468,12 +505,47 @@ if ($endpoint === 'products' || preg_match('#^products/(.+)$#', $endpoint, $m)) 
     }
 
     if ($method === 'DELETE') {
-        $products = array_filter($products, function($p) use ($prodId) {
-            return $p['id'] != $prodId;
+        $targetId = strval($prodId ?? ($body['id'] ?? ($_GET['id'] ?? '')));
+        $targetIdDecoded = urldecode($targetId);
+        if (empty($targetId) && empty($targetIdDecoded)) {
+            json_err('Missing product ID to delete', 400);
+        }
+
+        $beforeCount = count($products);
+        $products = array_filter($products, function($p) use ($targetId, $targetIdDecoded) {
+            $pId = strval($p['id'] ?? $p['_id'] ?? '');
+            if ($pId === $targetId || $pId === $targetIdDecoded) return false;
+            if (is_numeric($pId) && is_numeric($targetId) && (int)$pId === (int)$targetId) return false;
+            return true;
         });
         $store['products'] = array_values($products);
+
+        // Record in tombstone list so this deleted ID can NEVER be resurrected
+        $deletedList = $store['deletedProductIds'] ?? [];
+        if (!in_array($targetId, $deletedList)) $deletedList[] = $targetId;
+        if (!empty($targetIdDecoded) && !in_array($targetIdDecoded, $deletedList)) $deletedList[] = $targetIdDecoded;
+        $store['deletedProductIds'] = $deletedList;
+
+        // Clean up pinned collections & spotlight
+        if (!empty($store['pinned']) && is_array($store['pinned'])) {
+            $store['pinned'] = array_values(array_filter($store['pinned'], function($x) use ($targetId, $targetIdDecoded) {
+                $pid = is_array($x) ? strval($x['id'] ?? '') : strval($x);
+                return $pid !== $targetId && $pid !== $targetIdDecoded;
+            }));
+        }
+        if (!empty($store['spotlight']) && is_array($store['spotlight'])) {
+            $store['spotlight'] = array_values(array_filter($store['spotlight'], function($x) use ($targetId, $targetIdDecoded) {
+                return strval($x) !== $targetId && strval($x) !== $targetIdDecoded;
+            }));
+        }
+
         save_store($store);
-        json_ok(['deleted' => true]);
+        json_ok([
+            'deleted' => true,
+            'id' => $targetId,
+            'deletedCount' => $beforeCount - count($store['products']),
+            'remainingCount' => count($store['products'])
+        ]);
     }
 }
 

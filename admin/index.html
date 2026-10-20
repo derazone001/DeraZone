@@ -2225,10 +2225,15 @@ function apiFetch(path, options = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
+  const reqHeaders = { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}`, ...(options.headers || {}) };
+  if (options.method && ['DELETE', 'PUT', 'PATCH'].includes(options.method.toUpperCase())) {
+    reqHeaders['X-HTTP-Method-Override'] = options.method.toUpperCase();
+  }
+
   return fetch(`${API}${finalPath}`, {
     ...options,
     signal: options.signal || controller.signal,
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}`, ...(options.headers || {}) },
+    headers: reqHeaders,
   }).then(async res => {
     clearTimeout(timer);
     if (res.status === 503) {
@@ -4420,9 +4425,9 @@ function renderProducts(products) {
         </div>
         <div class="pac-actions">
           ${currentUser?.role === 'supervisor' ? '<span style="color:var(--muted);font-size:0.75rem;padding:4px 0;">🔒 Read-only</span>' : `
-          <button class="btn btn-outline btn-sm" onclick="editProductById('${p.id}')" title="Edit"><i class="fa-solid fa-pen"></i> Edit</button>
-          <button class="btn btn-outline btn-sm" onclick="duplicateProductById('${p.id}')" title="Duplicate"><i class="fa-regular fa-copy"></i> Copy</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+          <button class="btn btn-outline btn-sm" onclick="editProductById('${p.id || p._id}')" title="Edit"><i class="fa-solid fa-pen"></i> Edit</button>
+          <button class="btn btn-outline btn-sm" onclick="duplicateProductById('${p.id || p._id}')" title="Duplicate"><i class="fa-regular fa-copy"></i> Copy</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id || p._id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
           `}
         </div>
       </div>
@@ -4705,13 +4710,66 @@ async function saveProduct() {
 }
 
 async function deleteProduct(id) {
-  const ok = await bktConfirm({ title: 'Delete Product?', message: 'This product will be permanently removed. This cannot be undone.', confirmText: 'Delete Product', icon: '🗑️' });
+  if (!id) return toast('Invalid product ID.', 'error');
+  const ok = await bktConfirm({ 
+    title: 'Delete Product?', 
+    message: 'This product will be permanently removed. This cannot be undone.', 
+    confirmText: 'Delete Product', 
+    icon: '🗑️',
+    danger: true 
+  });
   if (!ok) return;
+
+  const strId = String(id);
+
+  // 1. Optimistic removal: immediately disappear from UI and localStorage cache
+  allProducts = allProducts.filter(p => String(p.id || p._id) !== strId);
+  if (window.AdminLocalStore && AdminLocalStore.saveProducts) {
+    AdminLocalStore.saveProducts(allProducts);
+  }
+  filterProductsTable();
+
+  // 2. Multi-tier backend deletion (handles standard DELETE and cPanel POST-tunneling)
   try {
-    const res = await apiFetch(`/products/${id}`, { method: 'DELETE' });
-    if (res.ok) { toast('Product deleted.', 'success'); loadProducts(); }
-    else { const d = await res.json(); toast(d.error || 'Delete failed.', 'error'); }
-  } catch { toast('Network error.', 'error'); }
+    let res = await apiFetch(`/products/${encodeURIComponent(strId)}`, {
+      method: 'DELETE',
+      headers: { 'X-HTTP-Method-Override': 'DELETE' }
+    });
+
+    // If server disallowed DELETE (405 or 403) or failed, try POST tunneling
+    if (!res.ok && (res.status === 405 || res.status === 403 || res.status === 500)) {
+      res = await apiFetch(`/products/${encodeURIComponent(strId)}?_method=DELETE`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-HTTP-Method-Override': 'DELETE' },
+        body: JSON.stringify({ action: 'delete', id: strId, _method: 'DELETE' })
+      });
+    }
+
+    if (res.ok) {
+      toast('Product permanently deleted ✓', 'success');
+      loadProducts();
+    } else {
+      const d = await res.json().catch(() => ({}));
+      toast(d.error || 'Delete failed on server.', 'error');
+      loadProducts();
+    }
+  } catch (err) {
+    // Ultimate fallback: POST /products?action=delete
+    try {
+      const fb = await apiFetch(`/products?action=delete&id=${encodeURIComponent(strId)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', id: strId, _method: 'DELETE' })
+      });
+      if (fb.ok) {
+        toast('Product permanently deleted ✓', 'success');
+        loadProducts();
+        return;
+      }
+    } catch(e) {}
+    toast('Network error while deleting product.', 'error');
+    loadProducts();
+  }
 }
 
 /* ═══════════════════ MESSAGES ═══════════════════ */
