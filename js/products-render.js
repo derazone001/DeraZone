@@ -52,6 +52,7 @@ function normalizeCategorySlug(c) {
   return c;
 }
 window.normalizeCategorySlug = normalizeCategorySlug;
+window.dzNormalizeCategory = normalizeCategorySlug;
 
 function dzCatLabel(cat) {
   if (!cat) return '';
@@ -369,11 +370,15 @@ async function derazoneRenderHomepageGrids() {
       let sectionsHTML = '';
 
       for (const col of pinnedList) {
-        const colId = (col.id || '').toLowerCase();
-        const colName = col.name || dzCatLabel(colId);
+        const rawId = (typeof col === 'string') ? col : (col.id || col.category || col.slug || '');
+        const colId = normalizeCategorySlug(rawId);
+        const colName = (typeof col === 'object' && col.name) ? col.name : dzCatLabel(colId);
+
         const colProducts = allProducts.filter(p => {
-          const pCat = (p.category || '').toLowerCase();
-          return pCat === colId || dzNormalizeCategory(pCat) === dzNormalizeCategory(colId);
+          const pCatSlug = normalizeCategorySlug(p.category || '');
+          const pSubSlug = normalizeCategorySlug(p.subcategory || '');
+          const rawCat = (p.category || '').toLowerCase().trim();
+          return pCatSlug === colId || pSubSlug === colId || rawCat === colId;
         });
 
         if (colProducts.length > 0) {
@@ -386,10 +391,10 @@ async function derazoneRenderHomepageGrids() {
                     <h2 class="section-title" style="margin-top:6px;">${colName}</h2>
                     <p class="section-subtitle">Curated picks from our ${colName} collection</p>
                   </div>
-                  <a href="shop?cat=${col.id}" class="see-all-link">View All ${colName} <i class="fa-solid fa-arrow-right"></i></a>
+                  <a href="shop?cat=${colId}" class="section-link" style="color:#7000ff;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">View All ${colName} <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
-                <div class="product-grid-4">
-                  ${colProducts.slice(0, 4).map(p => derazoneProductCardHTML(p)).join('')}
+                <div class="products-grid">
+                  ${colProducts.slice(0, 8).map(p => derazoneProductCardHTML(p)).join('')}
                 </div>
               </div>
             </section>
@@ -422,12 +427,7 @@ async function derazoneRenderHomepageGrids() {
         });
       }
 
-      // Auto fallback if no manual spotlight products are configured yet in admin:
-      if (spotlightProducts.length === 0 && allProducts.length > 0) {
-        const fallback = allProducts.find(p => p.is_featured || p.badge) || allProducts[0];
-        if (fallback) spotlightProducts.push(fallback);
-      }
-
+      // Only show spotlight if admin has explicitly selected products in admin spotlight settings
       if (spotlightProducts.length > 0) {
         if (spotlightSection) spotlightSection.style.display = 'block';
         spotlightContainer.innerHTML = spotlightProducts.slice(0, 3).map(p => {

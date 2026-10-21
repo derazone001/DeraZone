@@ -405,6 +405,7 @@ if ($endpoint === 'auth/register') {
     }
 
     $userId = 'user-' . time() . '-' . rand(100, 999);
+    $token = 'dz_cust_' . $userId . '_' . md5($userId . time());
     $newUser = [
         'id' => $userId,
         'fname' => $fname,
@@ -417,14 +418,14 @@ if ($endpoint === 'auth/register') {
         'role' => 'customer',
         'isAdmin' => false,
         'createdAt' => date('c'),
-        'lastLogin' => date('c')
+        'lastLogin' => date('c'),
+        'token' => $token
     ];
 
     $users[] = $newUser;
     $store['users'] = $users;
     save_store($store);
 
-    $token = 'dz_cust_' . md5($userId . time());
     json_ok([
         'message' => 'Account created! Welcome to DERA ZONE ⚡',
         'token' => $token,
@@ -451,8 +452,8 @@ if ($endpoint === 'auth/login') {
 
     $store = get_store();
 
-    // 1. Master Super Admin check (Accepts both A_Proejct_By_Subhan and A_Project_By_Subhan)
-    if ($identifier === 'admin' && ($pass === 'A_Proejct_By_Subhan' || $pass === 'A_Project_By_Subhan' || $pass === 'admin')) {
+    // 1. Master Super Admin check (Accepts both admin and admin@derazone.com, and both password spellings)
+    if (($identifier === 'admin' || $identifier === 'admin@derazone.com') && ($pass === 'A_Proejct_By_Subhan' || $pass === 'A_Project_By_Subhan' || $pass === 'admin')) {
         json_ok([
             'token' => 'dz_jwt_admin_token_super_' . md5('admin' . time()),
             'user' => [
@@ -501,8 +502,12 @@ if ($endpoint === 'auth/login') {
         $uPhone = preg_replace('/[^0-9]/', '', $u['phone'] ?? '');
 
         $isMatch = ($uEmail === $identifier);
-        if (!$isMatch && !empty($cleanPhone) && strlen($cleanPhone) >= 7 && !empty($uPhone) && $uPhone === $cleanPhone) {
-            $isMatch = true;
+        if (!$isMatch && !empty($cleanPhone) && strlen($cleanPhone) >= 7 && !empty($uPhone)) {
+            if ($uPhone === $cleanPhone) {
+                $isMatch = true;
+            } elseif (strlen($cleanPhone) >= 10 && strlen($uPhone) >= 10 && substr($cleanPhone, -10) === substr($uPhone, -10)) {
+                $isMatch = true;
+            }
         }
 
         if ($isMatch) {
@@ -515,10 +520,11 @@ if ($endpoint === 'auth/login') {
 
             if ($passMatch) {
                 $u['lastLogin'] = date('c');
+                $token = 'dz_cust_' . ($u['id'] ?? 'user') . '_' . md5(($u['id'] ?? 'user') . time());
+                $u['token'] = $token;
                 $store['users'] = $users;
                 save_store($store);
 
-                $token = 'dz_cust_' . md5($u['id'] . time());
                 json_ok([
                     'token' => $token,
                     'user' => [
@@ -547,16 +553,9 @@ if ($endpoint === 'auth/me' || $endpoint === 'auth/verify') {
     // Check customers
     if (strpos($token, 'dz_cust_') === 0) {
         foreach ($store['users'] ?? [] as $u) {
-            json_ok([
-                'id' => $u['id'],
-                'fname' => $u['fname'] ?? '',
-                'lname' => $u['lname'] ?? '',
-                'name' => trim(($u['fname'] ?? '') . ' ' . ($u['lname'] ?? '')),
-                'email' => $u['email'] ?? '',
-                'phone' => $u['phone'] ?? '',
-                'role' => 'customer',
-                'isAdmin' => false,
-                'user' => [
+            $uId = $u['id'] ?? '';
+            if (($u['token'] ?? '') === $token || (!empty($uId) && strpos($token, 'dz_cust_' . $uId) === 0)) {
+                json_ok([
                     'id' => $u['id'],
                     'fname' => $u['fname'] ?? '',
                     'lname' => $u['lname'] ?? '',
@@ -564,9 +563,19 @@ if ($endpoint === 'auth/me' || $endpoint === 'auth/verify') {
                     'email' => $u['email'] ?? '',
                     'phone' => $u['phone'] ?? '',
                     'role' => 'customer',
-                    'isAdmin' => false
-                ]
-            ]);
+                    'isAdmin' => false,
+                    'user' => [
+                        'id' => $u['id'],
+                        'fname' => $u['fname'] ?? '',
+                        'lname' => $u['lname'] ?? '',
+                        'name' => trim(($u['fname'] ?? '') . ' ' . ($u['lname'] ?? '')),
+                        'email' => $u['email'] ?? '',
+                        'phone' => $u['phone'] ?? '',
+                        'role' => 'customer',
+                        'isAdmin' => false
+                    ]
+                ]);
+            }
         }
     }
 

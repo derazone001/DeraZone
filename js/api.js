@@ -29,7 +29,7 @@ async function apiGet(endpoint) {
   try {
     const res = await fetch(`${derazone_API}${endpoint}`, {
       headers: apiHeaders(),
-      signal: AbortSignal.timeout(3500),
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return null;
     const text = await res.text();
