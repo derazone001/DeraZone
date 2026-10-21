@@ -79,12 +79,20 @@ async function apiPatch(endpoint, data) {
 
 /* ── Auth: Register ── */
 async function apiRegister({ fname, lname, email, phone, password }) {
-  return apiPost('/auth/register', { fname, lname, email, phone, password });
+  const res = await apiPost('/auth/register', { fname, lname, email, phone, password });
+  if (res.ok && res.data && res.data.token && res.data.user) {
+    saveSession(res.data.token, res.data.user);
+  }
+  return res;
 }
 
 /* ── Auth: Login ── */
 async function apiLogin({ email, password }) {
-  return apiPost('/auth/login', { email, password });
+  const res = await apiPost('/auth/login', { email, password });
+  if (res.ok && res.data && res.data.token && res.data.user) {
+    saveSession(res.data.token, res.data.user);
+  }
+  return res;
 }
 
 /* ── Save auth session ── */

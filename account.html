@@ -688,10 +688,13 @@
         if (typeof apiLogin === 'function') {
           const result = await apiLogin({ email, password });
           if (result.ok) {
+            if (result.data && result.data.token && result.data.user) {
+              saveSession(result.data.token, result.data.user);
+            }
             showToast('Welcome back! ⚡');
-            setTimeout(() => location.reload(), 800);
+            setTimeout(() => location.reload(), 600);
           } else {
-            showToast(result.data.error || 'Invalid email or password.');
+            showToast(result.data?.error || 'Invalid email or password.');
             if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
           }
         }
@@ -727,10 +730,13 @@
         if (typeof apiRegister === 'function') {
           const result = await apiRegister(payload);
           if (result.ok) {
+            if (result.data && result.data.token && result.data.user) {
+              saveSession(result.data.token, result.data.user);
+            }
             showToast('Account created! Welcome to DERA ZONE ⚡');
-            setTimeout(() => location.reload(), 900);
+            setTimeout(() => location.reload(), 700);
           } else {
-            showToast(result.data.error || 'Registration failed.');
+            showToast(result.data?.error || 'Registration failed.');
             if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
           }
         }

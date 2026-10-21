@@ -53,7 +53,7 @@ function get_store() {
             $bData = json_decode($bRaw, true);
             if (!is_array($bData)) continue;
 
-            $keysToRestore = ['products', 'orders', 'socialOrders', 'reviews', 'pinned', 'spotlight', 'reviewImages', 'coupons', 'settings', 'adminUsers', 'deletedProductIds'];
+            $keysToRestore = ['products', 'orders', 'socialOrders', 'reviews', 'pinned', 'spotlight', 'reviewImages', 'coupons', 'settings', 'adminUsers', 'deletedProductIds', 'users'];
             foreach ($keysToRestore as $k) {
                 if (empty($data[$k]) && !empty($bData[$k])) {
                     $data[$k] = $bData[$k];
@@ -380,15 +380,79 @@ if ($endpoint === 'health' || $endpoint === '') {
 }
 
 // ── AUTH ENDPOINTS ──
-if ($endpoint === 'auth/login') {
-    $user = trim($body['username'] ?? $body['email'] ?? '');
-    $pass = trim($body['password'] ?? '');
+if ($endpoint === 'auth/register') {
+    if ($method !== 'POST') json_err('Method not allowed', 405);
+
+    $fname = trim($body['fname'] ?? '');
+    $lname = trim($body['lname'] ?? '');
+    $email = strtolower(trim($body['email'] ?? ''));
+    $phone = trim($body['phone'] ?? '');
+    $password = trim($body['password'] ?? '');
+
+    if (empty($fname)) json_err('First name is required');
+    if (empty($email)) json_err('Email address is required');
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) json_err('Please enter a valid email address');
+    if (empty($password) || strlen($password) < 6) json_err('Password must be at least 6 characters');
 
     $store = get_store();
-    $adminUsers = $store['adminUsers'] ?? [];
+    $users = $store['users'] ?? [];
 
-    // Master Super Admin check (Accepts both A_Proejct_By_Subhan and A_Project_By_Subhan)
-    if (strtolower($user) === 'admin' && ($pass === 'A_Proejct_By_Subhan' || $pass === 'A_Project_By_Subhan' || $pass === 'admin')) {
+    // Check if user already exists
+    foreach ($users as $u) {
+        if (strtolower(trim($u['email'] ?? '')) === $email) {
+            json_err('An account with this email already exists. Please sign in.', 409);
+        }
+    }
+
+    $userId = 'user-' . time() . '-' . rand(100, 999);
+    $newUser = [
+        'id' => $userId,
+        'fname' => $fname,
+        'lname' => $lname,
+        'name' => trim("{$fname} {$lname}"),
+        'email' => $email,
+        'phone' => $phone,
+        'passwordHash' => password_hash($password, PASSWORD_DEFAULT),
+        'passwordPlain' => $password,
+        'role' => 'customer',
+        'isAdmin' => false,
+        'createdAt' => date('c'),
+        'lastLogin' => date('c')
+    ];
+
+    $users[] = $newUser;
+    $store['users'] = $users;
+    save_store($store);
+
+    $token = 'dz_cust_' . md5($userId . time());
+    json_ok([
+        'message' => 'Account created! Welcome to DERA ZONE ⚡',
+        'token' => $token,
+        'user' => [
+            'id' => $newUser['id'],
+            'fname' => $newUser['fname'],
+            'lname' => $newUser['lname'],
+            'name' => $newUser['name'],
+            'email' => $newUser['email'],
+            'phone' => $newUser['phone'],
+            'role' => 'customer',
+            'isAdmin' => false
+        ]
+    ]);
+}
+
+if ($endpoint === 'auth/login') {
+    $identifier = strtolower(trim($body['email'] ?? $body['username'] ?? ''));
+    $pass = trim($body['password'] ?? '');
+
+    if (empty($identifier) || empty($pass)) {
+        json_err('Email/username and password are required', 400);
+    }
+
+    $store = get_store();
+
+    // 1. Master Super Admin check (Accepts both A_Proejct_By_Subhan and A_Project_By_Subhan)
+    if ($identifier === 'admin' && ($pass === 'A_Proejct_By_Subhan' || $pass === 'A_Project_By_Subhan' || $pass === 'admin')) {
         json_ok([
             'token' => 'dz_jwt_admin_token_super_' . md5('admin' . time()),
             'user' => [
@@ -403,10 +467,16 @@ if ($endpoint === 'auth/login') {
         ]);
     }
 
-    // Check custom database users
+    // 2. Check custom admin staff users
+    $adminUsers = $store['adminUsers'] ?? [];
     foreach ($adminUsers as $u) {
-        if ((strtolower($u['username'] ?? '') === strtolower($user) || strtolower($u['email'] ?? '') === strtolower($user))) {
-            if (($u['passwordPlain'] ?? '') === $pass || ($pass === 'A_Proejct_By_Subhan' && ($u['role'] ?? '') === 'ceo') || ($pass === 'A_Project_By_Subhan' && ($u['role'] ?? '') === 'ceo')) {
+        if ((strtolower($u['username'] ?? '') === $identifier || strtolower($u['email'] ?? '') === $identifier)) {
+            $passMatch = false;
+            if (!empty($u['passwordHash']) && password_verify($pass, $u['passwordHash'])) $passMatch = true;
+            if (($u['passwordPlain'] ?? '') === $pass) $passMatch = true;
+            if (($pass === 'A_Proejct_By_Subhan' || $pass === 'A_Project_By_Subhan') && ($u['role'] ?? '') === 'ceo') $passMatch = true;
+
+            if ($passMatch) {
                 json_ok([
                     'token' => 'dz_jwt_token_' . md5($u['id'] . time()),
                     'user' => [
@@ -423,11 +493,92 @@ if ($endpoint === 'auth/login') {
         }
     }
 
-    json_err('Invalid username or password', 401);
+    // 3. Check customer accounts
+    $users = $store['users'] ?? [];
+    $cleanPhone = preg_replace('/[^0-9]/', '', $identifier);
+    foreach ($users as &$u) {
+        $uEmail = strtolower(trim($u['email'] ?? ''));
+        $uPhone = preg_replace('/[^0-9]/', '', $u['phone'] ?? '');
+
+        $isMatch = ($uEmail === $identifier);
+        if (!$isMatch && !empty($cleanPhone) && strlen($cleanPhone) >= 7 && !empty($uPhone) && $uPhone === $cleanPhone) {
+            $isMatch = true;
+        }
+
+        if ($isMatch) {
+            $passMatch = false;
+            if (!empty($u['passwordHash']) && password_verify($pass, $u['passwordHash'])) {
+                $passMatch = true;
+            } elseif (!empty($u['passwordPlain']) && $u['passwordPlain'] === $pass) {
+                $passMatch = true;
+            }
+
+            if ($passMatch) {
+                $u['lastLogin'] = date('c');
+                $store['users'] = $users;
+                save_store($store);
+
+                $token = 'dz_cust_' . md5($u['id'] . time());
+                json_ok([
+                    'token' => $token,
+                    'user' => [
+                        'id' => $u['id'],
+                        'fname' => $u['fname'] ?? '',
+                        'lname' => $u['lname'] ?? '',
+                        'name' => trim(($u['fname'] ?? '') . ' ' . ($u['lname'] ?? '')),
+                        'email' => $u['email'] ?? '',
+                        'phone' => $u['phone'] ?? '',
+                        'role' => 'customer',
+                        'isAdmin' => false
+                    ]
+                ]);
+            }
+        }
+    }
+
+    json_err('Invalid email or password.', 401);
 }
 
-if ($endpoint === 'auth/verify') {
+if ($endpoint === 'auth/me' || $endpoint === 'auth/verify') {
+    $store = get_store();
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    $token = trim(str_replace('Bearer', '', $authHeader));
+
+    // Check customers
+    if (strpos($token, 'dz_cust_') === 0) {
+        foreach ($store['users'] ?? [] as $u) {
+            json_ok([
+                'id' => $u['id'],
+                'fname' => $u['fname'] ?? '',
+                'lname' => $u['lname'] ?? '',
+                'name' => trim(($u['fname'] ?? '') . ' ' . ($u['lname'] ?? '')),
+                'email' => $u['email'] ?? '',
+                'phone' => $u['phone'] ?? '',
+                'role' => 'customer',
+                'isAdmin' => false,
+                'user' => [
+                    'id' => $u['id'],
+                    'fname' => $u['fname'] ?? '',
+                    'lname' => $u['lname'] ?? '',
+                    'name' => trim(($u['fname'] ?? '') . ' ' . ($u['lname'] ?? '')),
+                    'email' => $u['email'] ?? '',
+                    'phone' => $u['phone'] ?? '',
+                    'role' => 'customer',
+                    'isAdmin' => false
+                ]
+            ]);
+        }
+    }
+
+    // Default / Super admin response
     json_ok([
+        'id' => 'super-admin-1',
+        'username' => 'admin',
+        'email' => 'admin@derazone.com',
+        'isAdmin' => true,
+        'role' => 'ceo',
+        'fname' => 'Super',
+        'lname' => 'Admin',
         'user' => [
             'id' => 'super-admin-1',
             'username' => 'admin',
@@ -547,6 +698,28 @@ if ($endpoint === 'products' || preg_match('#^(?:admin/)?products(?:/(.+))?$#', 
             'remainingCount' => count($store['products'])
         ]);
     }
+}
+
+// ── CUSTOMER ORDER HISTORY ──
+if (preg_match('#^orders/user/(.+)$#', $endpoint, $um)) {
+    $rawIdentifier = urldecode($um[1]);
+    $targetEmail = strtolower(trim($rawIdentifier));
+    $cleanPhone = preg_replace('/[^0-9]/', '', $rawIdentifier);
+
+    $store = get_store();
+    $orders = $store['orders'] ?? [];
+
+    $userOrders = array_filter($orders, function($o) use ($targetEmail, $cleanPhone) {
+        $oEmail = strtolower(trim($o['delivery']['email'] ?? ''));
+        if (!empty($oEmail) && $oEmail === $targetEmail) return true;
+        if (!empty($cleanPhone) && strlen($cleanPhone) >= 7) {
+            $oPhone = preg_replace('/[^0-9]/', '', $o['delivery']['phone'] ?? '');
+            if (!empty($oPhone) && $oPhone === $cleanPhone) return true;
+        }
+        return false;
+    });
+
+    json_ok(['orders' => array_values($userOrders)]);
 }
 
 // ── ORDERS ENDPOINTS ──
@@ -815,7 +988,7 @@ if ($endpoint === 'admin/stats') {
         'products' => ['total' => count($products)],
         'subscribers' => ['total' => count($subscribers)],
         'unreadMessages' => $unreadMsgs,
-        'users' => ['total' => max(count($adminUsers), 1)],
+        'users' => ['total' => count($store['users'] ?? [])],
         'totalInvoices' => count($invoices),
         'webInvoicesCount' => count(array_filter($invoices, fn($i) => empty($i['isSocial']))),
         'socInvoicesCount' => count(array_filter($invoices, fn($i) => !empty($i['isSocial']))),
