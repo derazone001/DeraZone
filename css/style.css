@@ -656,6 +656,12 @@ footer { background: #ffffff; padding: 100px 0 40px; border-top: 1px solid var(-
   text-align: center;
 }
 
+.cart-item-del-btn:hover {
+  background: #fca5a5 !important;
+  color: #991b1b !important;
+  transform: scale(1.05);
+}
+
 /* Modern Cart Drawer Footer */
 .cart-footer {
   padding: 20px 24px;

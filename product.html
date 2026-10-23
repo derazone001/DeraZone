@@ -32,8 +32,21 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
+      cursor: zoom-in;
     }
-    .product-gallery-main img,
+    .product-gallery-main img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      padding: 8px;
+      pointer-events: none;
+      transform-origin: center center;
+      transition: transform 0.1s ease-out;
+      will-change: transform, transform-origin;
+    }
     .product-gallery-main video {
       max-width: 100%;
       max-height: 100%;
@@ -41,6 +54,26 @@
       height: auto;
       object-fit: contain;
       padding: 8px;
+    }
+    .size-opt.sold-out, .color-opt.sold-out, .variant-opt.sold-out {
+      opacity: 0.55;
+      background: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+      color: #94a3b8 !important;
+      text-decoration: line-through;
+    }
+    .pd-soldout-tag {
+      font-size: 0.65rem;
+      background: #ef4444;
+      color: #ffffff;
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin-left: 6px;
+      text-decoration: none !important;
+      display: inline-block;
+      vertical-align: middle;
+      font-weight: 700;
+      letter-spacing: 0.5px;
     }
     .product-gallery-thumbs {
       display: flex;
@@ -587,11 +620,30 @@
       ? `<span class="product-price-old">PKR ${Number(product.priceOld).toLocaleString()}</span>`
       : '';
 
+    const vs = (product.variantStock && typeof product.variantStock === 'object') ? product.variantStock : {};
+    const hasVariantStock = Object.keys(vs).length > 0;
+
+    const getOptStock = (name) => {
+      if (!name) return 999;
+      if (!hasVariantStock) {
+        return (product.stock != null) ? Number(product.stock) : (product.inStock !== false ? 999 : 0);
+      }
+      if (vs[name] !== undefined) return Number(vs[name]);
+      const found = Object.keys(vs).find(k => k.trim().toLowerCase() === name.trim().toLowerCase());
+      if (found) return Number(vs[found]);
+      return 999;
+    };
+
     const pSizes = Array.isArray(product.sizes) ? product.sizes : (typeof product.sizes === 'string' && product.sizes ? product.sizes.split(',') : []);
     const sizesHTML = (pSizes.length)
       ? `<p class="pd-option-label">Select Size</p>
          <div class="size-options">
-           ${pSizes.map((s, i) => `<div class="size-opt${i === 0 ? ' active' : ''}" data-size="${s.trim()}">${s.trim()}</div>`).join('')}
+           ${pSizes.map((s, i) => {
+             const sName = s.trim();
+             const stk = getOptStock(sName);
+             const isSold = stk <= 0;
+             return `<div class="size-opt${i === 0 ? ' active' : ''}${isSold ? ' sold-out' : ''}" data-size="${sName}" data-stock="${stk}">${sName}${isSold ? '<span class="pd-soldout-tag">Sold Out</span>' : ''}</div>`;
+           }).join('')}
          </div>`
       : '';
 
@@ -599,7 +651,12 @@
     const variantsHTML = (pVariants.length)
       ? `<p class="pd-option-label">Select Variant / Model</p>
          <div class="variant-options">
-           ${pVariants.map((v, i) => `<div class="variant-opt${i === 0 ? ' active' : ''}" data-variant="${v.trim()}">${v.trim()}</div>`).join('')}
+           ${pVariants.map((v, i) => {
+             const vName = v.trim();
+             const stk = getOptStock(vName);
+             const isSold = stk <= 0;
+             return `<div class="variant-opt${i === 0 ? ' active' : ''}${isSold ? ' sold-out' : ''}" data-variant="${vName}" data-stock="${stk}">${vName}${isSold ? '<span class="pd-soldout-tag">Sold Out</span>' : ''}</div>`;
+           }).join('')}
          </div>`
       : '';
 
@@ -609,14 +666,12 @@
          <div class="color-options">
            ${pColors.map((c, i) => {
              const cName = (typeof c === 'string') ? c.trim() : c.name;
-             return `<div class="color-opt${i === 0 ? ' active' : ''}" data-color="${cName}">${cName}</div>`;
+             const stk = getOptStock(cName);
+             const isSold = stk <= 0;
+             return `<div class="color-opt${i === 0 ? ' active' : ''}${isSold ? ' sold-out' : ''}" data-color="${cName}" data-stock="${stk}">${cName}${isSold ? '<span class="pd-soldout-tag">Sold Out</span>' : ''}</div>`;
            }).join('')}
          </div>`
       : '';
-
-    const stockHTML = product.inStock === false
-      ? `<p style="color:#ef4444;font-size:0.85rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:16px;"><i class="fa-solid fa-circle-xmark"></i> Out of Stock</p>`
-      : `<p style="color:#10b981;font-size:0.85rem;font-weight:700;margin-bottom:16px;"><i class="fa-solid fa-circle-check"></i> In Stock &amp; Ready to Ship</p>`;
 
     const images = (product.images && product.images.length) ? product.images : [];
     const hasVideo = !!product.video;
@@ -654,17 +709,19 @@
             PKR ${Number(product.price).toLocaleString()}
             ${oldPriceHTML}
           </div>
-          ${stockHTML}
+          <div id="pd-stock-container">
+            <p style="color:#10b981;font-size:0.85rem;font-weight:700;margin-bottom:16px;"><i class="fa-solid fa-circle-check"></i> In Stock &amp; Ready to Ship</p>
+          </div>
           <p class="pd-desc">${product.description || 'Premium quality guaranteed. Inspected before dispatch.'}</p>
           ${sizesHTML}
           ${colorsHTML}
           ${variantsHTML}
           
           <div class="pd-add-row">
-            <button class="btn-primary" id="pd-add-btn" ${product.inStock === false ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
-              <i class="fa-solid fa-bag-shopping" style="margin-right:8px;"></i> ${product.inStock === false ? 'Out of Stock' : 'Add to Bag'}
+            <button class="btn-primary" id="pd-add-btn">
+              <i class="fa-solid fa-bag-shopping" style="margin-right:8px;"></i> Add to Bag
             </button>
-            <button class="btn-outline" id="pd-buynow-btn" ${product.inStock === false ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
+            <button class="btn-outline" id="pd-buynow-btn">
               Buy Now
             </button>
             <div class="pd-wishlist" title="Wishlist"><i class="fa-regular fa-heart"></i></div>
@@ -693,6 +750,36 @@
         </div>
       </div>`;
 
+    /* ── Image Hover Zoom Lens Functionality ── */
+    function initGalleryHoverZoom() {
+      const galleryMain = document.getElementById('pd-gallery-main');
+      if (!galleryMain) return;
+
+      galleryMain.addEventListener('mouseenter', () => {
+        const img = galleryMain.querySelector('img');
+        if (img) img.style.transition = 'transform 0.08s ease-out';
+      });
+
+      galleryMain.addEventListener('mousemove', (e) => {
+        const img = galleryMain.querySelector('img');
+        if (!img) return;
+        const rect = galleryMain.getBoundingClientRect();
+        const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+        const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+        img.style.transformOrigin = `${x}% ${y}%`;
+        img.style.transform = 'scale(2.2)';
+      });
+
+      galleryMain.addEventListener('mouseleave', () => {
+        const img = galleryMain.querySelector('img');
+        if (!img) return;
+        img.style.transition = 'transform 0.22s ease-out';
+        img.style.transform = 'scale(1)';
+        img.style.transformOrigin = 'center center';
+      });
+    }
+    initGalleryHoverZoom();
+
     /* Gallery image/video switching */
     window.derazoneGalleryImages = images || [];
     window.derazoneGalleryVideo = product.video || null;
@@ -705,15 +792,80 @@
       }
       document.querySelectorAll('#pd-thumbs .gallery-thumb').forEach(t => t.classList.remove('active'));
       document.querySelector(`#pd-thumbs .gallery-thumb[data-idx="${idx}"]`)?.classList.add('active');
+      initGalleryHoverZoom();
     };
+
+    /* ── Dynamic Stock & Option Calculator ── */
+    function updateActiveStockState() {
+      const size = root.querySelector('.size-opt.active')?.dataset.size;
+      const color = root.querySelector('.color-opt.active')?.dataset.color;
+      const varOpt = root.querySelector('.variant-opt.active')?.dataset.variant;
+
+      let availQty = 999;
+      if (hasVariantStock) {
+        const combined = [varOpt, size, color].filter(Boolean).join(' — ');
+        if (vs[combined] !== undefined) {
+          availQty = Number(vs[combined]);
+        } else {
+          const checked = [];
+          if (varOpt && vs[varOpt] !== undefined) checked.push(Number(vs[varOpt]));
+          if (color && vs[color] !== undefined) checked.push(Number(vs[color]));
+          if (size && vs[size] !== undefined) checked.push(Number(vs[size]));
+          if (checked.length > 0) availQty = Math.min(...checked);
+          else if (product.stock != null) availQty = Number(product.stock);
+        }
+      } else if (product.stock != null) {
+        availQty = Number(product.stock);
+      }
+
+      const isOut = (product.inStock === false) || (availQty <= 0);
+      const stockBox = document.getElementById('pd-stock-container');
+      const addBtn = document.getElementById('pd-add-btn');
+      const buyNowBtn = document.getElementById('pd-buynow-btn');
+
+      if (isOut) {
+        if (stockBox) {
+          stockBox.innerHTML = `<p style="color:#ef4444;font-size:0.85rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:16px;"><i class="fa-solid fa-circle-xmark"></i> Out of Stock — Selected option is unavailable</p>`;
+        }
+        if (addBtn) {
+          addBtn.disabled = true;
+          addBtn.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Out of Stock';
+          addBtn.style.opacity = '0.5';
+          addBtn.style.cursor = 'not-allowed';
+        }
+        if (buyNowBtn) {
+          buyNowBtn.disabled = true;
+          buyNowBtn.style.display = 'none';
+        }
+      } else {
+        const lowNotice = (availQty > 0 && availQty <= 5) ? ` (Only ${availQty} left in stock)` : '';
+        if (stockBox) {
+          stockBox.innerHTML = `<p style="color:#10b981;font-size:0.85rem;font-weight:700;margin-bottom:16px;"><i class="fa-solid fa-circle-check"></i> In Stock &amp; Ready to Ship${lowNotice}</p>`;
+        }
+        if (addBtn) {
+          addBtn.disabled = false;
+          addBtn.innerHTML = '<i class="fa-solid fa-bag-shopping" style="margin-right:8px;"></i> Add to Bag';
+          addBtn.style.opacity = '1';
+          addBtn.style.cursor = 'pointer';
+        }
+        if (buyNowBtn) {
+          buyNowBtn.disabled = false;
+          buyNowBtn.style.display = '';
+        }
+      }
+    }
 
     /* Option selection clicks */
     root.querySelectorAll('.size-opt, .color-opt, .variant-opt').forEach(opt => {
       opt.addEventListener('click', () => {
         opt.parentElement.querySelectorAll('.' + opt.classList[0]).forEach(o => o.classList.remove('active'));
         opt.classList.add('active');
+        updateActiveStockState();
       });
     });
+
+    // Run once on initial render
+    updateActiveStockState();
 
     /* Add to bag */
     const addBtn = document.getElementById('pd-add-btn');

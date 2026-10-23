@@ -336,6 +336,10 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
       <i class="fa-solid fa-share-nodes"></i><span>Social Orders</span>
       <span class="nav-badge" id="social-badge" style="display:none;background:#e1306c">0</span>
     </div>
+    <div class="nav-item" onclick="showPage('customers')" id="nav-customers">
+      <i class="fa-solid fa-users"></i><span>Customers</span>
+      <span class="nav-badge" id="customers-badge" style="display:none;background:#7000ff">0</span>
+    </div>
     <div class="nav-item" onclick="showPage('products')" id="nav-products">
       <i class="fa-solid fa-tags"></i><span>Products</span>
     </div>
@@ -612,6 +616,44 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
         <th>Action</th>
       </tr></thead>
       <tbody id="social-orders-body"><tr><td colspan="11" class="empty-state"><div class="spinner"></div></td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── CUSTOMERS PAGE ── -->
+<div id="page-customers" class="page" style="display:none">
+  <div class="page-header">
+    <div>
+      <h1><i class="fa-solid fa-users" style="color:var(--gold);margin-right:8px"></i>Registered Customers</h1>
+      <p class="text-muted" style="margin-top:4px;">Customer sign-up directory, contact details, and lifetime purchase history.</p>
+    </div>
+    <div class="ml-auto">
+      <button class="btn btn-outline" onclick="loadCustomers()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+    </div>
+  </div>
+
+  <div class="filters-row" style="display:flex;gap:12px;align-items:center;margin-bottom:18px;flex-wrap:wrap;">
+    <input class="search-input" id="cust-search" placeholder="Search customers by name, email, or phone…" oninput="filterCustomersTable()" style="max-width:380px;flex:1;"/>
+    <span id="cust-count-label" style="color:var(--muted);font-size:0.85rem;margin-left:auto;"></span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Customer</th>
+          <th>Email</th>
+          <th>Phone / WhatsApp</th>
+          <th>Joined Date</th>
+          <th>Last Login</th>
+          <th>Orders</th>
+          <th>Total Spent</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="customers-table-body">
+        <tr><td colspan="8" class="empty-state"><div class="spinner"></div></td></tr>
+      </tbody>
     </table>
   </div>
 </div>
@@ -1406,8 +1448,11 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
         <div class="form-group"><label>Featured on Homepage?</label>
           <select id="p-featured"><option value="false">No</option><option value="true">Yes</option></select>
         </div>
-        <div class="form-group"><label>In Stock?</label>
-          <select id="p-instock"><option value="true">Yes</option><option value="false">No</option></select>
+        <div class="form-group"><label>Total Inventory (Stock) *</label>
+          <input id="p-stock" type="number" min="0" placeholder="e.g. 10"/>
+        </div>
+        <div class="form-group"><label>Stock Status</label>
+          <select id="p-instock"><option value="true">In Stock</option><option value="false">Out of Stock</option></select>
         </div>
       </div>
       <div class="form-group"><label>Description</label><textarea id="p-desc" rows="3" placeholder="Product description…"></textarea></div>
@@ -1428,8 +1473,8 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
         </div>
       </div>
 
-      <!-- ── Gallery: Images ── -->
-            <div class="form-row">
+      <!-- ── Variants / Designs ── -->
+      <div class="form-row">
         <div class="form-group">
           <label>Variants / Designs <span style="color:var(--muted);font-weight:400">(press Enter to add)</span></label>
           <div class="tag-input-wrap" id="p-variants-wrap">
@@ -1438,6 +1483,18 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
           </div>
         </div>
         <div class="form-group"></div>
+      </div>
+
+      <!-- ── Variant & Option Inventory Breakdown ── -->
+      <div id="p-variant-inventory-box" style="margin:16px 0;padding:14px;background:rgba(184,136,58,0.06);border:1px solid var(--border);border-radius:10px;display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+          <div>
+            <strong style="color:var(--text);font-size:0.92rem;"><i class="fa-solid fa-boxes-stacked" style="color:var(--gold);margin-right:6px;"></i> Variant Inventory Management</strong>
+            <p style="margin:2px 0 0;font-size:0.75rem;color:var(--muted);">Set quantity for each variant/color/size. Sold-out options (0 stock) cannot be purchased by customers.</p>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="applyBulkStock()" style="font-size:0.75rem;"><i class="fa-solid fa-sliders"></i> Set All Qty</button>
+        </div>
+        <div id="p-variant-stock-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(210px, 1fr));gap:10px;"></div>
       </div>
 
       <!-- ── Gallery: Images ── -->
@@ -1465,6 +1522,24 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('product-modal')">Cancel</button>
       <button class="btn btn-gold" onclick="saveProduct()" id="save-product-btn"><i class="fa-solid fa-check"></i> Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- Customer History Modal -->
+<div class="modal-overlay" id="customer-history-modal">
+  <div class="modal" style="max-width:760px;">
+    <div class="modal-header">
+      <h3 id="cust-modal-title"><i class="fa-solid fa-user-clock" style="color:var(--gold);margin-right:8px"></i>Customer History</h3>
+      <button class="btn btn-outline btn-sm" onclick="closeModal('customer-history-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="cust-modal-profile" style="background:rgba(184,136,58,0.06);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:18px;"></div>
+      <h4 style="margin:0 0 10px;color:var(--text);font-size:0.95rem;">Order Records</h4>
+      <div id="cust-modal-orders-list" style="display:flex;flex-direction:column;gap:10px;max-height:380px;overflow-y:auto;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('customer-history-modal')">Close</button>
     </div>
   </div>
 </div>
@@ -2442,6 +2517,7 @@ function showPage(name) {
   if (name === 'visitors')      loadVisitors();
   if (name === 'abandoned')     loadAbandoned();
   if (name === 'social-orders') loadSocialOrders();
+  if (name === 'customers')     loadCustomers();
   if (name === 'coupons')       loadCoupons();
   if (name === 'invoices')      loadInvoices();
   if (name === 'review-images') loadReviewImages();
@@ -2582,6 +2658,13 @@ function renderDashStats(data) {
   if (revBadge && data.pendingReviews !== undefined) {
     revBadge.textContent = data.pendingReviews;
     revBadge.style.display = data.pendingReviews ? 'inline-block' : 'none';
+  }
+
+  /* Customers badge */
+  const custBadge = document.getElementById('customers-badge');
+  if (custBadge && data.users?.total !== undefined) {
+    custBadge.textContent = data.users.total;
+    custBadge.style.display = data.users.total ? 'inline-block' : 'none';
   }
 
   /* Resellers badge */
@@ -4408,8 +4491,17 @@ function renderProducts(products) {
       : p.video
         ? `<video src="${p.video}#t=0.1" muted preload="metadata" playsinline style="width:100%;height:100%;object-fit:cover;"></video>`
         : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2.2rem;">${p.emoji || '🛍️'}</div>`;
-    const stockBadge = p.inStock
-      ? `<span class="badge badge-delivered">In Stock</span>`
+    const totalStk = (p.stock != null) ? p.stock : (p.inStock !== false ? 10 : 0);
+    const isOut = (p.inStock === false) || (totalStk <= 0);
+    let vsSnippet = '';
+    if (p.variantStock && typeof p.variantStock === 'object') {
+      const keys = Object.keys(p.variantStock);
+      if (keys.length > 0) {
+        vsSnippet = `<div style="font-size:0.73rem;color:var(--muted);margin-top:4px;line-height:1.4;">Stock: ${keys.map(k => `${k}: <strong>${p.variantStock[k]}</strong>`).join(' · ')}</div>`;
+      }
+    }
+    const stockBadge = !isOut
+      ? `<span class="badge badge-delivered">In Stock (${totalStk})</span>`
       : `<span class="badge badge-cancelled">Out of Stock</span>`;
     return `
     <div class="pac">
@@ -4422,6 +4514,7 @@ function renderProducts(products) {
         <div class="pac-meta">
           ${stockBadge}
           ${currentUser?.role !== 'supervisor' && p.purchasePrice != null ? `<span style="color:var(--muted);font-size:0.72rem">Cost: PKR ${p.purchasePrice.toLocaleString()}</span>` : ''}
+          ${vsSnippet}
         </div>
         <div class="pac-actions">
           ${currentUser?.role === 'supervisor' ? '<span style="color:var(--muted);font-size:0.75rem;padding:4px 0;">🔒 Read-only</span>' : `
@@ -4567,17 +4660,21 @@ function openProductModal(product = null) {
   document.getElementById('p-purchase-price').value = product?.purchasePrice ?? '';
   document.getElementById('p-price-old').value  = product?.priceOld || '';
   document.getElementById('p-featured').value   = product?.featured ? 'true' : 'false';
+  document.getElementById('p-stock').value      = (product?.stock != null) ? product.stock : 10;
   document.getElementById('p-instock').value    = product?.inStock !== false ? 'true' : 'false';
   document.getElementById('p-hidden').checked   = product?.hidden ? true : false;
   document.getElementById('p-desc').value       = product?.description || '';
   productSizes  = [...(product?.sizes  || [])];
   productColors = [...(product?.colors || [])];
   productVariants = [...(product?.variants || [])];
+  productVariantStock = (product?.variantStock && typeof product?.variantStock === 'object') ? JSON.parse(JSON.stringify(product.variantStock)) : {};
   document.getElementById('p-sizes-text').value  = '';
   document.getElementById('p-colors-text').value = '';
   document.getElementById('p-variants-text').value = '';
   renderTagChips('sizes');
   renderTagChips('colors');
+  renderTagChips('variants');
+  renderVariantStockBreakdown();
   productImages = Array.isArray(product?.images) ? [...product.images] : [];
   productVideo  = product?.video || null;
   renderImageGalleryPreview();
@@ -4588,16 +4685,20 @@ function openProductModal(product = null) {
 }
 
 
-/* ── Sizes / Colors tag chip state ── */
+/* ── Sizes / Colors tag chip & variant stock state ── */
 let productSizes = [];
 let productColors = [];
+let productVariants = [];
+let productVariantStock = {};
 
 function renderTagChips(field) {
   const wrap = document.getElementById(`p-${field}-chips`);
+  if (!wrap) return;
   const arr  = field === 'sizes' ? productSizes : field === 'colors' ? productColors : productVariants;
   wrap.innerHTML = arr.map((val, i) => `
     <span class="tag-chip">${val}<button type="button" onclick="removeTag('${field}',${i})">✕</button></span>
   `).join('');
+  renderVariantStockBreakdown();
 }
 
 function addTag(field, value) {
@@ -4611,8 +4712,88 @@ function addTag(field, value) {
 
 function removeTag(field, idx) {
   const arr = field === 'sizes' ? productSizes : field === 'colors' ? productColors : productVariants;
+  const removedVal = arr[idx];
   arr.splice(idx, 1);
+  if (removedVal && productVariantStock[removedVal] !== undefined) {
+    delete productVariantStock[removedVal];
+  }
   renderTagChips(field);
+}
+
+function renderVariantStockBreakdown() {
+  const box = document.getElementById('p-variant-inventory-box');
+  const grid = document.getElementById('p-variant-stock-grid');
+  if (!box || !grid) return;
+
+  const hasColors = productColors.length > 0;
+  const hasSizes = productSizes.length > 0;
+  const hasVariants = productVariants.length > 0;
+
+  if (!hasColors && !hasSizes && !hasVariants) {
+    box.style.display = 'none';
+    return;
+  }
+
+  box.style.display = 'block';
+
+  let items = [];
+  if (hasColors && !hasSizes && !hasVariants) {
+    items = productColors.map(c => ({ key: c, label: `Color: <strong>${c}</strong>` }));
+  } else if (hasSizes && !hasColors && !hasVariants) {
+    items = productSizes.map(s => ({ key: s, label: `Size: <strong>${s}</strong>` }));
+  } else if (hasVariants && !hasColors && !hasSizes) {
+    items = productVariants.map(v => ({ key: v, label: `Variant: <strong>${v}</strong>` }));
+  } else {
+    // If multiple attribute types exist: list options clearly
+    if (hasColors) productColors.forEach(c => items.push({ key: c, label: `Color: <strong>${c}</strong>` }));
+    if (hasSizes) productSizes.forEach(s => items.push({ key: s, label: `Size: <strong>${s}</strong>` }));
+    if (hasVariants) productVariants.forEach(v => items.push({ key: v, label: `Variant: <strong>${v}</strong>` }));
+  }
+
+  grid.innerHTML = items.map(item => {
+    const curVal = (productVariantStock[item.key] !== undefined) ? productVariantStock[item.key] : 10;
+    return `
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <span style="font-size:0.85rem;color:var(--text);">${item.label}</span>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <label style="font-size:0.75rem;color:var(--muted);margin:0;">Stock:</label>
+          <input type="number" min="0" value="${curVal}" data-opt-key="${item.key}" class="opt-qty-field" style="width:68px;padding:4px 6px;font-size:0.85rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);text-align:center;" oninput="updateVariantStockField('${item.key}', this.value)" />
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  syncTotalStockFromVariants();
+}
+
+function updateVariantStockField(key, val) {
+  productVariantStock[key] = Math.max(0, parseInt(val) || 0);
+  syncTotalStockFromVariants();
+}
+
+function syncTotalStockFromVariants() {
+  const hasOptions = (productColors.length > 0) || (productSizes.length > 0) || (productVariants.length > 0);
+  if (!hasOptions) return;
+  const vals = Object.values(productVariantStock);
+  if (vals.length > 0) {
+    const sum = vals.reduce((a, b) => a + Number(b || 0), 0);
+    const stockInput = document.getElementById('p-stock');
+    if (stockInput) stockInput.value = sum;
+    const inStockSel = document.getElementById('p-instock');
+    if (inStockSel) inStockSel.value = sum > 0 ? 'true' : 'false';
+  }
+}
+
+function applyBulkStock() {
+  const qty = prompt('Enter stock quantity for all options:', '10');
+  if (qty === null) return;
+  const num = Math.max(0, parseInt(qty) || 0);
+  document.querySelectorAll('.opt-qty-field').forEach(input => {
+    input.value = num;
+    const k = input.dataset.optKey;
+    if (k) productVariantStock[k] = num;
+  });
+  syncTotalStockFromVariants();
 }
 
 function handleTagKeydown(event, field) {
@@ -4670,6 +4851,15 @@ async function saveProduct() {
   const additionalCheckboxes = additionalContainer.querySelectorAll('input[type="checkbox"]:checked');
   const additionalCategories = Array.from(additionalCheckboxes).map(cb => cb.value);
 
+  const hasOptions = (productColors.length > 0) || (productSizes.length > 0) || (productVariants.length > 0);
+  if (hasOptions) {
+    document.querySelectorAll('.opt-qty-field').forEach(inp => {
+      const k = inp.dataset.optKey;
+      if (k) productVariantStock[k] = Math.max(0, parseInt(inp.value) || 0);
+    });
+  }
+  const stockVal = Number(document.getElementById('p-stock').value || 0);
+
   const payload = {
     name, brand: document.getElementById('p-brand').value, category: cat,
     additionalCategories,
@@ -4680,7 +4870,9 @@ async function saveProduct() {
     priceOld:    document.getElementById('p-price-old').value ? Number(document.getElementById('p-price-old').value) : null,
     featured:      document.getElementById('p-featured').value === 'true',
     hotSelling:    false,
-    inStock:     document.getElementById('p-instock').value !== 'false',
+    stock:         stockVal,
+    variantStock:  hasOptions ? productVariantStock : {},
+    inStock:     (stockVal > 0) && (document.getElementById('p-instock').value !== 'false'),
     hidden:      document.getElementById('p-hidden').checked,
     description: document.getElementById('p-desc').value,
     sizes:       (() => { const t=document.getElementById('p-sizes-text').value.trim(); if(t) addTag('sizes',t); return productSizes; })(),
@@ -4769,6 +4961,178 @@ async function deleteProduct(id) {
     } catch(e) {}
     toast('Network error while deleting product.', 'error');
     loadProducts();
+  }
+}
+
+/* ═══════════════════ CUSTOMERS ═══════════════════ */
+let allCustomers = [];
+
+async function loadCustomers() {
+  const tbody = document.getElementById('customers-table-body');
+  if (!tbody) return;
+  tbody.innerHTML = `<tr><td colspan="8" class="empty-state"><div class="spinner"></div></td></tr>`;
+  try {
+    const res = await apiFetch('/admin/customers');
+    const data = await res.json();
+    allCustomers = Array.isArray(data.customers) ? data.customers : [];
+    
+    // Update badge in sidebar
+    const badge = document.getElementById('customers-badge');
+    if (badge) {
+      badge.textContent = allCustomers.length;
+      badge.style.display = allCustomers.length > 0 ? 'inline-block' : 'none';
+    }
+
+    renderCustomers(allCustomers);
+  } catch (err) {
+    console.warn('loadCustomers error:', err);
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--muted);">Could not load customers.</td></tr>`;
+  }
+}
+
+function filterCustomersTable() {
+  const q = (document.getElementById('cust-search')?.value || '').toLowerCase().trim();
+  if (!q) {
+    renderCustomers(allCustomers);
+    return;
+  }
+  const filtered = allCustomers.filter(c => {
+    const name = (c.name || `${c.fname||''} ${c.lname||''}`).toLowerCase();
+    const email = (c.email || '').toLowerCase();
+    const phone = (c.phone || '').toLowerCase();
+    return name.includes(q) || email.includes(q) || phone.includes(q);
+  });
+  renderCustomers(filtered);
+}
+
+function renderCustomers(list) {
+  const tbody = document.getElementById('customers-table-body');
+  const countEl = document.getElementById('cust-count-label');
+  if (countEl) {
+    countEl.textContent = `${list.length} registered customer${list.length !== 1 ? 's' : ''}`;
+  }
+  if (!tbody) return;
+
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="8" class="empty-state" style="padding:40px;text-align:center;"><i class="fa-solid fa-users-slash" style="font-size:2rem;color:var(--muted);margin-bottom:10px;display:block;"></i><p>No customers found.</p></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map(c => {
+    const name = c.name || `${c.fname||''} ${c.lname||''}`.trim() || 'Valued Customer';
+    const joined = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-PK', { dateStyle: 'medium' }) : 'N/A';
+    const lastActive = c.lastLogin ? new Date(c.lastLogin).toLocaleDateString('en-PK', { dateStyle: 'short' }) : 'Never';
+    const spent = Number(c.totalSpent || 0).toLocaleString();
+    const ordCount = c.ordersCount || (c.orders ? c.orders.length : 0);
+
+    return `
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:34px;height:34px;border-radius:50%;background:rgba(112,0,255,0.1);color:#7000ff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0;">
+              ${name.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <strong style="color:var(--text);font-size:0.9rem;display:block;">${name}</strong>
+              <small style="color:var(--muted);font-family:monospace;font-size:0.7rem;">${c.id || ''}</small>
+            </div>
+          </div>
+        </td>
+        <td><a href="mailto:${c.email}" style="color:var(--gold);text-decoration:none;">${c.email || '—'}</a></td>
+        <td>
+          ${c.phone ? `<a href="https://wa.me/${c.phone.replace(/[^0-9]/g,'')}" target="_blank" style="color:#22c55e;text-decoration:none;font-weight:600;"><i class="fa-brands fa-whatsapp"></i> ${c.phone}</a>` : '—'}
+        </td>
+        <td><span style="font-size:0.85rem;color:var(--muted);">${joined}</span></td>
+        <td><span style="font-size:0.82rem;color:var(--muted);">${lastActive}</span></td>
+        <td>
+          <span class="badge ${ordCount > 0 ? 'badge-delivered' : ''}" style="${ordCount === 0 ? 'background:rgba(148,163,184,0.15);color:var(--muted);' : ''}">
+            ${ordCount} order${ordCount !== 1 ? 's' : ''}
+          </span>
+        </td>
+        <td><strong>PKR ${spent}</strong></td>
+        <td style="text-align:right;white-space:nowrap;">
+          <button class="btn btn-outline btn-sm" onclick="viewCustomerHistory('${c.id}')" title="View Customer Orders &amp; Activity">
+            <i class="fa-solid fa-clock-rotate-left"></i> History
+          </button>
+          <button class="btn btn-sm" onclick="deleteCustomer('${c.id}')" title="Delete customer" style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.25);margin-left:4px;">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function viewCustomerHistory(custId) {
+  const c = allCustomers.find(x => String(x.id) === String(custId));
+  if (!c) return toast('Customer not found.', 'error');
+
+  const profileEl = document.getElementById('cust-modal-profile');
+  const ordersEl = document.getElementById('cust-modal-orders-list');
+  const name = c.name || `${c.fname||''} ${c.lname||''}`.trim() || 'Customer';
+
+  profileEl.innerHTML = `
+    <div style="display:flex;justify-content:space-between;width:100%;flex-wrap:wrap;gap:12px;">
+      <div>
+        <h3 style="margin:0 0 4px;font-size:1.1rem;color:var(--text);">${name}</h3>
+        <p style="margin:0 0 4px;font-size:0.85rem;color:var(--gold);">${c.email || 'No email'}</p>
+        <p style="margin:0;font-size:0.85rem;color:var(--muted);">Phone: <strong>${c.phone || 'N/A'}</strong></p>
+      </div>
+      <div style="text-align:right;">
+        <p style="margin:0 0 4px;font-size:0.85rem;color:var(--muted);">Joined: <strong>${c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-PK',{dateStyle:'medium'}) : 'N/A'}</strong></p>
+        <p style="margin:0;font-size:0.92rem;font-weight:700;color:#10b981;">Total Spend: PKR ${Number(c.totalSpent||0).toLocaleString()}</p>
+      </div>
+    </div>
+  `;
+
+  const orders = c.orders || [];
+  if (!orders.length) {
+    ordersEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);background:var(--bg);border-radius:8px;">No orders placed yet by this customer.</div>`;
+  } else {
+    ordersEl.innerHTML = orders.map(o => {
+      const itemsList = (o.items || []).map(i => `${i.name} (×${i.qty || 1}${i.variant && i.variant !== 'Standard' ? ', ' + i.variant : ''})`).join(', ');
+      const dt = o.createdAt ? new Date(o.createdAt).toLocaleString('en-PK', { dateStyle: 'medium', timeStyle: 'short' }) : 'N/A';
+      return `
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <strong style="color:var(--gold);font-size:0.9rem;">#${o.id}</strong>
+            <span style="font-size:0.75rem;color:var(--muted);">${dt}</span>
+          </div>
+          <div style="font-size:0.83rem;color:var(--text);margin-bottom:6px;line-height:1.4;">
+            ${itemsList || 'Items summary not available'}
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="badge ${o.status === 'Delivered' ? 'badge-delivered' : o.status === 'Cancelled' ? 'badge-cancelled' : 'badge-pending'}">${o.status || 'Pending'}</span>
+            <strong style="color:var(--text);font-size:0.9rem;">PKR ${Number(o.total||0).toLocaleString()}</strong>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  openModal('customer-history-modal');
+}
+
+async function deleteCustomer(id) {
+  const proceed = await bktConfirm({
+    title: 'Delete Customer Account?',
+    message: 'Are you sure you want to remove this registered customer account? Past order records will remain preserved in Orders history.',
+    confirmText: 'Delete Customer',
+    icon: '🗑️',
+    danger: true
+  });
+  if (!proceed) return;
+
+  try {
+    const res = await apiFetch(`/admin/customers/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      toast('Customer deleted successfully', 'success');
+      loadCustomers();
+    } else {
+      toast('Failed to delete customer', 'error');
+    }
+  } catch (err) {
+    toast('Network error.', 'error');
   }
 }
 

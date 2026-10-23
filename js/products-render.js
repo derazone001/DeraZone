@@ -818,6 +818,51 @@ window.derazoneOpenQuickSelect = async function(productId) {
   const pColors = Array.isArray(product.colors) ? product.colors : (typeof product.colors === 'string' && product.colors ? product.colors.split(',').map(c=>c.trim()).filter(Boolean) : []);
   const pVariants = Array.isArray(product.variants) ? product.variants : (typeof product.variants === 'string' && product.variants ? product.variants.split(',').map(v=>v.trim()).filter(Boolean) : []);
 
+  const vs = (product.variantStock && typeof product.variantStock === 'object') ? product.variantStock : {};
+  const hasVS = Object.keys(vs).length > 0;
+  const getQuickOptStock = (name) => {
+    if (!name) return 999;
+    if (!hasVS) return (product.stock != null) ? Number(product.stock) : (product.inStock !== false ? 999 : 0);
+    if (vs[name] !== undefined) return Number(vs[name]);
+    const f = Object.keys(vs).find(k => k.trim().toLowerCase() === name.trim().toLowerCase());
+    return f ? Number(vs[f]) : 999;
+  };
+
+  const updateQuickModalStockState = () => {
+    let avail = 999;
+    if (hasVS) {
+      const combined = [_selectedQuickVariant, _selectedQuickSize, _selectedQuickColor].filter(Boolean).join(' — ');
+      if (vs[combined] !== undefined) {
+        avail = Number(vs[combined]);
+      } else {
+        const checked = [];
+        if (_selectedQuickVariant && vs[_selectedQuickVariant] !== undefined) checked.push(Number(vs[_selectedQuickVariant]));
+        if (_selectedQuickColor && vs[_selectedQuickColor] !== undefined) checked.push(Number(vs[_selectedQuickColor]));
+        if (_selectedQuickSize && vs[_selectedQuickSize] !== undefined) checked.push(Number(vs[_selectedQuickSize]));
+        if (checked.length > 0) avail = Math.min(...checked);
+        else if (product.stock != null) avail = Number(product.stock);
+      }
+    } else if (product.stock != null) {
+      avail = Number(product.stock);
+    }
+
+    const isSoldOut = (product.inStock === false) || (avail <= 0);
+    const addBtn = document.getElementById('qm-add-btn');
+    if (addBtn) {
+      if (isSoldOut) {
+        addBtn.disabled = true;
+        addBtn.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Out of Stock';
+        addBtn.style.opacity = '0.5';
+        addBtn.style.cursor = 'not-allowed';
+      } else {
+        addBtn.disabled = false;
+        addBtn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> Add to Bag';
+        addBtn.style.opacity = '1';
+        addBtn.style.cursor = 'pointer';
+      }
+    }
+  };
+
   // 1. Sizes
   const sizesWrap = document.getElementById('qm-sizes-wrap');
   const sizesList = document.getElementById('qm-sizes-list');
@@ -825,15 +870,18 @@ window.derazoneOpenQuickSelect = async function(productId) {
   if (pSizes.length > 0) {
     _selectedQuickSize = pSizes[0];
     if (sizeLabel) sizeLabel.textContent = _selectedQuickSize;
-    sizesList.innerHTML = pSizes.map((s, idx) => `
-      <div class="qm-pill ${idx === 0 ? 'active' : ''}" data-size="${s}">${s}</div>
-    `).join('');
+    sizesList.innerHTML = pSizes.map((s, idx) => {
+      const stk = getQuickOptStock(s);
+      const isSold = stk <= 0;
+      return `<div class="qm-pill ${idx === 0 ? 'active' : ''} ${isSold ? 'sold-out' : ''}" data-size="${s}" style="${isSold ? 'opacity:0.5;text-decoration:line-through;cursor:not-allowed;' : ''}">${s}${isSold ? ' (Sold Out)' : ''}</div>`;
+    }).join('');
     sizesList.querySelectorAll('.qm-pill').forEach(btn => {
       btn.addEventListener('click', () => {
         sizesList.querySelectorAll('.qm-pill').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         _selectedQuickSize = btn.dataset.size;
         if (sizeLabel) sizeLabel.textContent = _selectedQuickSize;
+        updateQuickModalStockState();
       });
     });
     sizesWrap.style.display = 'block';
@@ -850,7 +898,9 @@ window.derazoneOpenQuickSelect = async function(productId) {
     if (colorLabel) colorLabel.textContent = _selectedQuickColor;
     colorsList.innerHTML = pColors.map((c, idx) => {
       const cName = typeof c === 'object' ? c.name : c;
-      return `<div class="qm-pill ${idx === 0 ? 'active' : ''}" data-color="${cName}">${cName}</div>`;
+      const stk = getQuickOptStock(cName);
+      const isSold = stk <= 0;
+      return `<div class="qm-pill ${idx === 0 ? 'active' : ''} ${isSold ? 'sold-out' : ''}" data-color="${cName}" style="${isSold ? 'opacity:0.5;text-decoration:line-through;cursor:not-allowed;' : ''}">${cName}${isSold ? ' (Sold Out)' : ''}</div>`;
     }).join('');
     colorsList.querySelectorAll('.qm-pill').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -858,6 +908,7 @@ window.derazoneOpenQuickSelect = async function(productId) {
         btn.classList.add('active');
         _selectedQuickColor = btn.dataset.color;
         if (colorLabel) colorLabel.textContent = _selectedQuickColor;
+        updateQuickModalStockState();
       });
     });
     colorsWrap.style.display = 'block';
@@ -874,7 +925,9 @@ window.derazoneOpenQuickSelect = async function(productId) {
     if (variantLabel) variantLabel.textContent = _selectedQuickVariant;
     variantsList.innerHTML = pVariants.map((v, idx) => {
       const vName = typeof v === 'object' ? v.name : v;
-      return `<div class="qm-pill ${idx === 0 ? 'active' : ''}" data-variant="${vName}">${vName}</div>`;
+      const stk = getQuickOptStock(vName);
+      const isSold = stk <= 0;
+      return `<div class="qm-pill ${idx === 0 ? 'active' : ''} ${isSold ? 'sold-out' : ''}" data-variant="${vName}" style="${isSold ? 'opacity:0.5;text-decoration:line-through;cursor:not-allowed;' : ''}">${vName}${isSold ? ' (Sold Out)' : ''}</div>`;
     }).join('');
     variantsList.querySelectorAll('.qm-pill').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -882,12 +935,15 @@ window.derazoneOpenQuickSelect = async function(productId) {
         btn.classList.add('active');
         _selectedQuickVariant = btn.dataset.variant;
         if (variantLabel) variantLabel.textContent = _selectedQuickVariant;
+        updateQuickModalStockState();
       });
     });
     variantsWrap.style.display = 'block';
   } else {
     variantsWrap.style.display = 'none';
   }
+
+  updateQuickModalStockState();
 
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';

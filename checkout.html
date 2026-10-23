@@ -47,6 +47,16 @@
       color: #94a3b8;
       font-size: 0.9rem;
       font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+    .ck-step:hover {
+      color: #7000ff;
+    }
+    .ck-step:hover .ck-num {
+      transform: scale(1.1);
+      box-shadow: 0 4px 10px rgba(112, 0, 255, 0.25);
     }
     .ck-step .ck-num {
       width: 32px;
@@ -551,7 +561,7 @@
                 </div>
                 <div class="form-group">
                   <label>Phone Number <span style="color:#ef4444;font-weight:700;">*</span></label>
-                  <input type="tel" name="phone" placeholder="03XXXXXXXXX" required/>
+                  <input type="tel" name="phone" id="checkout-phone" placeholder="03XXXXXXXXX" inputmode="tel" pattern="[0-9+\-() ]+" required/>
                 </div>
               </div>
 

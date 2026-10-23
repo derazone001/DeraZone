@@ -72,10 +72,15 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="cart-item-variant">${item.variant || 'Standard'}</div>
           <div class="cart-item-row">
             <span class="cart-item-price">PKR ${(item.price * item.qty).toLocaleString()}</span>
-            <div class="qty-ctrl">
-              <button onclick="changeQty(${idx},-1)" aria-label="Decrease quantity">−</button>
-              <span>${item.qty}</span>
-              <button onclick="changeQty(${idx},1)" aria-label="Increase quantity">+</button>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="qty-ctrl">
+                <button onclick="changeQty(${idx},-1)" aria-label="Decrease quantity">−</button>
+                <span>${item.qty}</span>
+                <button onclick="changeQty(${idx},1)" aria-label="Increase quantity">+</button>
+              </div>
+              <button class="cart-item-del-btn" onclick="removeFromCart(${idx})" title="Remove item from bag" aria-label="Remove item" style="background:#fee2e2;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:6px 9px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:0.85rem;line-height:1;transition:all .15s ease;">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -88,6 +93,15 @@ document.addEventListener('DOMContentLoaded', () => {
     cart[idx].qty += delta;
     if (cart[idx].qty <= 0) cart.splice(idx, 1);
     saveCart(); updateCartUI();
+  };
+
+  window.removeFromCart = (idx) => {
+    if (cart[idx]) {
+      cart.splice(idx, 1);
+      saveCart();
+      updateCartUI();
+      showToast('Item removed from bag');
+    }
   };
 
   window.addToCart = (name, price, emoji, variant, image, qty = 1) => {

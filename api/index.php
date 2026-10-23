@@ -364,6 +364,139 @@ function send_admin_contact_alert($msg) {
 }
 
 
+// ── INVENTORY & STOCK MANAGEMENT HELPERS ──
+function check_items_stock_availability($store, $items) {
+    if (empty($items) || !is_array($items) || empty($store['products'])) return true;
+
+    foreach ($items as $it) {
+        $name = trim($it['name'] ?? '');
+        $variant = trim($it['variant'] ?? '');
+        $qty = max(1, intval($it['qty'] ?? $it['quantity'] ?? 1));
+        $itemId = $it['id'] ?? $it['productId'] ?? null;
+
+        foreach ($store['products'] as $p) {
+            $match = false;
+            if (!empty($itemId) && strval($p['id'] ?? '') === strval($itemId)) {
+                $match = true;
+            } elseif (strcasecmp(trim($p['name'] ?? ''), $name) === 0) {
+                $match = true;
+            }
+
+            if ($match) {
+                if (isset($p['inStock']) && $p['inStock'] === false) {
+                    return "Sorry, '{$p['name']}' is currently Out of Stock.";
+                }
+
+                if (!empty($p['variantStock']) && is_array($p['variantStock']) && !empty($variant) && strcasecmp($variant, 'Standard') !== 0) {
+                    $matchedKey = null;
+                    foreach ($p['variantStock'] as $vKey => $vQty) {
+                        if (strcasecmp(trim($vKey), $variant) === 0) {
+                            $matchedKey = $vKey;
+                            break;
+                        }
+                    }
+                    if ($matchedKey === null) {
+                        $parts = array_map('trim', preg_split('/[—\-\/,|]/', $variant));
+                        foreach ($p['variantStock'] as $vKey => $vQty) {
+                            foreach ($parts as $prt) {
+                                if (!empty($prt) && strcasecmp(trim($vKey), $prt) === 0) {
+                                    $matchedKey = $vKey;
+                                    break 2;
+                                }
+                            }
+                        }
+                    }
+
+                    if ($matchedKey !== null) {
+                        $available = intval($p['variantStock'][$matchedKey] ?? 0);
+                        if ($available <= 0) {
+                            return "Sorry, '{$p['name']} ({$matchedKey})' is Out of Stock.";
+                        }
+                        if ($qty > $available) {
+                            return "Sorry, only {$available} unit(s) of '{$p['name']} ({$matchedKey})' available in stock.";
+                        }
+                    }
+                } elseif (isset($p['stock'])) {
+                    $available = intval($p['stock']);
+                    if ($available <= 0) {
+                        return "Sorry, '{$p['name']}' is Out of Stock.";
+                    }
+                    if ($qty > $available) {
+                        return "Sorry, only {$available} unit(s) of '{$p['name']}' available in stock.";
+                    }
+                }
+                break;
+            }
+        }
+    }
+    return true;
+}
+
+function deduct_product_inventory(&$store, $items) {
+    if (empty($items) || !is_array($items) || empty($store['products'])) return;
+
+    foreach ($items as $it) {
+        $name = trim($it['name'] ?? '');
+        $variant = trim($it['variant'] ?? '');
+        $qty = max(1, intval($it['qty'] ?? $it['quantity'] ?? 1));
+        $itemId = $it['id'] ?? $it['productId'] ?? null;
+
+        foreach ($store['products'] as &$p) {
+            $match = false;
+            if (!empty($itemId) && strval($p['id'] ?? '') === strval($itemId)) {
+                $match = true;
+            } elseif (strcasecmp(trim($p['name'] ?? ''), $name) === 0) {
+                $match = true;
+            }
+
+            if ($match) {
+                if (!empty($p['variantStock']) && is_array($p['variantStock'])) {
+                    $deducted = false;
+                    if (!empty($variant)) {
+                        foreach ($p['variantStock'] as $vKey => $vQty) {
+                            if (strcasecmp(trim($vKey), $variant) === 0) {
+                                $newQty = max(0, intval($vQty) - $qty);
+                                $p['variantStock'][$vKey] = $newQty;
+                                $deducted = true;
+                                break;
+                            }
+                        }
+                        if (!$deducted) {
+                            $parts = array_map('trim', preg_split('/[—\-\/,|]/', $variant));
+                            foreach ($p['variantStock'] as $vKey => $vQty) {
+                                foreach ($parts as $prt) {
+                                    if (!empty($prt) && strcasecmp(trim($vKey), $prt) === 0) {
+                                        $newQty = max(0, intval($vQty) - $qty);
+                                        $p['variantStock'][$vKey] = $newQty;
+                                        $deducted = true;
+                                        break 2;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    $total = 0;
+                    foreach ($p['variantStock'] as $vQty) {
+                        $total += intval($vQty);
+                    }
+                    $p['stock'] = $total;
+                    if ($total <= 0) {
+                        $p['inStock'] = false;
+                    }
+                } else {
+                    $cur = isset($p['stock']) ? intval($p['stock']) : (isset($p['quantity']) ? intval($p['quantity']) : 10);
+                    $newStock = max(0, $cur - $qty);
+                    $p['stock'] = $newStock;
+                    if ($newStock <= 0) {
+                        $p['inStock'] = false;
+                    }
+                }
+                break;
+            }
+        }
+    }
+}
+
 // ── 4. Router ──
 
 // Health Check
@@ -642,6 +775,20 @@ if ($endpoint === 'products' || preg_match('#^(?:admin/)?products(?:/(.+))?$#', 
             $newProd = $body;
             $newProd['id'] = $newProd['id'] ?? ('dz-prod-' . time() . '-' . rand(100, 999));
             $newProd['createdAt'] = date('c');
+
+            if (isset($newProd['variantStock']) && is_array($newProd['variantStock'])) {
+                $sum = 0;
+                foreach ($newProd['variantStock'] as $vk => $vv) {
+                    $newProd['variantStock'][$vk] = intval($vv);
+                    $sum += intval($vv);
+                }
+                $newProd['stock'] = $sum;
+                if ($sum <= 0) $newProd['inStock'] = false;
+            } elseif (isset($newProd['stock'])) {
+                $newProd['stock'] = intval($newProd['stock']);
+                if ($newProd['stock'] <= 0) $newProd['inStock'] = false;
+            }
+
             $products[] = $newProd;
             $store['products'] = $products;
             save_store($store);
@@ -654,6 +801,20 @@ if ($endpoint === 'products' || preg_match('#^(?:admin/)?products(?:/(.+))?$#', 
         foreach ($products as &$p) {
             if ($p['id'] == $prodId) {
                 $p = array_merge($p, $body);
+
+                if (isset($p['variantStock']) && is_array($p['variantStock'])) {
+                    $sum = 0;
+                    foreach ($p['variantStock'] as $vk => $vv) {
+                        $p['variantStock'][$vk] = intval($vv);
+                        $sum += intval($vv);
+                    }
+                    $p['stock'] = $sum;
+                    if ($sum <= 0) $p['inStock'] = false;
+                } elseif (isset($p['stock'])) {
+                    $p['stock'] = intval($p['stock']);
+                    if ($p['stock'] <= 0) $p['inStock'] = false;
+                }
+
                 $updated = true;
                 break;
             }
@@ -750,10 +911,20 @@ if ($endpoint === 'orders' || preg_match('#^orders/([^/]+)(?:/(status))?$#', $en
 
     if ($method === 'POST') {
         $newOrder = $body;
+        $items = $newOrder['items'] ?? [];
+
+        // 1. Check stock availability before accepting order
+        $stockCheck = check_items_stock_availability($store, $items);
+        if ($stockCheck !== true) {
+            json_err($stockCheck, 400);
+        }
+
+        // 2. Deduct inventory from products
+        deduct_product_inventory($store, $items);
+
         $newOrder['id'] = $newOrder['id'] ?? ('DZ-' . rand(1000, 9999));
         $newOrder['status'] = $newOrder['status'] ?? 'Pending';
         $newOrder['createdAt'] = $newOrder['createdAt'] ?? date('c');
-        $items = $newOrder['items'] ?? [];
         $subtotal = 0;
         $costTotal = 0;
         foreach ($items as $it) {
@@ -870,10 +1041,14 @@ if ($endpoint === 'social-orders' || preg_match('#^social-orders/([^/]+)(?:/(sta
 
     if ($method === 'POST') {
         $newSO = $body;
+        $items = $newSO['items'] ?? [];
+
+        // Deduct inventory for social order items if matched
+        deduct_product_inventory($store, $items);
+
         $newSO['id'] = $newSO['id'] ?? ('SO-' . rand(1000, 9999));
         $newSO['status'] = $newSO['status'] ?? 'Pending';
         $newSO['createdAt'] = $newSO['createdAt'] ?? date('c');
-        $items = $newSO['items'] ?? [];
         $subtotal = 0;
         $costTotal = 0;
         foreach ($items as $it) {
@@ -1679,6 +1854,74 @@ if ($endpoint === 'invoices' || $endpoint === 'invoices/generate' || preg_match(
 
         send_customer_order_confirmed($targetOrder);
         json_ok(['message' => "Invoice email sent successfully to {$custEmail}"]);
+    }
+}
+
+// ── CUSTOMERS & USERS (ADMIN) ──
+if ($endpoint === 'admin/customers' || $endpoint === 'admin/users' || preg_match('#^admin/customers/([^/]+)$#', $endpoint, $m)) {
+    $targetCustId = $m[1] ?? null;
+    $store = get_store();
+    $users = $store['users'] ?? [];
+    $orders = $store['orders'] ?? [];
+    $socialOrders = $store['socialOrders'] ?? [];
+    $allOrders = array_merge($orders, $socialOrders);
+
+    if ($method === 'GET') {
+        $customerList = [];
+        foreach ($users as $u) {
+            $uEmail = strtolower(trim($u['email'] ?? ''));
+            $uPhone = preg_replace('/[^0-9]/', '', $u['phone'] ?? '');
+
+            $userOrders = [];
+            $totalSpent = 0;
+            foreach ($allOrders as $o) {
+                $oEmail = strtolower(trim($o['customer']['email'] ?? $o['delivery']['email'] ?? $o['email'] ?? ''));
+                $oPhone = preg_replace('/[^0-9]/', '', $o['customer']['phone'] ?? $o['delivery']['phone'] ?? $o['phone'] ?? '');
+
+                $match = false;
+                if (!empty($uEmail) && $oEmail === $uEmail) $match = true;
+                if (!$match && !empty($uPhone) && strlen($uPhone) >= 7 && !empty($oPhone)) {
+                    if ($uPhone === $oPhone || (strlen($uPhone) >= 10 && strlen($oPhone) >= 10 && substr($uPhone, -10) === substr($oPhone, -10))) {
+                        $match = true;
+                    }
+                }
+
+                if ($match) {
+                    $userOrders[] = $o;
+                    $totalSpent += floatval($o['total'] ?? 0);
+                }
+            }
+
+            $customerList[] = [
+                'id' => $u['id'] ?? '',
+                'fname' => $u['fname'] ?? '',
+                'lname' => $u['lname'] ?? '',
+                'name' => trim(($u['fname'] ?? '') . ' ' . ($u['lname'] ?? '')),
+                'email' => $u['email'] ?? '',
+                'phone' => $u['phone'] ?? '',
+                'role' => $u['role'] ?? 'customer',
+                'createdAt' => $u['createdAt'] ?? '',
+                'lastLogin' => $u['lastLogin'] ?? '',
+                'ordersCount' => count($userOrders),
+                'totalSpent' => $totalSpent,
+                'orders' => $userOrders
+            ];
+        }
+
+        // Sort: newest registered first
+        usort($customerList, function($a, $b) {
+            return strcmp($b['createdAt'] ?? '', $a['createdAt'] ?? '');
+        });
+
+        json_ok(['customers' => $customerList, 'total' => count($customerList)]);
+    }
+
+    if ($method === 'DELETE' && $targetCustId) {
+        $store['users'] = array_values(array_filter($users, function($u) use ($targetCustId) {
+            return ($u['id'] ?? '') !== $targetCustId;
+        }));
+        save_store($store);
+        json_ok(['message' => 'Customer removed successfully']);
     }
 }
 

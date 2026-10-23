@@ -142,6 +142,32 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('input[name="delivery"]').forEach(r =>
     r.addEventListener('change', renderSummary)
   );
+  /* ── Phone input validation: ONLY numbers and symbols (+, -, (, ), space), NO alphabets ── */
+  const phoneEl = document.querySelector('input[name="phone"]') || document.getElementById('checkout-phone');
+  if (phoneEl) {
+    phoneEl.addEventListener('input', function() {
+      const cleaned = this.value.replace(/[^0-9+\-() ]/g, '');
+      if (this.value !== cleaned) {
+        this.value = cleaned;
+      }
+    });
+
+    phoneEl.addEventListener('keydown', function(e) {
+      if (['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Enter', 'Home', 'End'].includes(e.key)) return;
+      if (e.ctrlKey || e.metaKey) return;
+      if (!/^[0-9+\-() ]$/.test(e.key)) {
+        e.preventDefault();
+      }
+    });
+
+    phoneEl.addEventListener('paste', function(e) {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text');
+      const cleanText = text.replace(/[^0-9+\-() ]/g, '');
+      document.execCommand('insertText', false, cleanText);
+    });
+  }
+
   /* ── Step navigation ── */
   window.goToStep = (step) => {
     document.querySelectorAll('.ck-panel').forEach(p => p.classList.add('hidden'));
@@ -153,6 +179,47 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     currentStep = step;
   };
+
+  /* ── Clickable 1-2-3 Step Indicators ── */
+  document.querySelectorAll('.ck-step').forEach((stepEl, idx) => {
+    stepEl.addEventListener('click', () => {
+      const targetStep = idx + 1;
+      if (targetStep === currentStep) return;
+
+      if (targetStep < currentStep) {
+        // Navigating backwards is always allowed (Step 3 -> 2 or 1, Step 2 -> 1)
+        goToStep(targetStep);
+      } else if (targetStep === 2) {
+        // Going to Step 2: check if delivery form is valid
+        const dForm = document.getElementById('delivery-form');
+        if (dForm && dForm.reportValidity()) {
+          const fd = new FormData(dForm);
+          orderData.delivery = Object.fromEntries(fd.entries());
+          goToStep(2);
+        } else {
+          toast('Please complete the delivery details first.');
+        }
+      } else if (targetStep === 3) {
+        // Going to Step 3: check delivery form first
+        const dForm = document.getElementById('delivery-form');
+        if (!dForm || !dForm.reportValidity()) {
+          toast('Please complete the delivery details first.');
+          goToStep(1);
+          return;
+        }
+        const fd = new FormData(dForm);
+        orderData.delivery = Object.fromEntries(fd.entries());
+        
+        // Trigger payment form submit to build summary
+        const pForm = document.getElementById('payment-form');
+        if (pForm) {
+          pForm.dispatchEvent(new Event('submit', { cancelable: true }));
+        } else {
+          goToStep(3);
+        }
+      }
+    });
+  });
   /* ── Step 1 submit ── */
   document.getElementById('delivery-form')?.addEventListener('submit', e => {
     e.preventDefault();
