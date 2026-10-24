@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <i class="fa-solid fa-bag-shopping"></i>
           <p>Your shopping bag is empty.</p>
           <a href="shop" class="btn-primary" onclick="if(window.closeCart) window.closeCart();">
-            <i class="fa-solid fa-arrow-right"></i> Start Shopping
+            <i class="fa-solid fa-compass"></i> Explore Collections <i class="fa-solid fa-arrow-right"></i>
           </a>
         </div>
       `;
@@ -365,15 +365,62 @@ window.togglePassword = (inputId, btn) => {
 };
 window.toggleDERAZONEPassword = window.togglePassword;
 window.toggleGolnisàPassword = window.togglePassword;
-/* ── Proceed to Checkout — cart check ── */
+/* ── Empty Cart Notification Modal & Checkout Interceptor ── */
+window.showEmptyCartModal = () => {
+  let modal = document.getElementById('empty-cart-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'empty-cart-modal';
+    modal.className = 'dz-empty-cart-modal';
+    modal.innerHTML = `
+      <div class="dz-empty-cart-overlay" onclick="closeEmptyCartModal()"></div>
+      <div class="dz-empty-cart-box">
+        <button type="button" class="dz-empty-cart-close" onclick="closeEmptyCartModal()" aria-label="Close">&times;</button>
+        <div class="dz-empty-cart-icon">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <h3>Your Shopping Bag is Empty</h3>
+        <p>You cannot proceed to checkout without adding products. Explore our collections and discover trending items!</p>
+        <div class="dz-empty-cart-btns">
+          <a href="shop" class="btn-primary" onclick="closeEmptyCartModal()">
+            <i class="fa-solid fa-compass"></i> Explore Collections <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+  modal.classList.add('active');
+  window.showToast?.('Your shopping bag is empty! Please add items to proceed.');
+};
+
+window.closeEmptyCartModal = () => {
+  document.getElementById('empty-cart-modal')?.classList.remove('active');
+};
+
+/* Proceed to Checkout — cart check */
 window.proceedToCheckout = () => {
   const cart = JSON.parse(localStorage.getItem('derazone_cart') || '[]');
   if (!cart.length) {
-    window.showToast('Your bag is empty. Add items before checking out.');
+    window.showEmptyCartModal();
     return;
   }
   window.location.href = 'checkout';
 };
+
+/* Global interception of checkout clicks when cart is empty */
+document.addEventListener('click', (e) => {
+  const checkoutBtn = e.target.closest('.cart-checkout-btn, a[href="checkout"], a[href="/checkout"], a[href="checkout.html"], a[href="./checkout"], a[href="./checkout.html"]');
+  if (checkoutBtn) {
+    const cart = JSON.parse(localStorage.getItem('derazone_cart') || '[]');
+    if (!cart || cart.length === 0) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.showEmptyCartModal();
+      return false;
+    }
+  }
+}, true);
 
 /* ── Global Mouse drag-to-scroll for horizontal grids ── */
 document.addEventListener('DOMContentLoaded', () => {

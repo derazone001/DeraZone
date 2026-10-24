@@ -212,6 +212,133 @@
     .track-input-group button:hover {
       background: #5b00d1;
     }
+    /* Real-Time Order Tracking Results */
+    .track-card {
+      background: #ffffff;
+      border: 1px solid rgba(112, 0, 255, 0.15);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(112, 0, 255, 0.05);
+      text-align: left;
+    }
+    .track-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .track-ref-label {
+      font-size: 0.75rem;
+      color: #64748b;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .track-ref-id {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #0f0728;
+      margin: 2px 0 0;
+    }
+    .track-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .track-status-pill.cancelled {
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    .track-status-pill.delivered {
+      background: #dcfce7;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+    }
+    .track-status-pill.dispatched {
+      background: #ede9fe;
+      color: #7000ff;
+      border: 1px solid #ddd6fe;
+    }
+    .track-status-pill.confirmed {
+      background: #e0f2fe;
+      color: #0284c7;
+      border: 1px solid #bae6fd;
+    }
+    .track-status-pill.pending {
+      background: #fef3c7;
+      color: #d97706;
+      border: 1px solid #fde68a;
+    }
+    .track-timeline {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 24px 0 28px;
+    }
+    .track-timeline::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: 30px;
+      right: 30px;
+      height: 3px;
+      background: #e2e8f0;
+      z-index: 1;
+    }
+    .track-timeline-step {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      flex: 1;
+    }
+    .track-step-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #cbd5e1;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      margin: 0 auto 8px;
+      transition: all 0.25s ease;
+    }
+    .track-timeline-step.completed .track-step-circle {
+      background: #16a34a;
+      border-color: #16a34a;
+      color: #ffffff;
+    }
+    .track-timeline-step.active .track-step-circle {
+      background: #7000ff;
+      border-color: #7000ff;
+      color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(112, 0, 255, 0.2);
+    }
+    .track-step-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #64748b;
+    }
+    .track-timeline-step.active .track-step-title,
+    .track-timeline-step.completed .track-step-title {
+      color: #0f0728;
+    }
+    @media (max-width: 600px) {
+      .track-timeline::before { left: 16px; right: 16px; }
+      .track-step-circle { width: 30px; height: 30px; font-size: 0.75rem; }
+      .track-step-title { font-size: 0.68rem; }
+    }
     @media (max-width: 850px) {
       .policy-layout {
         grid-template-columns: 1fr;
@@ -631,20 +758,20 @@
         <h2>Track Your <em>Order Status</em></h2>
         <div class="policy-rule"></div>
         <div class="policy-section">
-          <p>Enter your Order Reference ID (e.g. DZ-12345678) or the email address used during checkout to view the current dispatch status.</p>
+          <p>Enter your Order Reference ID (e.g. DZ-1234), Phone Number or Email address used during checkout to view real-time dispatch and delivery progress.</p>
           
           <div class="track-box">
             <i class="fa-solid fa-box-open" style="font-size:2.5rem;color:#7000ff;margin-bottom:12px;"></i>
             <h3 style="font-size:1.2rem;color:#0f0728;">Check Shipment Status</h3>
             <div class="track-input-group">
-              <input type="text" id="track-order-id" placeholder="Enter Order ID or Email" autocomplete="off" />
+              <input type="text" id="track-order-id" placeholder="Enter Order ID (e.g. DZ-1234), Phone or Email" autocomplete="off" onkeydown="if(event.key==='Enter')trackOrder()" />
               <button type="button" onclick="trackOrder()">Track Order</button>
             </div>
             <div id="track-result" style="margin-top:24px;text-align:left;"></div>
           </div>
 
           <p style="font-size:0.88rem;color:#64748b;text-align:center;">
-            Need help? You can also message our WhatsApp support at <a href="https://wa.me/923294551652" target="_blank" style="color:#7000ff;font-weight:700;">+92 329 4551652</a>.
+            Need help? You can also message our WhatsApp support directly at <a href="https://wa.me/923294551652" target="_blank" style="color:#7000ff;font-weight:700;">+92 329 4551652</a>.
           </p>
         </div>`
     },
@@ -693,66 +820,246 @@
   window.trackOrder = async function () {
     const query = document.getElementById('track-order-id')?.value.trim();
     const result = document.getElementById('track-result');
-    if (!query || !result) return;
-    result.innerHTML = `<div style="text-align:center;padding:20px;color:#7000ff;"><i class="fa-solid fa-spinner fa-spin"></i> Checking order status...</div>`;
+    if (!result) return;
+    if (!query) {
+      result.innerHTML = `<div style="background:#fffbeb;border:1px solid #fef3c7;padding:14px;border-radius:10px;color:#92400e;text-align:center;font-size:0.9rem;"><i class="fa-solid fa-circle-exclamation" style="margin-right:6px;"></i> Please enter an Order Reference ID, Phone Number or Email address.</div>`;
+      return;
+    }
+    result.innerHTML = `<div style="text-align:center;padding:24px;color:#7000ff;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem;margin-bottom:8px;display:block;"></i> Fetching real-time order status...</div>`;
     
     try {
       let order = null;
+
+      // 1. Try public track endpoint
       try {
-        const res = await fetch(`/api/orders/${encodeURIComponent(query)}`);
+        const res = await fetch(`/api/track?q=${encodeURIComponent(query)}`);
         if (res.ok) {
           const data = await res.json();
-          order = data.order || data;
+          if (data && data.order && data.order.id) {
+            order = data.order;
+          }
         }
       } catch (e) {}
 
-      if (!order && query.includes('@')) {
+      // 2. Fallback to /api/orders/{id}
+      if (!order) {
         try {
-          const res = await fetch(`/api/orders/user/${encodeURIComponent(query)}`);
+          const res = await fetch(`/api/orders/${encodeURIComponent(query)}`);
           if (res.ok) {
             const data = await res.json();
-            if (data.orders?.length) order = data.orders[0];
+            if (data && data.order && data.order.id) {
+              order = data.order;
+            }
           }
         } catch (e) {}
       }
 
-      if (!order) {
+      // If still not found:
+      if (!order || !order.id) {
         result.innerHTML = `
-          <div style="background:#fef2f2;border:1px solid #fecaca;padding:18px;border-radius:10px;color:#991b1b;text-align:center;">
-            <strong>Order Not Found</strong>
-            <p style="font-size:0.85rem;margin-top:6px;color:#7f1d1d;">We couldn't locate an order with reference "${query}". Please check your order confirmation email or WhatsApp our support team.</p>
-            <a href="https://wa.me/923294551652?text=Hello%20DERA%20ZONE,%20please%20help%20me%20track%20my%20order" target="_blank" style="display:inline-block;margin-top:12px;background:#25D366;color:#fff;padding:8px 16px;border-radius:6px;font-weight:700;text-decoration:none;font-size:0.85rem;">
-              <i class="fa-brands fa-whatsapp"></i> Ask on WhatsApp
+          <div style="background:#fef2f2;border:1px solid #fecaca;padding:22px;border-radius:14px;color:#991b1b;text-align:center;">
+            <div style="width:48px;height:48px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:#dc2626;font-size:1.4rem;">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <strong style="font-size:1.05rem;display:block;">Order Not Found</strong>
+            <p style="font-size:0.88rem;margin:8px auto 14px;color:#7f1d1d;max-width:440px;line-height:1.5;">
+              We couldn't locate any order matching reference "<strong>${query.replace(/</g, '&lt;')}</strong>". Please verify your order number (e.g. DZ-1234) or the phone/email used during checkout.
+            </p>
+            <a href="https://wa.me/923294551652?text=${encodeURIComponent('Hello DERA ZONE, please help me track my order ' + query)}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#25D366;color:#fff;padding:10px 20px;border-radius:8px;font-weight:700;text-decoration:none;font-size:0.88rem;">
+              <i class="fa-brands fa-whatsapp" style="font-size:1.1rem;"></i> Ask Support on WhatsApp
             </a>
           </div>`;
         return;
       }
 
-      result.innerHTML = `
-        <div style="background:#ffffff;border:1.5px solid #7000ff;padding:20px;border-radius:12px;box-shadow:0 4px 15px rgba(112,0,255,0.06);">
-          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f1f5f9;padding-bottom:12px;">
+      // Format date if present
+      let formattedDate = 'Recently';
+      if (order.createdAt) {
+        try {
+          const d = new Date(order.createdAt);
+          formattedDate = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + ', ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        } catch (e) {}
+      }
+
+      const status = (order.status || 'Pending').trim();
+      const statusLower = status.toLowerCase();
+      const isCancelled = statusLower === 'cancelled';
+      const isDelivered = statusLower === 'delivered';
+      const isShipped = statusLower === 'dispatched' || statusLower === 'shipped' || statusLower === 'in transit';
+      const isConfirmed = statusLower === 'confirmed' || statusLower === 'processing';
+
+      // Step levels: 1 = Placed, 2 = Confirmed, 3 = Dispatched, 4 = Delivered
+      let currentStepNum = 1;
+      if (isDelivered) currentStepNum = 4;
+      else if (isShipped) currentStepNum = 3;
+      else if (isConfirmed) currentStepNum = 2;
+
+      let pillClass = 'pending';
+      let pillIcon = 'fa-clock';
+      let statusText = 'Order Received';
+
+      if (isCancelled) {
+        pillClass = 'cancelled';
+        pillIcon = 'fa-ban';
+        statusText = 'Order Cancelled';
+      } else if (isDelivered) {
+        pillClass = 'delivered';
+        pillIcon = 'fa-circle-check';
+        statusText = 'Delivered';
+      } else if (isShipped) {
+        pillClass = 'dispatched';
+        pillIcon = 'fa-truck-fast';
+        statusText = 'Dispatched / In Transit';
+      } else if (isConfirmed) {
+        pillClass = 'confirmed';
+        pillIcon = 'fa-box-archive';
+        statusText = 'Confirmed & Packing';
+      }
+
+      // Build Items list
+      const items = order.items || [];
+      const itemsHtml = items.length ? `
+        <div style="margin-top:18px;border-top:1px solid #f1f5f9;padding-top:14px;">
+          <strong style="font-size:0.85rem;color:#0f0728;display:block;margin-bottom:10px;">Order Items (${items.length}):</strong>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            ${items.map(it => `
+              <div style="display:flex;justify-content:space-between;align-items:center;background:#f8fafc;padding:8px 12px;border-radius:8px;font-size:0.85rem;">
+                <div>
+                  <span style="font-weight:600;color:#0f172a;">${it.name || 'Product'}</span>
+                  ${it.variant && it.variant !== 'Standard' ? `<span style="display:block;font-size:0.75rem;color:#7000ff;font-weight:600;">Variant: ${it.variant}</span>` : ''}
+                </div>
+                <div style="text-align:right;">
+                  <span style="color:#64748b;">Qty: ${it.qty || it.quantity || 1}</span>
+                  ${it.price ? `<strong style="display:block;color:#0f172a;font-size:0.82rem;">PKR ${((it.price) * (it.qty || it.quantity || 1)).toLocaleString()}</strong>` : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : '';
+
+      // Courier info if available
+      const courierName = order.courier || order.courierName;
+      const trackingNum = order.trackingNumber || order.courierTracking;
+      const courierHtml = (courierName || trackingNum) ? `
+        <div style="background:#faf7ff;border:1px solid #ddd6fe;border-radius:10px;padding:12px 16px;margin-top:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <div>
+            <span style="font-size:0.75rem;color:#64748b;display:block;">Courier Partner</span>
+            <strong style="color:#7000ff;font-size:0.95rem;">${courierName || 'Standard Express'}</strong>
+          </div>
+          ${trackingNum ? `
             <div>
-              <span style="font-size:0.75rem;color:#64748b;text-transform:uppercase;font-weight:700;">Order Reference</span>
-              <h4 style="font-size:1.1rem;color:#0f0728;margin:2px 0 0;">${order.id || query}</h4>
+              <span style="font-size:0.75rem;color:#64748b;display:block;">Tracking / Airway Bill #</span>
+              <strong style="color:#0f0728;font-size:0.95rem;letter-spacing:0.5px;">${trackingNum}</strong>
             </div>
-            <div style="background:#faf7ff;color:#7000ff;border:1px solid #c084fc;padding:6px 14px;border-radius:20px;font-weight:700;font-size:0.82rem;">
-              ${order.status || 'Processing'}
+          ` : ''}
+          ${order.trackingUrl ? `
+            <a href="${order.trackingUrl}" target="_blank" style="padding:6px 12px;background:#7000ff;color:#fff;border-radius:6px;font-size:0.8rem;font-weight:600;text-decoration:none;">
+              Track on Courier <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+          ` : ''}
+        </div>
+      ` : '';
+
+      // Timeline HTML
+      let timelineHtml = '';
+      if (isCancelled) {
+        timelineHtml = `
+          <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:16px;margin:18px 0;text-align:center;color:#991b1b;">
+            <i class="fa-solid fa-circle-xmark" style="font-size:1.8rem;color:#dc2626;margin-bottom:6px;display:block;"></i>
+            <strong style="font-size:0.98rem;display:block;">This order has been marked as Cancelled</strong>
+            <p style="font-size:0.84rem;margin:6px 0 12px;color:#7f1d1d;">If you need assistance or wish to reactivate your order, please tap below to message our WhatsApp team.</p>
+            <a href="https://wa.me/923294551652?text=${encodeURIComponent('Hello DERA ZONE, my order ' + (order.id || query) + ' is cancelled. Can you help?')}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#25D366;color:#fff;padding:8px 16px;border-radius:6px;font-weight:700;text-decoration:none;font-size:0.84rem;">
+              <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
+            </a>
+          </div>
+        `;
+      } else {
+        timelineHtml = `
+          <div class="track-timeline">
+            <div class="track-timeline-step ${currentStepNum >= 1 ? (currentStepNum > 1 ? 'completed' : 'active') : ''}">
+              <div class="track-step-circle">
+                <i class="fa-solid ${currentStepNum > 1 ? 'fa-check' : 'fa-clipboard-check'}"></i>
+              </div>
+              <div class="track-step-title">Order Placed</div>
+            </div>
+            <div class="track-timeline-step ${currentStepNum >= 2 ? (currentStepNum > 2 ? 'completed' : 'active') : ''}">
+              <div class="track-step-circle">
+                <i class="fa-solid ${currentStepNum > 2 ? 'fa-check' : 'fa-box-archive'}"></i>
+              </div>
+              <div class="track-step-title">Confirmed</div>
+            </div>
+            <div class="track-timeline-step ${currentStepNum >= 3 ? (currentStepNum > 3 ? 'completed' : 'active') : ''}">
+              <div class="track-step-circle">
+                <i class="fa-solid ${currentStepNum > 3 ? 'fa-check' : 'fa-truck-fast'}"></i>
+              </div>
+              <div class="track-step-title">In Transit</div>
+            </div>
+            <div class="track-timeline-step ${currentStepNum >= 4 ? 'completed' : ''}">
+              <div class="track-step-circle">
+                <i class="fa-solid fa-house-chimney-user"></i>
+              </div>
+              <div class="track-step-title">Delivered</div>
             </div>
           </div>
-          <div style="margin-top:14px;font-size:0.88rem;color:#475569;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-            <div><strong>Delivery:</strong> 3–5 Working Days</div>
-            <div><strong>Payment:</strong> ${order.paymentMethod || 'Cash on Delivery'}</div>
+        `;
+      }
+
+      result.innerHTML = `
+        <div class="track-card">
+          <div class="track-card-header">
+            <div>
+              <span class="track-ref-label">Order Reference</span>
+              <h4 class="track-ref-id">${order.id || query}</h4>
+              <span style="font-size:0.78rem;color:#64748b;">Placed on: ${formattedDate}</span>
+            </div>
+            <div class="track-status-pill ${pillClass}">
+              <i class="fa-solid ${pillIcon}"></i> ${statusText}
+            </div>
           </div>
-        </div>`;
+
+          ${timelineHtml}
+
+          ${courierHtml}
+
+          <div style="margin-top:16px;background:#f8fafc;padding:14px;border-radius:10px;font-size:0.86rem;color:#475569;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div><strong>Payment Method:</strong><br><span style="color:#0f0728;">${order.paymentMethod || 'Cash on Delivery (COD)'}</span></div>
+            <div><strong>Total Amount:</strong><br><span style="color:#0f0728;font-weight:700;">PKR ${(order.total || 0).toLocaleString()}</span></div>
+            ${order.city ? `<div><strong>Delivery City:</strong><br><span style="color:#0f0728;">${order.city}</span></div>` : ''}
+            <div><strong>Shipping Method:</strong><br><span style="color:#0f0728;">${order.deliveryMethod || 'Standard Delivery (3-5 Days)'}</span></div>
+          </div>
+
+          ${itemsHtml}
+
+          <div style="margin-top:20px;text-align:center;">
+            <a href="https://wa.me/923294551652?text=${encodeURIComponent('Hello DERA ZONE, checking order ' + (order.id || query))}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#25D366;color:#ffffff;padding:9px 18px;border-radius:8px;font-weight:700;text-decoration:none;font-size:0.84rem;">
+              <i class="fa-brands fa-whatsapp" style="font-size:1.05rem;"></i> Need Help? Chat with WhatsApp Support
+            </a>
+          </div>
+        </div>
+      `;
 
     } catch (err) {
-      result.innerHTML = `<div style="color:#ef4444;text-align:center;padding:12px;">Connection error. Please try again later.</div>`;
+      result.innerHTML = `<div style="color:#ef4444;text-align:center;padding:16px;background:#fef2f2;border-radius:10px;border:1px solid #fecaca;"><i class="fa-solid fa-circle-exclamation" style="margin-right:6px;"></i> Connection error. Please verify your internet connection and try again.</div>`;
     }
   };
 
   // Init page on load based on URL param
-  const urlParam = new URLSearchParams(window.location.search).get('page') || 'shipping';
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlParam = urlParams.get('page') || 'shipping';
   loadPolicyPage(urlParam);
+
+  const autoTrackQuery = urlParams.get('order') || urlParams.get('id') || urlParams.get('q');
+  if (autoTrackQuery) {
+    loadPolicyPage('track');
+    setTimeout(() => {
+      const input = document.getElementById('track-order-id');
+      if (input) {
+        input.value = autoTrackQuery;
+        trackOrder();
+      }
+    }, 100);
+  }
   </script>
 </body>
 </html>

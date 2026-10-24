@@ -3719,7 +3719,7 @@ function renderCoupons(coupons) {
     <tr>
       <td><code style="color:var(--gold);font-weight:700">${esc(c.code)}</code></td>
       <td>${c.type === 'percent' ? c.value + '% off' : 'PKR ' + c.value.toLocaleString() + ' off'}</td>
-      <td>${c.minOrderAmount ? 'PKR ' + c.minOrderAmount.toLocaleString() : '—'}</td>
+      <td>${(c.minOrderAmount != null && c.minOrderAmount !== '' || c.minOrder != null && c.minOrder !== '') ? 'PKR ' + Number(c.minOrderAmount ?? c.minOrder).toLocaleString() : '—'}</td>
       <td>${c.usedCount || 0}${c.maxUses != null ? ' / ' + c.maxUses : ''}</td>
       <td>${c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : 'Never'}</td>
       <td>${statusBadge}</td>
@@ -3761,7 +3761,7 @@ function openCouponModal(coupon) {
   document.getElementById('cpn-code').disabled    = !!coupon; /* code can't be changed once created, to avoid breaking customers who already have it */
   document.getElementById('cpn-type').value       = coupon?.type || 'percent';
   document.getElementById('cpn-value').value      = coupon?.value ?? '';
-  document.getElementById('cpn-min-order').value  = coupon?.minOrderAmount ?? '';
+  document.getElementById('cpn-min-order').value  = coupon?.minOrderAmount ?? coupon?.minOrder ?? '';
   document.getElementById('cpn-max-uses').value   = coupon?.maxUses ?? '';
   document.getElementById('cpn-expires').value    = coupon?.expiresAt ? coupon.expiresAt.slice(0, 10) : '';
   document.getElementById('cpn-active').checked   = coupon?.active !== false;
@@ -3775,8 +3775,11 @@ async function saveCoupon() {
   const code           = document.getElementById('cpn-code').value.trim().toUpperCase();
   const type           = document.getElementById('cpn-type').value;
   const value          = Number(document.getElementById('cpn-value').value);
-  const minOrderAmount = document.getElementById('cpn-min-order').value;
-  const maxUses        = document.getElementById('cpn-max-uses').value;
+  const minOrderRaw    = document.getElementById('cpn-min-order').value;
+  const minOrderAmount = minOrderRaw !== '' ? Number(minOrderRaw) : null;
+  const minOrder       = minOrderAmount;
+  const maxUsesRaw     = document.getElementById('cpn-max-uses').value;
+  const maxUses        = maxUsesRaw !== '' ? Number(maxUsesRaw) : null;
   const expiresAtRaw   = document.getElementById('cpn-expires').value;
   const expiresAt      = expiresAtRaw ? new Date(expiresAtRaw + 'T23:59:59').toISOString() : null;
   const active         = document.getElementById('cpn-active').checked;
@@ -3794,12 +3797,12 @@ async function saveCoupon() {
     if (id) {
       res = await apiFetch(`/coupons/${id}`, {
         method: 'PATCH',
-        body: JSON.stringify({ type, value, minOrderAmount, maxUses, expiresAt, active }),
+        body: JSON.stringify({ type, value, minOrderAmount, minOrder, maxUses, expiresAt, active }),
       });
     } else {
       res = await apiFetch('/coupons', {
         method: 'POST',
-        body: JSON.stringify({ code, type, value, minOrderAmount, maxUses, expiresAt, active: true }),
+        body: JSON.stringify({ code, type, value, minOrderAmount, minOrder, maxUses, expiresAt, active: true }),
       });
     }
     const data = await res.json();

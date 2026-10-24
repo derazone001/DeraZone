@@ -11,10 +11,33 @@ document.addEventListener('DOMContentLoaded', () => {
   /* Coupon currently applied at checkout — null until the customer
      successfully applies one. Re-checked against the live subtotal
      every time renderSummary runs. */
-  let appliedCoupon = null; /* { code, type, value } */
+  let appliedCoupon = null; /* { code, type, value, minOrder } */
+
+  /* ── Check empty cart on checkout page ── */
+  const checkEmptyCart = () => {
+    const cart = JSON.parse(localStorage.getItem('derazone_cart') || '[]');
+    const emptyState = document.getElementById('checkout-empty-state');
+    const stepsBar = document.getElementById('checkout-steps-bar');
+    const gridContainer = document.getElementById('checkout-grid-container');
+
+    if (!cart || cart.length === 0) {
+      if (emptyState) emptyState.style.display = 'block';
+      if (stepsBar) stepsBar.style.display = 'none';
+      if (gridContainer) gridContainer.style.display = 'none';
+      return true;
+    } else {
+      if (emptyState) emptyState.style.display = 'none';
+      if (stepsBar) stepsBar.style.display = 'flex';
+      if (gridContainer) gridContainer.style.display = 'grid';
+      return false;
+    }
+  };
 
   const computeDiscount = (subtotal) => {
     if (!appliedCoupon) return 0;
+    if (appliedCoupon.minOrder && subtotal < appliedCoupon.minOrder) {
+      return 0;
+    }
     let d = appliedCoupon.type === 'percent'
       ? Math.round(subtotal * (appliedCoupon.value / 100))
       : appliedCoupon.value;
@@ -23,16 +46,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ── Populate summary sidebar ── */
   const renderSummary = () => {
+    const isEmpty = checkEmptyCart();
+    if (isEmpty) return;
+
     const cart = JSON.parse(localStorage.getItem('derazone_cart') || '[]');
     const itemsEl = document.getElementById('ck-summary-items');
     const subtotalEl = document.getElementById('ck-subtotal');
     const totalEl    = document.getElementById('ck-total');
     const delivEl    = document.getElementById('ck-delivery-fee');
     if (!itemsEl) return;
-    if (cart.length === 0) {
-      itemsEl.innerHTML = '<p style="color:var(--muted);font-size:.8rem">Your bag is empty.</p>';
-      return;
+
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+
+    // Invalidate applied coupon if cart subtotal drops below coupon minimum
+    if (appliedCoupon && appliedCoupon.minOrder && subtotal < appliedCoupon.minOrder) {
+      if (couponMsgEl) {
+        couponMsgEl.style.color = '#c0392b';
+        couponMsgEl.textContent = `Minimum order of PKR ${appliedCoupon.minOrder.toLocaleString()} required for code "${appliedCoupon.code}". Discount removed.`;
+        couponMsgEl.style.display = 'block';
+      }
+      appliedCoupon = null;
     }
+
     itemsEl.innerHTML = cart.map(item => `
       <div class="ck-item" style="display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #f1f5f9;">
         <div class="ck-item-img-box" style="width:58px;height:58px;border-radius:8px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid #e2e8f0;padding:3px;">
@@ -45,7 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <span class="ck-item-price" style="font-weight:700;font-size:0.92rem;color:#0f172a;">PKR ${(item.price * item.qty).toLocaleString()}</span>
       </div>`).join('');
-    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
     const delivery = getDeliveryFee(subtotal, getSelectedPayment());
     const discount = computeDiscount(subtotal);
     const discountRow = document.getElementById('ck-discount-row');
@@ -62,6 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   const getSelectedPayment = () =>
     document.querySelector('input[name="payment"]:checked')?.value || 'cod';
+
+  // Initial check & render
+  checkEmptyCart();
   renderSummary();
 
   /* ── Coupon apply/clear ── */
@@ -86,6 +123,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const cart = JSON.parse(localStorage.getItem('derazone_cart') || '[]');
     const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
 
+    if (subtotal <= 0) {
+      if (couponMsgEl) {
+        couponMsgEl.style.color = '#c0392b';
+        couponMsgEl.textContent = 'Please add products to your bag before applying a coupon.';
+        couponMsgEl.style.display = 'block';
+      }
+      return;
+    }
+
     const origLabel = couponApplyBtn.textContent;
     couponApplyBtn.textContent = '…';
     couponApplyBtn.disabled = true;
@@ -97,7 +143,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const val = Number(result.data?.value ?? cpnData?.value ?? 0);
         const type = result.data?.type || cpnData?.type || 'percent';
         const cCode = result.data?.code || cpnData?.code || code;
-        appliedCoupon = { code: cCode, type: type, value: val };
+        const minOrder = Number(result.data?.minOrder ?? result.data?.minOrderAmount ?? cpnData?.minOrderAmount ?? cpnData?.minOrder ?? 0);
+
+        if (minOrder > 0 && subtotal < minOrder) {
+          appliedCoupon = null;
+          if (couponMsgEl) {
+            couponMsgEl.style.color = '#c0392b';
+            couponMsgEl.textContent = `Minimum order of PKR ${minOrder.toLocaleString()} required for code "${cCode}". (Your current subtotal: PKR ${subtotal.toLocaleString()})`;
+            couponMsgEl.style.display = 'block';
+          }
+          renderSummary();
+          couponApplyBtn.textContent = origLabel;
+          couponApplyBtn.disabled = false;
+          return;
+        }
+
+        appliedCoupon = { code: cCode, type: type, value: val, minOrder: minOrder };
         if (couponMsgEl) {
           couponMsgEl.style.color = 'var(--gold)';
           couponMsgEl.textContent = `✓ "${cCode}" applied — ${type === 'percent' ? val + '% off' : 'PKR ' + val.toLocaleString() + ' off'}`;
@@ -170,6 +231,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ── Step navigation ── */
   window.goToStep = (step) => {
+    if (checkEmptyCart()) {
+      toast('Your shopping bag is empty. Please add items before checking out.');
+      return;
+    }
     document.querySelectorAll('.ck-panel').forEach(p => p.classList.add('hidden'));
     const target = document.getElementById(`ck-panel-${step}`);
     if (target) { target.classList.remove('hidden'); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
@@ -183,6 +248,10 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── Clickable 1-2-3 Step Indicators ── */
   document.querySelectorAll('.ck-step').forEach((stepEl, idx) => {
     stepEl.addEventListener('click', () => {
+      if (checkEmptyCart()) {
+        toast('Your shopping bag is empty. Please add items before checking out.');
+        return;
+      }
       const targetStep = idx + 1;
       if (targetStep === currentStep) return;
 
@@ -223,6 +292,10 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── Step 1 submit ── */
   document.getElementById('delivery-form')?.addEventListener('submit', e => {
     e.preventDefault();
+    if (checkEmptyCart()) {
+      toast('Your shopping bag is empty. Please add items before checking out.');
+      return;
+    }
     const fd = new FormData(e.target);
     orderData.delivery = Object.fromEntries(fd.entries());
     const dCheck = orderData.delivery;

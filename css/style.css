@@ -3371,4 +3371,107 @@ footer, .dz-footer {
   .dz-footer .footer-grid { grid-template-columns: 1fr !important; }
 }
 
+/* ── Empty Cart Notification Modal ── */
+.dz-empty-cart-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.dz-empty-cart-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+.dz-empty-cart-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 7, 40, 0.65);
+  backdrop-filter: blur(4px);
+}
+.dz-empty-cart-box {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid rgba(112, 0, 255, 0.15);
+  border-radius: 20px;
+  padding: 38px 28px 32px;
+  max-width: 440px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(112, 0, 255, 0.22);
+  transform: translateY(20px) scale(0.96);
+  transition: transform 0.25s ease;
+  z-index: 1;
+}
+.dz-empty-cart-modal.active .dz-empty-cart-box {
+  transform: translateY(0) scale(1);
+}
+.dz-empty-cart-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 1.6rem;
+  color: #94a3b8;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+.dz-empty-cart-close:hover {
+  color: #0f0728;
+}
+.dz-empty-cart-icon {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(112, 0, 255, 0.1), rgba(212, 175, 55, 0.15));
+  border: 1.5px solid rgba(112, 0, 255, 0.25);
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7000ff;
+  font-size: 2.2rem;
+}
+.dz-empty-cart-box h3 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0f0728;
+  margin-bottom: 8px;
+}
+.dz-empty-cart-box p {
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.55;
+  margin-bottom: 24px;
+}
+.dz-empty-cart-btns {
+  display: flex;
+  justify-content: center;
+}
+.dz-empty-cart-btns .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 26px;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  font-weight: 700;
+  text-decoration: none;
+  background: #7000ff;
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(112, 0, 255, 0.35);
+  transition: all 0.2s ease;
+}
+.dz-empty-cart-btns .btn-primary:hover {
+  background: #8b2dfa;
+  transform: translateY(-2px);
+}
+
+
 

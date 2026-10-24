@@ -664,10 +664,13 @@
             <div style="font-size:0.82rem;color:#475569;">
               ${o.items?.length || 0} item(s) — <strong style="color:#0f0728;">PKR ${(o.total||0).toLocaleString()}</strong>
             </div>
-            <div style="margin-top:8px;">
+            <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
               <span style="padding:3px 10px;border-radius:12px;font-weight:700;font-size:0.72rem;background:#faf7ff;color:#7000ff;border:1px solid #c084fc;">
                 ${o.status || 'Pending'}
               </span>
+              <a href="policy?page=track&order=${encodeURIComponent(o.id)}" style="font-size:0.75rem;color:#7000ff;font-weight:600;text-decoration:none;">
+                Track Parcel <i class="fa-solid fa-arrow-right"></i>
+              </a>
             </div>
           </div>`).join('');
       } catch(err) {

@@ -433,6 +433,93 @@
         padding: 24px 20px;
       }
     }
+
+    /* Checkout Empty State */
+    .checkout-empty-wrapper {
+      max-width: 680px;
+      margin: 20px auto 60px;
+      text-align: center;
+    }
+    .checkout-empty-card {
+      background: #ffffff;
+      border: 1px solid rgba(112, 0, 255, 0.12);
+      border-radius: 20px;
+      padding: 50px 32px 42px;
+      box-shadow: 0 12px 35px rgba(112, 0, 255, 0.06);
+    }
+    .empty-cart-icon-halo {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 22px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(112, 0, 255, 0.1), rgba(212, 175, 55, 0.15));
+      border: 1.5px solid rgba(112, 0, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #7000ff;
+      font-size: 2.6rem;
+      animation: pulseBag 2.5s infinite ease-in-out;
+    }
+    @keyframes pulseBag {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(112,0,255,0.2); }
+      50% { transform: scale(1.04); box-shadow: 0 0 20px 4px rgba(112,0,255,0.18); }
+    }
+    .empty-cart-title {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: #0f0728;
+      margin-bottom: 12px;
+    }
+    .empty-cart-desc {
+      font-size: 0.95rem;
+      color: #64748b;
+      line-height: 1.6;
+      max-width: 520px;
+      margin: 0 auto 28px;
+    }
+    .empty-cart-cta {
+      margin-bottom: 32px;
+    }
+    .empty-cart-quick-categories {
+      border-top: 1px solid #f1f5f9;
+      padding-top: 24px;
+    }
+    .quick-cat-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #94a3b8;
+      margin-bottom: 14px;
+    }
+    .quick-cat-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .quick-cat-tags a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: #faf7ff;
+      border: 1px solid rgba(112, 0, 255, 0.15);
+      border-radius: 20px;
+      color: #5b00d1;
+      font-size: 0.84rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .quick-cat-tags a:hover {
+      background: #7000ff;
+      color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(112, 0, 255, 0.25);
+    }
   </style>
 </head>
 <body>
@@ -515,8 +602,36 @@
   <main class="checkout-main">
     <div class="container">
       
+      <!-- EMPTY CART STATE (Displayed if cart has 0 items) -->
+      <div id="checkout-empty-state" class="checkout-empty-wrapper" style="display:none;">
+        <div class="checkout-empty-card">
+          <div class="empty-cart-icon-halo">
+            <i class="fa-solid fa-bag-shopping"></i>
+          </div>
+          <h2 class="empty-cart-title">Your Shopping Bag is Empty</h2>
+          <p class="empty-cart-desc">
+            Looks like you haven't added any products to your bag yet. Explore our curated collections of smartwatches, luxury jewellery, streetwear footwear, and premium lifestyle accessories.
+          </p>
+          <div class="empty-cart-cta">
+            <a href="shop" class="btn-primary" style="display:inline-flex;align-items:center;gap:10px;padding:15px 34px;font-size:1.02rem;border-radius:12px;font-weight:700;text-decoration:none;box-shadow:0 8px 24px rgba(112,0,255,0.35);">
+              <i class="fa-solid fa-compass"></i> Explore Collections <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+          <div class="empty-cart-quick-categories">
+            <span class="quick-cat-label">Explore Trending Collections:</span>
+            <div class="quick-cat-tags">
+              <a href="shop?cat=smartwatches"><i class="fa-solid fa-clock"></i> Smartwatches</a>
+              <a href="shop?cat=jewellery"><i class="fa-solid fa-gem"></i> Jewellery</a>
+              <a href="shop?cat=footwear"><i class="fa-solid fa-shoe-prints"></i> Footwear</a>
+              <a href="shop?cat=clothing"><i class="fa-solid fa-shirt"></i> Clothing</a>
+              <a href="shop?cat=lifestyle"><i class="fa-solid fa-glasses"></i> Lifestyle</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Step Indicator -->
-      <div class="checkout-steps">
+      <div class="checkout-steps" id="checkout-steps-bar">
         <div class="ck-step active" id="step-ind-1">
           <span class="ck-num">1</span>
           <span class="ck-lbl">Delivery</span>
@@ -533,7 +648,7 @@
         </div>
       </div>
 
-      <div class="checkout-grid">
+      <div class="checkout-grid" id="checkout-grid-container">
         
         <!-- LEFT COLUMN: Checkout Panels -->
         <div class="checkout-form-col">

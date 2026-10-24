@@ -900,6 +900,20 @@ if ($endpoint === 'orders' || preg_match('#^orders/([^/]+)(?:/(status))?$#', $en
     $orders = $store['orders'] ?? [];
 
     if ($method === 'GET') {
+        if ($orderId) {
+            foreach ($orders as $o) {
+                if (strcasecmp($o['id'] ?? '', $orderId) === 0) {
+                    json_ok(['order' => $o]);
+                }
+            }
+            $socialOrders = $store['socialOrders'] ?? [];
+            foreach ($socialOrders as $so) {
+                if (strcasecmp($so['id'] ?? '', $orderId) === 0) {
+                    json_ok(['order' => $so]);
+                }
+            }
+            json_err('Order not found', 404);
+        }
         $statusFilter = $_GET['status'] ?? '';
         if ($statusFilter) {
             $orders = array_filter($orders, function($o) use ($statusFilter) {
@@ -934,10 +948,60 @@ if ($endpoint === 'orders' || preg_match('#^orders/([^/]+)(?:/(status))?$#', $en
             $subtotal += $p * $q;
             $costTotal += $c * $q;
         }
-        $newOrder['subtotal'] = $newOrder['subtotal'] ?? $subtotal;
-        $newOrder['costTotal'] = $newOrder['costTotal'] ?? $costTotal;
-        $newOrder['total'] = $newOrder['total'] ?? $subtotal;
-        $newOrder['profit'] = $newOrder['profit'] ?? ($newOrder['total'] - $newOrder['costTotal']);
+
+        // 3. Strict Server-side Coupon validation & application
+        $discount = 0;
+        $couponCode = strtoupper(trim($newOrder['couponCode'] ?? $newOrder['coupon'] ?? ''));
+        if ($couponCode && !empty($store['coupons'])) {
+            $matchedCoupon = false;
+            foreach ($store['coupons'] as &$c) {
+                if (strtoupper(trim($c['code'] ?? '')) === $couponCode) {
+                    $matchedCoupon = true;
+                    if (empty($c['active']) || $c['active'] === false || $c['active'] === 'false') {
+                        json_err("Coupon code '{$c['code']}' is inactive", 400);
+                    }
+                    if (!empty($c['expiresAt']) && strtotime($c['expiresAt']) < time()) {
+                        json_err("Coupon code '{$c['code']}' has expired", 400);
+                    }
+                    if (isset($c['maxUses']) && $c['maxUses'] !== '' && $c['maxUses'] !== null && ($c['usedCount'] ?? 0) >= (int)$c['maxUses']) {
+                        json_err("Coupon code '{$c['code']}' usage limit reached", 400);
+                    }
+                    $minReq = 0;
+                    if (isset($c['minOrderAmount']) && $c['minOrderAmount'] !== '' && $c['minOrderAmount'] !== null) {
+                        $minReq = (float)$c['minOrderAmount'];
+                    } elseif (isset($c['minOrder']) && $c['minOrder'] !== '' && $c['minOrder'] !== null) {
+                        $minReq = (float)$c['minOrder'];
+                    }
+                    if ($minReq > 0 && $subtotal < $minReq) {
+                        json_err("Minimum order of PKR " . number_format($minReq) . " required for coupon '{$c['code']}' (Current subtotal: PKR " . number_format($subtotal) . ")", 400);
+                    }
+                    if (($c['type'] ?? 'percent') === 'percent') {
+                        $discount = round($subtotal * ((float)$c['value'] / 100));
+                    } else {
+                        $discount = (float)$c['value'];
+                    }
+                    $discount = min($discount, $subtotal);
+                    $c['usedCount'] = ($c['usedCount'] ?? 0) + 1;
+                    $newOrder['couponDiscount'] = $discount;
+                    $newOrder['couponCode'] = $c['code'];
+                    $newOrder['coupon'] = $c['code'];
+                    break;
+                }
+            }
+            unset($c);
+            if (!$matchedCoupon) {
+                json_err("Invalid coupon code '{$couponCode}'", 400);
+            }
+        }
+
+        $paymentMethod = $newOrder['paymentMethod'] ?? $newOrder['payment']['method'] ?? 'cod';
+        $deliveryFee = $paymentMethod === 'bank_deposit' ? ($subtotal >= 1000 ? 0 : 200) : ($subtotal >= 5000 ? 0 : 200);
+        $newOrder['deliveryFee'] = $deliveryFee;
+        $newOrder['subtotal'] = $subtotal;
+        $newOrder['costTotal'] = $costTotal;
+        $newOrder['discount'] = $discount;
+        $newOrder['total'] = max(0, $subtotal - $discount + $deliveryFee);
+        $newOrder['profit'] = $newOrder['total'] - $costTotal;
         array_unshift($orders, $newOrder);
         $store['orders'] = $orders;
 
@@ -1108,6 +1172,102 @@ if ($endpoint === 'social-orders' || preg_match('#^social-orders/([^/]+)(?:/(sta
         save_store($store);
         json_ok(['deleted' => true]);
     }
+}
+
+// ── ORDER TRACKING ENDPOINT (Public) ──
+if ($endpoint === 'track' || preg_match('#^track(?:/([^/]+))?$#', $endpoint, $m)) {
+    $q = trim($m[1] ?? $_GET['q'] ?? $_GET['id'] ?? $body['query'] ?? $body['id'] ?? '');
+    if (!$q) {
+        json_err('Please provide an order reference ID, tracking number, phone, or email to track', 400);
+    }
+
+    $store = get_store();
+    $allOrders = array_merge($store['orders'] ?? [], $store['socialOrders'] ?? []);
+
+    $cleanQ = strtoupper(trim(str_replace(['#', ' '], '', $q)));
+    $phoneDigits = preg_replace('/[^0-9]/', '', $q);
+
+    $matched = null;
+    foreach ($allOrders as $o) {
+        $oid = strtoupper(trim(str_replace(['#', ' '], '', $o['id'] ?? '')));
+        // Match exact or partial ID (e.g. "DZ-1234" vs "1234")
+        if ($oid === $cleanQ || $oid === 'DZ-' . $cleanQ || 'DZ-' . $oid === $cleanQ) {
+            $matched = $o;
+            break;
+        }
+
+        // Match courier tracking number
+        $courierTracking = strtoupper(trim($o['courierTracking'] ?? $o['trackingNumber'] ?? $o['airwayBill'] ?? ''));
+        if ($courierTracking && $courierTracking === $cleanQ) {
+            $matched = $o;
+            break;
+        }
+
+        // Match email
+        $custEmail = strtolower(trim($o['delivery']['email'] ?? $o['customerEmail'] ?? $o['email'] ?? ''));
+        if ($custEmail && strtolower($q) === $custEmail) {
+            $matched = $o;
+            break;
+        }
+
+        // Match phone
+        if (strlen($phoneDigits) >= 7) {
+            $oPhone = preg_replace('/[^0-9]/', '', $o['delivery']['phone'] ?? $o['customerPhone'] ?? $o['phone'] ?? '');
+            if ($oPhone) {
+                // Match last 9-10 digits (covers +92 vs 03 format differences)
+                $subP1 = substr($phoneDigits, -9);
+                $subP2 = substr($oPhone, -9);
+                if ($subP1 && $subP2 && $subP1 === $subP2) {
+                    $matched = $o;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!$matched) {
+        json_err("No order found with reference '{$q}'. Please check your order reference number or contact support.", 404);
+    }
+
+    $items = [];
+    foreach (($matched['items'] ?? []) as $it) {
+        $items[] = [
+            'name' => $it['name'] ?? 'Product',
+            'qty' => (int)($it['qty'] ?? $it['quantity'] ?? 1),
+            'variant' => $it['variant'] ?? null,
+            'image' => $it['image'] ?? null,
+            'price' => (float)($it['price'] ?? 0)
+        ];
+    }
+
+    $status = trim($matched['status'] ?? 'Pending');
+    if (strcasecmp($status, 'cancelled') === 0) $status = 'Cancelled';
+    elseif (strcasecmp($status, 'delivered') === 0) $status = 'Delivered';
+    elseif (strcasecmp($status, 'shipped') === 0 || strcasecmp($status, 'dispatched') === 0 || strcasecmp($status, 'in transit') === 0) $status = 'Dispatched';
+    elseif (strcasecmp($status, 'confirmed') === 0) $status = 'Confirmed';
+    elseif (strcasecmp($status, 'processing') === 0) $status = 'Processing';
+    elseif (strcasecmp($status, 'pending') === 0) $status = 'Pending';
+
+    $result = [
+        'id' => $matched['id'] ?? $q,
+        'status' => $status,
+        'advanceStatus' => $matched['advanceStatus'] ?? null,
+        'createdAt' => $matched['createdAt'] ?? null,
+        'total' => (float)($matched['total'] ?? 0),
+        'subtotal' => (float)($matched['subtotal'] ?? 0),
+        'deliveryFee' => (float)($matched['deliveryFee'] ?? 0),
+        'paymentMethod' => $matched['paymentMethod'] ?? 'Cash on Delivery',
+        'deliveryMethod' => $matched['deliveryMethod'] ?? 'Standard Courier Delivery',
+        'city' => $matched['delivery']['city'] ?? '',
+        'customerName' => trim(($matched['delivery']['fname'] ?? '') . ' ' . ($matched['delivery']['lname'] ?? '')),
+        'courier' => $matched['courier'] ?? $matched['courierName'] ?? null,
+        'trackingNumber' => $matched['trackingNumber'] ?? $matched['courierTracking'] ?? null,
+        'trackingUrl' => $matched['trackingUrl'] ?? null,
+        'items' => $items,
+        'itemsCount' => count($items)
+    ];
+
+    json_ok(['found' => true, 'order' => $result]);
 }
 
 // ── ADMIN ANALYTICS & STATS ──
@@ -1365,16 +1525,41 @@ if ($endpoint === 'coupons' || $endpoint === 'coupons/validate' || preg_match('#
     if ($endpoint === 'coupons/validate' && $method === 'POST') {
         $code = strtoupper(trim($body['code'] ?? ''));
         $subtotal = (float)($body['subtotal'] ?? 0);
+        if (!$code) {
+            json_err('Please enter a coupon code', 400);
+        }
         foreach ($coupons as $c) {
-            if (strtoupper($c['code'] ?? '') === $code && !empty($c['active'])) {
-                if (!empty($c['minOrder']) && $subtotal > 0 && $subtotal < (float)$c['minOrder']) {
-                    json_err("Minimum order of PKR " . number_format($c['minOrder']) . " required for code " . $c['code'], 400);
+            if (strtoupper(trim($c['code'] ?? '')) === $code) {
+                if (empty($c['active']) || $c['active'] === false || $c['active'] === 'false') {
+                    json_err("Coupon code '{$c['code']}' is currently inactive", 400);
                 }
+                if (!empty($c['expiresAt']) && strtotime($c['expiresAt']) < time()) {
+                    json_err("Coupon code '{$c['code']}' has expired", 400);
+                }
+                if (isset($c['maxUses']) && $c['maxUses'] !== '' && $c['maxUses'] !== null && ($c['usedCount'] ?? 0) >= (int)$c['maxUses']) {
+                    json_err("Coupon code '{$c['code']}' usage limit reached", 400);
+                }
+                $minOrder = 0;
+                if (isset($c['minOrderAmount']) && $c['minOrderAmount'] !== '' && $c['minOrderAmount'] !== null) {
+                    $minOrder = (float)$c['minOrderAmount'];
+                } elseif (isset($c['minOrder']) && $c['minOrder'] !== '' && $c['minOrder'] !== null) {
+                    $minOrder = (float)$c['minOrder'];
+                }
+                if ($minOrder > 0 && $subtotal < $minOrder) {
+                    json_err("Minimum order of PKR " . number_format($minOrder) . " required for code '{$c['code']}' (Current subtotal: PKR " . number_format($subtotal) . ")", 400);
+                }
+                $val = (float)($c['value'] ?? 0);
+                $type = $c['type'] ?? 'percent';
+                $discount = $type === 'percent' ? round($subtotal * ($val / 100)) : $val;
+                $discount = min($discount, $subtotal);
                 json_ok([
                     'valid' => true,
                     'code' => $c['code'],
-                    'type' => $c['type'],
-                    'value' => (float)$c['value'],
+                    'type' => $type,
+                    'value' => $val,
+                    'discount' => $discount,
+                    'minOrder' => $minOrder,
+                    'minOrderAmount' => $minOrder,
                     'coupon' => $c
                 ]);
             }
@@ -1389,8 +1574,20 @@ if ($endpoint === 'coupons' || $endpoint === 'coupons/validate' || preg_match('#
     if ($method === 'POST') {
         $newC = $body;
         $newC['id'] = 'cpn-' . time();
+        $newC['code'] = strtoupper(trim($newC['code'] ?? ''));
         $newC['active'] = true;
         $newC['createdAt'] = date('c');
+        $minVal = null;
+        if (isset($newC['minOrderAmount']) && $newC['minOrderAmount'] !== '' && $newC['minOrderAmount'] !== null) {
+            $minVal = (float)$newC['minOrderAmount'];
+        } elseif (isset($newC['minOrder']) && $newC['minOrder'] !== '' && $newC['minOrder'] !== null) {
+            $minVal = (float)$newC['minOrder'];
+        }
+        $newC['minOrderAmount'] = $minVal;
+        $newC['minOrder'] = $minVal;
+        $newC['value'] = (float)($newC['value'] ?? 0);
+        $newC['maxUses'] = (isset($newC['maxUses']) && $newC['maxUses'] !== '' && $newC['maxUses'] !== null) ? (int)$newC['maxUses'] : null;
+        $newC['usedCount'] = 0;
         $coupons[] = $newC;
         $store['coupons'] = $coupons;
         save_store($store);
@@ -1400,6 +1597,22 @@ if ($endpoint === 'coupons' || $endpoint === 'coupons/validate' || preg_match('#
     if ($method === 'PATCH') {
         foreach ($coupons as &$c) {
             if ($c['id'] == $cpnId) {
+                if (isset($body['minOrderAmount']) || isset($body['minOrder'])) {
+                    $minVal = null;
+                    if (isset($body['minOrderAmount']) && $body['minOrderAmount'] !== '' && $body['minOrderAmount'] !== null) {
+                        $minVal = (float)$body['minOrderAmount'];
+                    } elseif (isset($body['minOrder']) && $body['minOrder'] !== '' && $body['minOrder'] !== null) {
+                        $minVal = (float)$body['minOrder'];
+                    }
+                    $body['minOrderAmount'] = $minVal;
+                    $body['minOrder'] = $minVal;
+                }
+                if (isset($body['value'])) {
+                    $body['value'] = (float)$body['value'];
+                }
+                if (isset($body['maxUses'])) {
+                    $body['maxUses'] = ($body['maxUses'] !== '' && $body['maxUses'] !== null) ? (int)$body['maxUses'] : null;
+                }
                 $c = array_merge($c, $body);
                 break;
             }
