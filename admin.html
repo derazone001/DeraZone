@@ -1487,14 +1487,14 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
 
       <!-- ── Variant & Option Inventory Breakdown ── -->
       <div id="p-variant-inventory-box" style="margin:16px 0;padding:14px;background:rgba(184,136,58,0.06);border:1px solid var(--border);border-radius:10px;display:none;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
           <div>
-            <strong style="color:var(--text);font-size:0.92rem;"><i class="fa-solid fa-boxes-stacked" style="color:var(--gold);margin-right:6px;"></i> Variant Inventory Management</strong>
-            <p style="margin:2px 0 0;font-size:0.75rem;color:var(--muted);">Set quantity for each variant/color/size. Sold-out options (0 stock) cannot be purchased by customers.</p>
+            <strong style="color:var(--text);font-size:0.92rem;"><i class="fa-solid fa-boxes-stacked" style="color:var(--gold);margin-right:6px;"></i> Variant Inventory Management <span id="p-variant-combo-count" style="font-size:0.8rem;color:var(--gold);font-weight:700;"></span></strong>
+            <p style="margin:2px 0 0;font-size:0.75rem;color:var(--muted);">Set quantity for each color, variant &amp; size combination. Sold-out combinations (0 stock) cannot be purchased by customers.</p>
           </div>
           <button type="button" class="btn btn-outline btn-sm" onclick="applyBulkStock()" style="font-size:0.75rem;"><i class="fa-solid fa-sliders"></i> Set All Qty</button>
         </div>
-        <div id="p-variant-stock-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(210px, 1fr));gap:10px;"></div>
+        <div id="p-variant-stock-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:10px;"></div>
       </div>
 
       <!-- ── Gallery: Images ── -->
@@ -4500,7 +4500,9 @@ function renderProducts(products) {
     if (p.variantStock && typeof p.variantStock === 'object') {
       const keys = Object.keys(p.variantStock);
       if (keys.length > 0) {
-        vsSnippet = `<div style="font-size:0.73rem;color:var(--muted);margin-top:4px;line-height:1.4;">Stock: ${keys.map(k => `${k}: <strong>${p.variantStock[k]}</strong>`).join(' · ')}</div>`;
+        const preview = keys.slice(0, 3).map(k => `${esc(k)}: <strong>${p.variantStock[k]}</strong>`).join(' · ');
+        const more = keys.length > 3 ? ` <span style="color:var(--gold);font-weight:600;" title="${keys.map(k => `${k}: ${p.variantStock[k]}`).join('\n')}">(+${keys.length - 3} more combos)</span>` : '';
+        vsSnippet = `<div style="font-size:0.73rem;color:var(--muted);margin-top:4px;line-height:1.4;">${preview}${more}</div>`;
       }
     }
     const stockBadge = !isOut
@@ -4723,6 +4725,103 @@ function removeTag(field, idx) {
   renderTagChips(field);
 }
 
+/* ── Cartesian Product Variant Combinations Generator ── */
+function generateVariantCombinations(colors, variants, sizes) {
+  const dims = [];
+  if (colors && colors.length > 0) {
+    dims.push(colors.map(c => ({ type: 'Color', val: c.trim() })));
+  }
+  if (variants && variants.length > 0) {
+    dims.push(variants.map(v => ({ type: 'Variant', val: v.trim() })));
+  }
+  if (sizes && sizes.length > 0) {
+    dims.push(sizes.map(s => ({ type: 'Size', val: s.trim() })));
+  }
+
+  if (dims.length === 0) return [];
+
+  // Single dimension (only 1 option type present)
+  if (dims.length === 1) {
+    return dims[0].map(item => ({
+      key: item.val,
+      label: `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;font-size:0.78rem;font-weight:600;background:rgba(112,0,255,0.08);color:#7000ff;border:1px solid rgba(112,0,255,0.2);"><i class="fa-solid fa-tag" style="font-size:0.7rem;"></i> ${item.type}: <strong>${esc(item.val)}</strong></span>`,
+      parts: [item]
+    }));
+  }
+
+  // Cartesian product across multiple dimensions (2 or 3)
+  const cartesian = dims.reduce((acc, curr) => {
+    const res = [];
+    acc.forEach(a => {
+      curr.forEach(b => {
+        res.push([...a, b]);
+      });
+    });
+    return res;
+  }, [[]]);
+
+  return cartesian.map(combo => {
+    const colorPart   = combo.find(c => c.type === 'Color')?.val;
+    const variantPart = combo.find(c => c.type === 'Variant')?.val;
+    const sizePart    = combo.find(c => c.type === 'Size')?.val;
+
+    let key = '';
+    if (colorPart && variantPart && sizePart) {
+      key = `Color ${colorPart} Variant ${variantPart} - Size ${sizePart}`;
+    } else if (colorPart && sizePart) {
+      key = `Color ${colorPart} - Size ${sizePart}`;
+    } else if (colorPart && variantPart) {
+      key = `Color ${colorPart} - Variant ${variantPart}`;
+    } else if (variantPart && sizePart) {
+      key = `Variant ${variantPart} - Size ${sizePart}`;
+    } else {
+      key = combo.map(c => c.val).join(' / ');
+    }
+
+    const label = combo.map(c => {
+      const isCol = c.type === 'Color';
+      const isVar = c.type === 'Variant';
+      const icon = isCol ? 'fa-palette' : isVar ? 'fa-layer-group' : 'fa-ruler';
+      const bg = isCol ? 'background:rgba(112,0,255,0.08);color:#7000ff;border:1px solid rgba(112,0,255,0.2);'
+               : isVar ? 'background:rgba(3,105,161,0.08);color:#0284c7;border:1px solid rgba(3,105,161,0.2);'
+               : 'background:rgba(16,185,129,0.08);color:#059669;border:1px solid rgba(16,185,129,0.2);';
+      return `<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:0.75rem;font-weight:600;${bg}"><i class="fa-solid ${icon}" style="font-size:0.7rem;"></i> ${c.type}: <strong>${esc(c.val)}</strong></span>`;
+    }).join(' <span style="color:var(--muted);font-size:0.75rem;">+</span> ');
+
+    return {
+      key: key,
+      label: label,
+      parts: combo
+    };
+  });
+}
+
+function resolveExistingStockForCombo(key, combo) {
+  // 1. Direct key match
+  if (productVariantStock[key] !== undefined) return Number(productVariantStock[key]);
+
+  // 2. Simple slash or hyphen keys
+  const vals = combo.parts.map(p => p.val);
+  const slashKey = vals.join(' / ');
+  if (productVariantStock[slashKey] !== undefined) return Number(productVariantStock[slashKey]);
+  const hyphenKey = vals.join(' - ');
+  if (productVariantStock[hyphenKey] !== undefined) return Number(productVariantStock[hyphenKey]);
+
+  // 3. Search existing keys containing all values
+  for (const [k, v] of Object.entries(productVariantStock)) {
+    const kLower = k.toLowerCase();
+    const allMatch = vals.every(val => kLower.includes(val.toLowerCase()));
+    if (allMatch) return Number(v);
+  }
+
+  // 4. Fallback to individual attribute stock if previously stored flat
+  for (const p of vals) {
+    if (productVariantStock[p] !== undefined) return Number(productVariantStock[p]);
+  }
+
+  return 10;
+}
+
 function renderVariantStockBreakdown() {
   const box = document.getElementById('p-variant-inventory-box');
   const grid = document.getElementById('p-variant-stock-grid');
@@ -4737,30 +4836,27 @@ function renderVariantStockBreakdown() {
     return;
   }
 
-  box.style.display = 'block';
-
-  let items = [];
-  if (hasColors && !hasSizes && !hasVariants) {
-    items = productColors.map(c => ({ key: c, label: `Color: <strong>${c}</strong>` }));
-  } else if (hasSizes && !hasColors && !hasVariants) {
-    items = productSizes.map(s => ({ key: s, label: `Size: <strong>${s}</strong>` }));
-  } else if (hasVariants && !hasColors && !hasSizes) {
-    items = productVariants.map(v => ({ key: v, label: `Variant: <strong>${v}</strong>` }));
-  } else {
-    // If multiple attribute types exist: list options clearly
-    if (hasColors) productColors.forEach(c => items.push({ key: c, label: `Color: <strong>${c}</strong>` }));
-    if (hasSizes) productSizes.forEach(s => items.push({ key: s, label: `Size: <strong>${s}</strong>` }));
-    if (hasVariants) productVariants.forEach(v => items.push({ key: v, label: `Variant: <strong>${v}</strong>` }));
+  const combos = generateVariantCombinations(productColors, productVariants, productSizes);
+  if (combos.length === 0) {
+    box.style.display = 'none';
+    return;
   }
 
-  grid.innerHTML = items.map(item => {
-    const curVal = (productVariantStock[item.key] !== undefined) ? productVariantStock[item.key] : 10;
+  box.style.display = 'block';
+  const countEl = document.getElementById('p-variant-combo-count');
+  if (countEl) countEl.textContent = `(${combos.length} Combination${combos.length > 1 ? 's' : ''})`;
+
+  grid.innerHTML = combos.map(c => {
+    const curVal = resolveExistingStockForCombo(c.key, c);
+    productVariantStock[c.key] = curVal;
     return `
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
-        <span style="font-size:0.85rem;color:var(--text);">${item.label}</span>
-        <div style="display:flex;align-items:center;gap:4px;">
-          <label style="font-size:0.75rem;color:var(--muted);margin:0;">Stock:</label>
-          <input type="number" min="0" value="${curVal}" data-opt-key="${item.key}" class="opt-qty-field" style="width:68px;padding:4px 6px;font-size:0.85rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);text-align:center;" oninput="updateVariantStockField('${item.key}', this.value)" />
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;">
+          ${c.label}
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <label style="font-size:0.75rem;color:var(--muted);margin:0;font-weight:600;">Stock:</label>
+          <input type="number" min="0" value="${curVal}" data-opt-key="${esc(c.key)}" class="opt-qty-field" style="width:72px;padding:4px 8px;font-size:0.88rem;font-weight:700;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);text-align:center;" oninput="updateVariantStockField('${esc(c.key)}', this.value)" />
         </div>
       </div>
     `;
@@ -4788,7 +4884,7 @@ function syncTotalStockFromVariants() {
 }
 
 function applyBulkStock() {
-  const qty = prompt('Enter stock quantity for all options:', '10');
+  const qty = prompt('Enter stock quantity for all combinations:', '10');
   if (qty === null) return;
   const num = Math.max(0, parseInt(qty) || 0);
   document.querySelectorAll('.opt-qty-field').forEach(input => {
@@ -4854,6 +4950,14 @@ async function saveProduct() {
   const additionalCheckboxes = additionalContainer.querySelectorAll('input[type="checkbox"]:checked');
   const additionalCategories = Array.from(additionalCheckboxes).map(cb => cb.value);
 
+  // Harvest any uncommitted text in chips input fields
+  const uncommittedSizes = document.getElementById('p-sizes-text')?.value.trim();
+  if (uncommittedSizes) addTag('sizes', uncommittedSizes);
+  const uncommittedColors = document.getElementById('p-colors-text')?.value.trim();
+  if (uncommittedColors) addTag('colors', uncommittedColors);
+  const uncommittedVariants = document.getElementById('p-variants-text')?.value.trim();
+  if (uncommittedVariants) addTag('variants', uncommittedVariants);
+
   const hasOptions = (productColors.length > 0) || (productSizes.length > 0) || (productVariants.length > 0);
   if (hasOptions) {
     document.querySelectorAll('.opt-qty-field').forEach(inp => {
@@ -4878,9 +4982,9 @@ async function saveProduct() {
     inStock:     (stockVal > 0) && (document.getElementById('p-instock').value !== 'false'),
     hidden:      document.getElementById('p-hidden').checked,
     description: document.getElementById('p-desc').value,
-    sizes:       (() => { const t=document.getElementById('p-sizes-text').value.trim(); if(t) addTag('sizes',t); return productSizes; })(),
-    colors:      (() => { const t=document.getElementById('p-colors-text').value.trim(); if(t) addTag('colors',t); return productColors; })(),
-    variants:    (() => { const t=document.getElementById('p-variants-text').value.trim(); if(t) addTag('variants',t); return productVariants; })(),
+    sizes:       productSizes,
+    colors:      productColors,
+    variants:    productVariants,
     images:      productImages,
     video:       productVideo,
   };

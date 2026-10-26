@@ -623,16 +623,81 @@
     const vs = (product.variantStock && typeof product.variantStock === 'object') ? product.variantStock : {};
     const hasVariantStock = Object.keys(vs).length > 0;
 
-    const getOptStock = (name) => {
-      if (!name) return 999;
+    function getSelectedVariantCombo(color, variant, size) {
+      const c = color ? color.trim() : '';
+      const v = variant ? variant.trim() : '';
+      const s = size ? size.trim() : '';
+
+      if (c && v && s) return `Color ${c} Variant ${v} - Size ${s}`;
+      if (c && s) return `Color ${c} - Size ${s}`;
+      if (c && v) return `Color ${c} - Variant ${v}`;
+      if (v && s) return `Variant ${v} - Size ${s}`;
+      if (c) return c;
+      if (v) return v;
+      if (s) return s;
+      return 'Standard';
+    }
+
+    function findCombinationStock(color, variant, size) {
       if (!hasVariantStock) {
         return (product.stock != null) ? Number(product.stock) : (product.inStock !== false ? 999 : 0);
       }
-      if (vs[name] !== undefined) return Number(vs[name]);
-      const found = Object.keys(vs).find(k => k.trim().toLowerCase() === name.trim().toLowerCase());
-      if (found) return Number(vs[found]);
-      return 999;
-    };
+      const keys = Object.keys(vs);
+      if (keys.length === 0) {
+        return (product.stock != null) ? Number(product.stock) : 999;
+      }
+
+      const c = color ? color.trim() : '';
+      const v = variant ? variant.trim() : '';
+      const s = size ? size.trim() : '';
+      const canonical = getSelectedVariantCombo(c, v, s);
+
+      // 1. Direct match
+      if (vs[canonical] !== undefined) return Number(vs[canonical]);
+
+      // Case-insensitive exact match
+      const ciKey = keys.find(k => k.trim().toLowerCase() === canonical.toLowerCase());
+      if (ciKey) return Number(vs[ciKey]);
+
+      // 2. Token-based matching (Color, Variant, Size components)
+      const activeTokens = [c, v, s].filter(Boolean).map(t => t.toLowerCase());
+      if (activeTokens.length > 0) {
+        const matchedKey = keys.find(k => {
+          const kLower = k.toLowerCase();
+          return activeTokens.every(t => kLower.includes(t));
+        });
+        if (matchedKey) return Number(vs[matchedKey]);
+
+        // Slash or hyphen format
+        const slashKey = [c, v, s].filter(Boolean).join(' / ');
+        if (vs[slashKey] !== undefined) return Number(vs[slashKey]);
+
+        const hyphenKey = [c, v, s].filter(Boolean).join(' - ');
+        if (vs[hyphenKey] !== undefined) return Number(vs[hyphenKey]);
+
+        const emdashKey = [v, s, c].filter(Boolean).join(' — ');
+        if (vs[emdashKey] !== undefined) return Number(vs[emdashKey]);
+      }
+
+      // 3. Fallback to individual attribute stocks if saved flat
+      const flatStocks = [];
+      if (c && vs[c] !== undefined) flatStocks.push(Number(vs[c]));
+      if (v && vs[v] !== undefined) flatStocks.push(Number(vs[v]));
+      if (s && vs[s] !== undefined) flatStocks.push(Number(vs[s]));
+      if (flatStocks.length > 0) return Math.min(...flatStocks);
+
+      return (product.stock != null) ? Number(product.stock) : 999;
+    }
+
+    function isAttributeEntirelySoldOut(attrVal) {
+      if (!hasVariantStock) return false;
+      const keys = Object.keys(vs);
+      if (keys.length === 0) return false;
+      const valLower = attrVal.trim().toLowerCase();
+      const relevantKeys = keys.filter(k => k.toLowerCase().includes(valLower));
+      if (relevantKeys.length === 0) return false;
+      return relevantKeys.every(k => Number(vs[k]) <= 0);
+    }
 
     const pSizes = Array.isArray(product.sizes) ? product.sizes : (typeof product.sizes === 'string' && product.sizes ? product.sizes.split(',') : []);
     const sizesHTML = (pSizes.length)
@@ -640,9 +705,8 @@
          <div class="size-options">
            ${pSizes.map((s, i) => {
              const sName = s.trim();
-             const stk = getOptStock(sName);
-             const isSold = stk <= 0;
-             return `<div class="size-opt${i === 0 ? ' active' : ''}${isSold ? ' sold-out' : ''}" data-size="${sName}" data-stock="${stk}">${sName}${isSold ? '<span class="pd-soldout-tag">Sold Out</span>' : ''}</div>`;
+             const isSold = isAttributeEntirelySoldOut(sName);
+             return `<div class="size-opt${i === 0 ? ' active' : ''}${isSold ? ' sold-out' : ''}" data-size="${sName}">${sName}${isSold ? '<span class="pd-soldout-tag">Sold Out</span>' : ''}</div>`;
            }).join('')}
          </div>`
       : '';
@@ -653,9 +717,8 @@
          <div class="variant-options">
            ${pVariants.map((v, i) => {
              const vName = v.trim();
-             const stk = getOptStock(vName);
-             const isSold = stk <= 0;
-             return `<div class="variant-opt${i === 0 ? ' active' : ''}${isSold ? ' sold-out' : ''}" data-variant="${vName}" data-stock="${stk}">${vName}${isSold ? '<span class="pd-soldout-tag">Sold Out</span>' : ''}</div>`;
+             const isSold = isAttributeEntirelySoldOut(vName);
+             return `<div class="variant-opt${i === 0 ? ' active' : ''}${isSold ? ' sold-out' : ''}" data-variant="${vName}">${vName}${isSold ? '<span class="pd-soldout-tag">Sold Out</span>' : ''}</div>`;
            }).join('')}
          </div>`
       : '';
@@ -666,9 +729,8 @@
          <div class="color-options">
            ${pColors.map((c, i) => {
              const cName = (typeof c === 'string') ? c.trim() : c.name;
-             const stk = getOptStock(cName);
-             const isSold = stk <= 0;
-             return `<div class="color-opt${i === 0 ? ' active' : ''}${isSold ? ' sold-out' : ''}" data-color="${cName}" data-stock="${stk}">${cName}${isSold ? '<span class="pd-soldout-tag">Sold Out</span>' : ''}</div>`;
+             const isSold = isAttributeEntirelySoldOut(cName);
+             return `<div class="color-opt${i === 0 ? ' active' : ''}${isSold ? ' sold-out' : ''}" data-color="${cName}">${cName}${isSold ? '<span class="pd-soldout-tag">Sold Out</span>' : ''}</div>`;
            }).join('')}
          </div>`
       : '';
@@ -801,31 +863,15 @@
       const color = root.querySelector('.color-opt.active')?.dataset.color;
       const varOpt = root.querySelector('.variant-opt.active')?.dataset.variant;
 
-      let availQty = 999;
-      if (hasVariantStock) {
-        const combined = [varOpt, size, color].filter(Boolean).join(' — ');
-        if (vs[combined] !== undefined) {
-          availQty = Number(vs[combined]);
-        } else {
-          const checked = [];
-          if (varOpt && vs[varOpt] !== undefined) checked.push(Number(vs[varOpt]));
-          if (color && vs[color] !== undefined) checked.push(Number(vs[color]));
-          if (size && vs[size] !== undefined) checked.push(Number(vs[size]));
-          if (checked.length > 0) availQty = Math.min(...checked);
-          else if (product.stock != null) availQty = Number(product.stock);
-        }
-      } else if (product.stock != null) {
-        availQty = Number(product.stock);
-      }
-
-      const isOut = (product.inStock === false) || (availQty <= 0);
+      const availQty = findCombinationStock(color, varOpt, size);
+      const isOut = (product.inStock === false) || (availQty !== null && availQty <= 0);
       const stockBox = document.getElementById('pd-stock-container');
       const addBtn = document.getElementById('pd-add-btn');
       const buyNowBtn = document.getElementById('pd-buynow-btn');
 
       if (isOut) {
         if (stockBox) {
-          stockBox.innerHTML = `<p style="color:#ef4444;font-size:0.85rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:16px;"><i class="fa-solid fa-circle-xmark"></i> Out of Stock — Selected option is unavailable</p>`;
+          stockBox.innerHTML = `<p style="color:#ef4444;font-size:0.85rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:16px;"><i class="fa-solid fa-circle-xmark"></i> Out of Stock — Selected combination is unavailable</p>`;
         }
         if (addBtn) {
           addBtn.disabled = true;
@@ -869,24 +915,26 @@
 
     /* Add to bag */
     const addBtn = document.getElementById('pd-add-btn');
-    if (addBtn && product.inStock !== false) {
+    if (addBtn) {
       addBtn.addEventListener('click', () => {
+        if (addBtn.disabled) return;
         const size = root.querySelector('.size-opt.active')?.dataset.size;
         const color = root.querySelector('.color-opt.active')?.dataset.color;
         const varOpt = root.querySelector('.variant-opt.active')?.dataset.variant;
-        const variant = [varOpt, size, color].filter(Boolean).join(' — ') || 'Standard';
+        const variant = getSelectedVariantCombo(color, varOpt, size);
         window.addToCart(product.name, Number(product.price), emoji, variant, (product.images && product.images[0]) || product.image || '');
       });
     }
 
     /* Buy now */
     const buyNowBtn = document.getElementById('pd-buynow-btn');
-    if (buyNowBtn && product.inStock !== false) {
+    if (buyNowBtn) {
       buyNowBtn.addEventListener('click', () => {
+        if (buyNowBtn.disabled) return;
         const size = root.querySelector('.size-opt.active')?.dataset.size;
         const color = root.querySelector('.color-opt.active')?.dataset.color;
         const varOpt = root.querySelector('.variant-opt.active')?.dataset.variant;
-        const variant = [varOpt, size, color].filter(Boolean).join(' — ') || 'Standard';
+        const variant = getSelectedVariantCombo(color, varOpt, size);
         window.buyNow(product.name, Number(product.price), emoji, variant, (product.images && product.images[0]) || product.image || '');
       });
     }
@@ -898,10 +946,10 @@
         const size = root.querySelector('.size-opt.active')?.dataset.size;
         const color = root.querySelector('.color-opt.active')?.dataset.color;
         const pdVariant = root.querySelector('.variant-opt.active')?.dataset.variant;
-        const variant = [pdVariant, size, color].filter(Boolean).join(' — ');
+        const variant = getSelectedVariantCombo(color, pdVariant, size);
         const waNum = window.DERAZONE_CONFIG?.whatsapp?.number || '923294551652';
         let msg = `Hello DERA ZONE, I want to order this product: ${product.name}`;
-        if (variant) msg += ` (${variant})`;
+        if (variant && variant !== 'Standard') msg += ` (${variant})`;
         msg += ` - PKR ${product.price}. Link: ${window.location.href}`;
         window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`, '_blank');
       });

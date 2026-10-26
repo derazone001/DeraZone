@@ -481,7 +481,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const finalTotal = Math.max(0, subtotal - discount + fee);
 
     try {
+      const cust = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
       const result = await apiPlaceOrder({
+        userId:         cust?.id || null,
         items:          cart,
         delivery:       orderData.delivery,
         paymentMethod:  payMethod,

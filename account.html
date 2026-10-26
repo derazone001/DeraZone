@@ -335,7 +335,7 @@
 
             <div class="form-group">
               <label>WhatsApp / Phone</label>
-              <input type="tel" name="phone" placeholder="03XXXXXXXXX"/>
+              <input type="tel" name="phone" id="signup-phone" placeholder="03XXXXXXXXX" inputmode="tel" pattern="[0-9+\-() ]+"/>
             </div>
 
             <div class="form-group">
@@ -707,6 +707,19 @@
       }
     });
 
+    /* ── Phone input restriction (numbers and valid phone symbols only) ── */
+    const phoneInput = document.getElementById('signup-phone');
+    if (phoneInput) {
+      phoneInput.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/[^0-9+\-() ]/g, '');
+      });
+      phoneInput.addEventListener('keypress', (e) => {
+        if (!/[0-9+\-() ]/.test(e.key)) {
+          e.preventDefault();
+        }
+      });
+    }
+
     /* ── Sign Up ── */
     document.getElementById('signup-form')?.addEventListener('submit', async e => {
       e.preventDefault();
@@ -718,11 +731,13 @@
         return;
       }
 
+      const rawPhone = (fd.get('phone') || '').toString().replace(/[^0-9+\-() ]/g, '').trim();
+
       const payload = {
         fname: fd.get('fname'),
         lname: fd.get('lname'),
         email: fd.get('email'),
-        phone: fd.get('phone'),
+        phone: rawPhone,
         password: password,
       };
 

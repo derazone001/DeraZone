@@ -365,6 +365,75 @@ function send_admin_contact_alert($msg) {
 
 
 // ── INVENTORY & STOCK MANAGEMENT HELPERS ──
+
+// ── Stock & Inventory Validation Helpers ──
+function find_product_variant_stock_key($variantStock, $variant) {
+    if (empty($variantStock) || !is_array($variantStock) || empty($variant)) return null;
+    $vClean = trim($variant);
+    if (strcasecmp($vClean, 'Standard') === 0) return null;
+
+    // 1. Direct case-insensitive match
+    foreach ($variantStock as $k => $qty) {
+        if (strcasecmp(trim($k), $vClean) === 0) {
+            return $k;
+        }
+    }
+
+    // 2. Token-based matching (Color, Variant, Size combination components)
+    $extractTokens = function($str) {
+        $clean = preg_replace('/\b(Color|Variant|Size)\b/i', '', $str);
+        $parts = preg_split('/[—\-\/,|+]/', $clean);
+        $tokens = [];
+        foreach ($parts as $p) {
+            $t = strtolower(trim($p));
+            if ($t !== '') $tokens[] = $t;
+        }
+        return $tokens;
+    };
+
+    $variantTokens = $extractTokens($vClean);
+    if (!empty($variantTokens)) {
+        // Try exact token-set match first
+        foreach ($variantStock as $k => $qty) {
+            $kTokens = $extractTokens($k);
+            if (!empty($kTokens) && count($kTokens) === count($variantTokens)) {
+                $diff1 = array_diff($variantTokens, $kTokens);
+                $diff2 = array_diff($kTokens, $variantTokens);
+                if (empty($diff1) && empty($diff2)) {
+                    return $k;
+                }
+            }
+        }
+
+        // Match if all active variant tokens are present in candidate key
+        foreach ($variantStock as $k => $qty) {
+            $kLower = strtolower($k);
+            $allFound = true;
+            foreach ($variantTokens as $t) {
+                if (strpos($kLower, $t) === false) {
+                    $allFound = false;
+                    break;
+                }
+            }
+            if ($allFound) {
+                return $k;
+            }
+        }
+    }
+
+    // 3. Fallback: single token match against flat options
+    $rawParts = array_map('trim', preg_split('/[—\-\/,|]/', $vClean));
+    foreach ($variantStock as $k => $qty) {
+        foreach ($rawParts as $prt) {
+            if (!empty($prt) && strcasecmp(trim($k), $prt) === 0) {
+                return $k;
+            }
+        }
+    }
+
+    return null;
+}
+
 function check_items_stock_availability($store, $items) {
     if (empty($items) || !is_array($items) || empty($store['products'])) return true;
 
@@ -388,25 +457,7 @@ function check_items_stock_availability($store, $items) {
                 }
 
                 if (!empty($p['variantStock']) && is_array($p['variantStock']) && !empty($variant) && strcasecmp($variant, 'Standard') !== 0) {
-                    $matchedKey = null;
-                    foreach ($p['variantStock'] as $vKey => $vQty) {
-                        if (strcasecmp(trim($vKey), $variant) === 0) {
-                            $matchedKey = $vKey;
-                            break;
-                        }
-                    }
-                    if ($matchedKey === null) {
-                        $parts = array_map('trim', preg_split('/[—\-\/,|]/', $variant));
-                        foreach ($p['variantStock'] as $vKey => $vQty) {
-                            foreach ($parts as $prt) {
-                                if (!empty($prt) && strcasecmp(trim($vKey), $prt) === 0) {
-                                    $matchedKey = $vKey;
-                                    break 2;
-                                }
-                            }
-                        }
-                    }
-
+                    $matchedKey = find_product_variant_stock_key($p['variantStock'], $variant);
                     if ($matchedKey !== null) {
                         $available = intval($p['variantStock'][$matchedKey] ?? 0);
                         if ($available <= 0) {
@@ -451,28 +502,11 @@ function deduct_product_inventory(&$store, $items) {
 
             if ($match) {
                 if (!empty($p['variantStock']) && is_array($p['variantStock'])) {
-                    $deducted = false;
-                    if (!empty($variant)) {
-                        foreach ($p['variantStock'] as $vKey => $vQty) {
-                            if (strcasecmp(trim($vKey), $variant) === 0) {
-                                $newQty = max(0, intval($vQty) - $qty);
-                                $p['variantStock'][$vKey] = $newQty;
-                                $deducted = true;
-                                break;
-                            }
-                        }
-                        if (!$deducted) {
-                            $parts = array_map('trim', preg_split('/[—\-\/,|]/', $variant));
-                            foreach ($p['variantStock'] as $vKey => $vQty) {
-                                foreach ($parts as $prt) {
-                                    if (!empty($prt) && strcasecmp(trim($vKey), $prt) === 0) {
-                                        $newQty = max(0, intval($vQty) - $qty);
-                                        $p['variantStock'][$vKey] = $newQty;
-                                        $deducted = true;
-                                        break 2;
-                                    }
-                                }
-                            }
+                    if (!empty($variant) && strcasecmp($variant, 'Standard') !== 0) {
+                        $matchedKey = find_product_variant_stock_key($p['variantStock'], $variant);
+                        if ($matchedKey !== null) {
+                            $curQty = intval($p['variantStock'][$matchedKey] ?? 0);
+                            $p['variantStock'][$matchedKey] = max(0, $curQty - $qty);
                         }
                     }
                     $total = 0;
@@ -2082,19 +2116,30 @@ if ($endpoint === 'admin/customers' || $endpoint === 'admin/users' || preg_match
     if ($method === 'GET') {
         $customerList = [];
         foreach ($users as $u) {
+            $uId = strval($u['id'] ?? '');
             $uEmail = strtolower(trim($u['email'] ?? ''));
             $uPhone = preg_replace('/[^0-9]/', '', $u['phone'] ?? '');
 
             $userOrders = [];
             $totalSpent = 0;
             foreach ($allOrders as $o) {
+                $oUserId = strval($o['userId'] ?? $o['customer']['id'] ?? '');
                 $oEmail = strtolower(trim($o['customer']['email'] ?? $o['delivery']['email'] ?? $o['email'] ?? ''));
                 $oPhone = preg_replace('/[^0-9]/', '', $o['customer']['phone'] ?? $o['delivery']['phone'] ?? $o['phone'] ?? '');
 
                 $match = false;
-                if (!empty($uEmail) && $oEmail === $uEmail) $match = true;
-                if (!$match && !empty($uPhone) && strlen($uPhone) >= 7 && !empty($oPhone)) {
-                    if ($uPhone === $oPhone || (strlen($uPhone) >= 10 && strlen($oPhone) >= 10 && substr($uPhone, -10) === substr($oPhone, -10))) {
+                // 1. Direct User ID match (if order was placed by authenticated customer)
+                if (!empty($uId) && !empty($oUserId) && $uId === $oUserId) {
+                    $match = true;
+                }
+                // 2. Email match: web orders are strictly identified by the customer's email address
+                elseif (!empty($uEmail) && !empty($oEmail) && $uEmail === $oEmail) {
+                    $match = true;
+                }
+                // 3. Phone match ONLY if the order has NO email attached (e.g. social media / offline manual order)
+                // If an order has an email, it belongs specifically to that email and must NOT cross-link by phone
+                elseif (empty($oEmail) && !empty($uPhone) && strlen($uPhone) >= 7 && !empty($oPhone)) {
+                    if ($uPhone === $oPhone || (strlen($uPhone) >= 9 && strlen($oPhone) >= 9 && substr($uPhone, -9) === substr($oPhone, -9))) {
                         $match = true;
                     }
                 }

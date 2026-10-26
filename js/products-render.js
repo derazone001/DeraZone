@@ -820,33 +820,85 @@ window.derazoneOpenQuickSelect = async function(productId) {
 
   const vs = (product.variantStock && typeof product.variantStock === 'object') ? product.variantStock : {};
   const hasVS = Object.keys(vs).length > 0;
-  const getQuickOptStock = (name) => {
-    if (!name) return 999;
-    if (!hasVS) return (product.stock != null) ? Number(product.stock) : (product.inStock !== false ? 999 : 0);
-    if (vs[name] !== undefined) return Number(vs[name]);
-    const f = Object.keys(vs).find(k => k.trim().toLowerCase() === name.trim().toLowerCase());
-    return f ? Number(vs[f]) : 999;
+
+  const getSelectedVariantCombo = (color, variant, size) => {
+    const c = color ? color.trim() : '';
+    const v = variant ? variant.trim() : '';
+    const s = size ? size.trim() : '';
+
+    if (c && v && s) return `Color ${c} Variant ${v} - Size ${s}`;
+    if (c && s) return `Color ${c} - Size ${s}`;
+    if (c && v) return `Color ${c} - Variant ${v}`;
+    if (v && s) return `Variant ${v} - Size ${s}`;
+    if (c) return c;
+    if (v) return v;
+    if (s) return s;
+    return 'Standard';
+  };
+
+  const findQuickCombinationStock = (color, variant, size) => {
+    if (!hasVS) {
+      return (product.stock != null) ? Number(product.stock) : (product.inStock !== false ? 999 : 0);
+    }
+    const keys = Object.keys(vs);
+    if (keys.length === 0) {
+      return (product.stock != null) ? Number(product.stock) : 999;
+    }
+
+    const c = color ? color.trim() : '';
+    const v = variant ? variant.trim() : '';
+    const s = size ? size.trim() : '';
+    const canonical = getSelectedVariantCombo(c, v, s);
+
+    // 1. Direct key match
+    if (vs[canonical] !== undefined) return Number(vs[canonical]);
+
+    // Case-insensitive exact match
+    const ciKey = keys.find(k => k.trim().toLowerCase() === canonical.toLowerCase());
+    if (ciKey) return Number(vs[ciKey]);
+
+    // 2. Token-based matching (Color, Variant, Size components)
+    const activeTokens = [c, v, s].filter(Boolean).map(t => t.toLowerCase());
+    if (activeTokens.length > 0) {
+      const matchedKey = keys.find(k => {
+        const kLower = k.toLowerCase();
+        return activeTokens.every(t => kLower.includes(t));
+      });
+      if (matchedKey) return Number(vs[matchedKey]);
+
+      const slashKey = [c, v, s].filter(Boolean).join(' / ');
+      if (vs[slashKey] !== undefined) return Number(vs[slashKey]);
+
+      const hyphenKey = [c, v, s].filter(Boolean).join(' - ');
+      if (vs[hyphenKey] !== undefined) return Number(vs[hyphenKey]);
+
+      const emdashKey = [v, s, c].filter(Boolean).join(' — ');
+      if (vs[emdashKey] !== undefined) return Number(vs[emdashKey]);
+    }
+
+    // 3. Fallback to individual attribute stocks if saved flat
+    const flatStocks = [];
+    if (c && vs[c] !== undefined) flatStocks.push(Number(vs[c]));
+    if (v && vs[v] !== undefined) flatStocks.push(Number(vs[v]));
+    if (s && vs[s] !== undefined) flatStocks.push(Number(vs[s]));
+    if (flatStocks.length > 0) return Math.min(...flatStocks);
+
+    return (product.stock != null) ? Number(product.stock) : 999;
+  };
+
+  const isQuickAttrEntirelySoldOut = (attrVal) => {
+    if (!hasVS) return false;
+    const keys = Object.keys(vs);
+    if (keys.length === 0) return false;
+    const valLower = attrVal.trim().toLowerCase();
+    const relevantKeys = keys.filter(k => k.toLowerCase().includes(valLower));
+    if (relevantKeys.length === 0) return false;
+    return relevantKeys.every(k => Number(vs[k]) <= 0);
   };
 
   const updateQuickModalStockState = () => {
-    let avail = 999;
-    if (hasVS) {
-      const combined = [_selectedQuickVariant, _selectedQuickSize, _selectedQuickColor].filter(Boolean).join(' — ');
-      if (vs[combined] !== undefined) {
-        avail = Number(vs[combined]);
-      } else {
-        const checked = [];
-        if (_selectedQuickVariant && vs[_selectedQuickVariant] !== undefined) checked.push(Number(vs[_selectedQuickVariant]));
-        if (_selectedQuickColor && vs[_selectedQuickColor] !== undefined) checked.push(Number(vs[_selectedQuickColor]));
-        if (_selectedQuickSize && vs[_selectedQuickSize] !== undefined) checked.push(Number(vs[_selectedQuickSize]));
-        if (checked.length > 0) avail = Math.min(...checked);
-        else if (product.stock != null) avail = Number(product.stock);
-      }
-    } else if (product.stock != null) {
-      avail = Number(product.stock);
-    }
-
-    const isSoldOut = (product.inStock === false) || (avail <= 0);
+    const avail = findQuickCombinationStock(_selectedQuickColor, _selectedQuickVariant, _selectedQuickSize);
+    const isSoldOut = (product.inStock === false) || (avail !== null && avail <= 0);
     const addBtn = document.getElementById('qm-add-btn');
     if (addBtn) {
       if (isSoldOut) {
@@ -856,7 +908,8 @@ window.derazoneOpenQuickSelect = async function(productId) {
         addBtn.style.cursor = 'not-allowed';
       } else {
         addBtn.disabled = false;
-        addBtn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> Add to Bag';
+        const lowNotice = (avail > 0 && avail <= 5) ? ` (${avail} left)` : '';
+        addBtn.innerHTML = `<i class="fa-solid fa-bag-shopping"></i> Add to Bag${lowNotice}`;
         addBtn.style.opacity = '1';
         addBtn.style.cursor = 'pointer';
       }
@@ -871,8 +924,7 @@ window.derazoneOpenQuickSelect = async function(productId) {
     _selectedQuickSize = pSizes[0];
     if (sizeLabel) sizeLabel.textContent = _selectedQuickSize;
     sizesList.innerHTML = pSizes.map((s, idx) => {
-      const stk = getQuickOptStock(s);
-      const isSold = stk <= 0;
+      const isSold = isQuickAttrEntirelySoldOut(s);
       return `<div class="qm-pill ${idx === 0 ? 'active' : ''} ${isSold ? 'sold-out' : ''}" data-size="${s}" style="${isSold ? 'opacity:0.5;text-decoration:line-through;cursor:not-allowed;' : ''}">${s}${isSold ? ' (Sold Out)' : ''}</div>`;
     }).join('');
     sizesList.querySelectorAll('.qm-pill').forEach(btn => {
@@ -898,8 +950,7 @@ window.derazoneOpenQuickSelect = async function(productId) {
     if (colorLabel) colorLabel.textContent = _selectedQuickColor;
     colorsList.innerHTML = pColors.map((c, idx) => {
       const cName = typeof c === 'object' ? c.name : c;
-      const stk = getQuickOptStock(cName);
-      const isSold = stk <= 0;
+      const isSold = isQuickAttrEntirelySoldOut(cName);
       return `<div class="qm-pill ${idx === 0 ? 'active' : ''} ${isSold ? 'sold-out' : ''}" data-color="${cName}" style="${isSold ? 'opacity:0.5;text-decoration:line-through;cursor:not-allowed;' : ''}">${cName}${isSold ? ' (Sold Out)' : ''}</div>`;
     }).join('');
     colorsList.querySelectorAll('.qm-pill').forEach(btn => {
@@ -925,8 +976,7 @@ window.derazoneOpenQuickSelect = async function(productId) {
     if (variantLabel) variantLabel.textContent = _selectedQuickVariant;
     variantsList.innerHTML = pVariants.map((v, idx) => {
       const vName = typeof v === 'object' ? v.name : v;
-      const stk = getQuickOptStock(vName);
-      const isSold = stk <= 0;
+      const isSold = isQuickAttrEntirelySoldOut(vName);
       return `<div class="qm-pill ${idx === 0 ? 'active' : ''} ${isSold ? 'sold-out' : ''}" data-variant="${vName}" style="${isSold ? 'opacity:0.5;text-decoration:line-through;cursor:not-allowed;' : ''}">${vName}${isSold ? ' (Sold Out)' : ''}</div>`;
     }).join('');
     variantsList.querySelectorAll('.qm-pill').forEach(btn => {
@@ -952,8 +1002,19 @@ window.derazoneOpenQuickSelect = async function(productId) {
 window.confirmQuickSelectAddToCart = function() {
   if (!_activeQuickProduct) return;
   const p = _activeQuickProduct;
-  const variantParts = [_selectedQuickVariant, _selectedQuickSize, _selectedQuickColor].filter(Boolean);
-  const finalVariant = variantParts.length > 0 ? variantParts.join(' - ') : 'Standard';
+  const c = _selectedQuickColor ? _selectedQuickColor.trim() : '';
+  const v = _selectedQuickVariant ? _selectedQuickVariant.trim() : '';
+  const s = _selectedQuickSize ? _selectedQuickSize.trim() : '';
+
+  let finalVariant = 'Standard';
+  if (c && v && s) finalVariant = `Color ${c} Variant ${v} - Size ${s}`;
+  else if (c && s) finalVariant = `Color ${c} - Size ${s}`;
+  else if (c && v) finalVariant = `Color ${c} - Variant ${v}`;
+  else if (v && s) finalVariant = `Variant ${v} - Size ${s}`;
+  else if (c) finalVariant = c;
+  else if (v) finalVariant = v;
+  else if (s) finalVariant = s;
+
   const qty = parseInt(document.getElementById('qm-qty-input')?.value) || 1;
   const primaryImg = (p.images && p.images[0]) || p.image || '';
 
