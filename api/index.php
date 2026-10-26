@@ -846,6 +846,14 @@ if ($endpoint === 'products' || preg_match('#^(?:admin/)?products(?:/(.+))?$#', 
                 if ($newProd['stock'] <= 0) $newProd['inStock'] = false;
             }
 
+            if (isset($newProd['variantPrices']) && is_array($newProd['variantPrices'])) {
+                foreach ($newProd['variantPrices'] as $vk => $vv) {
+                    $vp = floatval($vv);
+                    if ($vp > 0) $newProd['variantPrices'][$vk] = $vp;
+                    else unset($newProd['variantPrices'][$vk]);
+                }
+            }
+
             $products[] = $newProd;
             $store['products'] = $products;
             save_store($store);
@@ -870,6 +878,14 @@ if ($endpoint === 'products' || preg_match('#^(?:admin/)?products(?:/(.+))?$#', 
                 } elseif (isset($p['stock'])) {
                     $p['stock'] = intval($p['stock']);
                     if ($p['stock'] <= 0) $p['inStock'] = false;
+                }
+
+                if (isset($p['variantPrices']) && is_array($p['variantPrices'])) {
+                    foreach ($p['variantPrices'] as $vk => $vv) {
+                        $vp = floatval($vv);
+                        if ($vp > 0) $p['variantPrices'][$vk] = $vp;
+                        else unset($p['variantPrices'][$vk]);
+                    }
                 }
 
                 $updated = true;

@@ -223,6 +223,252 @@
       background: #7000ff;
       color: #ffffff;
     }
+    /* Quantity Stepper on Product Page */
+    .pd-qty-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 18px;
+      margin-bottom: 6px;
+    }
+    .pd-qty-stepper {
+      display: inline-flex;
+      align-items: center;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+    .pd-qty-btn {
+      width: 38px;
+      height: 38px;
+      border: none;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .pd-qty-btn:hover {
+      background: #ede9fe;
+      color: #7000ff;
+    }
+    .pd-qty-input {
+      width: 52px;
+      height: 38px;
+      border: none;
+      border-left: 1px solid #e2e8f0;
+      border-right: 1px solid #e2e8f0;
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #0f172a;
+      background: #ffffff;
+      -moz-appearance: textfield;
+    }
+    .pd-qty-input::-webkit-outer-spin-button,
+    .pd-qty-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Multi-Variant Quick Order Box */
+    .pd-multi-box {
+      margin-top: 24px;
+      background: #ffffff;
+      border: 1.5px solid #ede9fe;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 4px 16px rgba(112, 0, 255, 0.05);
+    }
+    .pd-multi-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+    .pd-multi-title {
+      font-size: 0.96rem;
+      font-weight: 800;
+      color: #1e1b4b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+    .pd-multi-sub {
+      font-size: 0.78rem;
+      color: #64748b;
+      margin: 0;
+    }
+    .pd-multi-table {
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 320px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .pd-multi-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 12px;
+      background: #faf7ff;
+      border: 1px solid #f1f5f9;
+      border-radius: 8px;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .pd-multi-row:hover {
+      background: #f5f3ff;
+      border-color: #ddd6fe;
+    }
+    .pd-multi-row.sold-out {
+      opacity: 0.55;
+      background: #f8fafc;
+    }
+    .pd-multi-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .pd-multi-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1e293b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pd-multi-meta {
+      font-size: 0.76rem;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .pd-multi-price {
+      color: #7000ff;
+      font-weight: 700;
+    }
+    .pd-multi-stock-badge {
+      font-weight: 600;
+    }
+    .pd-multi-stock-badge.in-stock {
+      color: #10b981;
+    }
+    .pd-multi-stock-badge.out-stock {
+      color: #ef4444;
+      font-weight: 700;
+    }
+    .pd-multi-stepper {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #fff;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .pd-multi-stepper button {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pd-multi-stepper button:hover:not(:disabled) {
+      background: #ede9fe;
+      color: #7000ff;
+    }
+    .pd-multi-stepper button:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .pd-multi-stepper input {
+      width: 36px;
+      height: 28px;
+      border: none;
+      border-left: 1px solid #cbd5e1;
+      border-right: 1px solid #cbd5e1;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #0f172a;
+      -moz-appearance: textfield;
+    }
+    .pd-multi-stepper input::-webkit-outer-spin-button,
+    .pd-multi-stepper input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .pd-multi-summary {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.88rem;
+    }
+    .pd-multi-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .pd-multi-actions .btn-primary {
+      flex: 1.3;
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #7000ff 0%, #9d4edd 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(112, 0, 255, 0.25);
+      transition: all 0.2s ease;
+    }
+    .pd-multi-actions .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(112, 0, 255, 0.35);
+    }
+    .pd-multi-actions .btn-primary:disabled,
+    .pd-multi-actions .btn-outline:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    .pd-multi-actions .btn-outline {
+      flex: 1;
+      padding: 12px 14px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border: 1.5px solid #7000ff;
+      background: transparent;
+      color: #7000ff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .pd-multi-actions .btn-outline:hover:not(:disabled) {
+      background: #7000ff;
+      color: #ffffff;
+    }
     .pd-wishlist {
       width: 52px;
       height: 52px;
@@ -579,9 +825,9 @@
   <!-- SCRIPTS -->
   <script src="js/whatsapp-config.js"></script>
   <script src="js/api.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/main.js?v=20261026c"></script>
   <script src="js/search.js"></script>
-  <script src="js/products-render.js?v=20261026b"></script>
+  <script src="js/products-render.js?v=20261026c"></script>
   <script>
   /* ============================================================
      Product Detail Page — loads product from backend by ?id=
@@ -695,6 +941,61 @@
       return (product.stock != null) ? Number(product.stock) : 999;
     }
 
+    function findCombinationPrice(color, variant, size) {
+      const vp = (product.variantPrices && typeof product.variantPrices === 'object') ? product.variantPrices : {};
+      const keys = Object.keys(vp);
+      if (keys.length === 0) return Number(product.price);
+
+      const c = color ? color.trim() : '';
+      const v = variant ? variant.trim() : '';
+      const s = size ? size.trim() : '';
+      const canonical = getSelectedVariantCombo(c, v, s);
+
+      if (vp[canonical] !== undefined && Number(vp[canonical]) > 0) {
+        return Number(vp[canonical]);
+      }
+      const ciKey = keys.find(k => k.trim().toLowerCase() === canonical.toLowerCase());
+      if (ciKey && Number(vp[ciKey]) > 0) return Number(vp[ciKey]);
+
+      const activeTokens = [c, v, s].filter(Boolean).map(t => t.toLowerCase());
+      if (activeTokens.length > 0) {
+        const matchedKey = keys.find(k => {
+          const kLower = k.toLowerCase();
+          return activeTokens.every(t => kLower.includes(t));
+        });
+        if (matchedKey && Number(vp[matchedKey]) > 0) return Number(vp[matchedKey]);
+      }
+
+      return Number(product.price);
+    }
+
+    function generateProductCombinations(colors, variants, sizes) {
+      const cList = (colors && colors.length) ? colors : [''];
+      const vList = (variants && variants.length) ? variants : [''];
+      const sList = (sizes && sizes.length) ? sizes : [''];
+
+      const combos = [];
+      for (const c of cList) {
+        for (const v of vList) {
+          for (const s of sList) {
+            const parts = [];
+            if (c) parts.push(`Color ${c}`);
+            if (v) parts.push(`Variant ${v}`);
+            if (s) parts.push(`Size ${s}`);
+            const label = parts.join(' - ') || 'Standard';
+            combos.push({
+              key: label,
+              color: c,
+              variant: v,
+              size: s,
+              label: label
+            });
+          }
+        }
+      }
+      return combos;
+    }
+
     function isAttributeEntirelySoldOut(attrVal) {
       if (product.inStock === false || product.inStock === 'false') return true;
       if (!hasVariantStock) return (product.stock != null && Number(product.stock) <= 0);
@@ -742,6 +1043,75 @@
          </div>`
       : '';
 
+    const cleanColors = pColors.map(c => (typeof c === 'string' ? c.trim() : c.name)).filter(Boolean);
+    const cleanVariants = pVariants.map(v => (typeof v === 'string' ? v.trim() : v)).filter(Boolean);
+    const cleanSizes = pSizes.map(s => (typeof s === 'string' ? s.trim() : s)).filter(Boolean);
+    const allCombos = generateProductCombinations(cleanColors, cleanVariants, cleanSizes);
+    const hasMultipleVariants = allCombos.length > 1;
+
+    let multiVariantHTML = '';
+    if (hasMultipleVariants) {
+      const comboRowsHTML = allCombos.map(combo => {
+        const comboStock = findCombinationStock(combo.color, combo.variant, combo.size);
+        const comboPrice = findCombinationPrice(combo.color, combo.variant, combo.size);
+        const isSoldOut = (product.inStock === false) || (comboStock !== null && comboStock <= 0);
+        const maxStock = (comboStock !== null && comboStock > 0) ? comboStock : 0;
+        const stockBadge = isSoldOut
+          ? `<span class="pd-multi-stock-badge out-stock">Sold Out</span>`
+          : `<span class="pd-multi-stock-badge in-stock">${maxStock <= 5 ? `Only ${maxStock} left` : `${maxStock} in stock`}</span>`;
+
+        return `
+          <div class="pd-multi-row${isSoldOut ? ' sold-out' : ''}" data-combo-key="${combo.key}">
+            <div class="pd-multi-info">
+              <div class="pd-multi-label" title="${combo.label}">${combo.label}</div>
+              <div class="pd-multi-meta">
+                <span class="pd-multi-price">PKR ${Number(comboPrice).toLocaleString()}</span>
+                <span>•</span>
+                ${stockBadge}
+              </div>
+            </div>
+            <div class="pd-multi-stepper">
+              <button type="button" ${isSoldOut ? 'disabled' : ''} onclick="stepMultiQty('${combo.key.replace(/'/g, "\\'")}', -1, ${maxStock})">−</button>
+              <input type="number" id="multi-qty-${encodeURIComponent(combo.key)}" data-combo-key="${combo.key}" data-price="${comboPrice}" data-max="${maxStock}" value="0" min="0" max="${maxStock}" ${isSoldOut ? 'disabled' : ''} onchange="validateMultiQty('${combo.key.replace(/'/g, "\\'")}', ${maxStock})" />
+              <button type="button" ${isSoldOut ? 'disabled' : ''} onclick="stepMultiQty('${combo.key.replace(/'/g, "\\'")}', 1, ${maxStock})">+</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      multiVariantHTML = `
+        <div class="pd-multi-box" id="pd-multi-box">
+          <div class="pd-multi-header" onclick="derazoneToggleMultiBox()">
+            <div>
+              <div class="pd-multi-title">
+                <i class="fa-solid fa-layer-group" style="color:#7000ff;"></i>
+                Order Multiple Variants / Colors
+              </div>
+              <p class="pd-multi-sub">Want multiple sizes or colors? Select quantities below and add all in 1 click!</p>
+            </div>
+            <span id="pd-multi-toggle-icon" style="color:#7000ff;font-size:1rem;margin-left:8px;"><i class="fa-solid fa-chevron-up"></i></span>
+          </div>
+          <div id="pd-multi-body">
+            <div class="pd-multi-table">
+              ${comboRowsHTML}
+            </div>
+            <div class="pd-multi-summary">
+              <div><strong id="pd-multi-total-items">0 items</strong> selected</div>
+              <div>Total: <strong id="pd-multi-total-price" style="color:#7000ff;font-size:1.05rem;">PKR 0</strong></div>
+            </div>
+            <div class="pd-multi-actions">
+              <button type="button" class="btn-primary" id="pd-multi-add-btn" disabled onclick="addMultiVariantsToBag()">
+                <i class="fa-solid fa-bag-shopping" style="margin-right:6px;"></i> Add Selected to Bag
+              </button>
+              <button type="button" class="btn-outline" id="pd-multi-buy-btn" disabled onclick="buyMultiVariantsNow()">
+                Buy Selected Now
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
     const images = (product.images && product.images.length) ? product.images : [];
     const hasVideo = !!product.video;
     const hasImages = images.length > 0;
@@ -774,7 +1144,7 @@
             <a href="/">Home</a> / <a href="shop">Shop</a> / <a href="shop?cat=${catSlug}">${catLabel || 'Category'}</a>
           </p>
           <h1 class="pd-title">${product.name}</h1>
-          <div class="pd-price">
+          <div class="pd-price" id="pd-price-display">
             PKR ${Number(product.price).toLocaleString()}
             ${oldPriceHTML}
           </div>
@@ -786,6 +1156,16 @@
           ${colorsHTML}
           ${variantsHTML}
           
+          <div class="pd-qty-row">
+            <label class="pd-option-label" style="margin-bottom:0;">Quantity:</label>
+            <div class="pd-qty-stepper">
+              <button type="button" class="pd-qty-btn" id="pd-qty-minus" onclick="stepPdQty(-1)">−</button>
+              <input type="number" id="pd-qty-input" class="pd-qty-input" value="1" min="1" max="999" onchange="validatePdQty()" />
+              <button type="button" class="pd-qty-btn" id="pd-qty-plus" onclick="stepPdQty(1)">+</button>
+            </div>
+            <span id="pd-qty-stock-label" style="font-size:0.82rem;color:#64748b;font-weight:600;"></span>
+          </div>
+
           <div class="pd-add-row">
             <button class="btn-primary" id="pd-add-btn">
               <i class="fa-solid fa-bag-shopping" style="margin-right:8px;"></i> Add to Bag
@@ -795,6 +1175,8 @@
             </button>
             <div class="pd-wishlist" title="Wishlist"><i class="fa-regular fa-heart"></i></div>
           </div>
+
+          ${multiVariantHTML}
 
           <button id="pd-whatsapp-btn" class="btn-pd-whatsapp">
             <i class="fa-brands fa-whatsapp" style="font-size:1.2rem;"></i> Quick WhatsApp Order
@@ -864,6 +1246,155 @@
       initGalleryHoverZoom();
     };
 
+    /* ── Quantity Stepper Handlers ── */
+    window.stepPdQty = function(delta) {
+      const input = document.getElementById('pd-qty-input');
+      if (!input) return;
+      const max = parseInt(input.max) || 999;
+      let cur = parseInt(input.value) || 1;
+      cur += delta;
+      if (cur < 1) cur = 1;
+      if (cur > max) {
+        cur = max;
+        if (typeof showToast === 'function') showToast(`Maximum available stock is ${max}`);
+      }
+      input.value = cur;
+    };
+
+    window.validatePdQty = function() {
+      const input = document.getElementById('pd-qty-input');
+      if (!input) return;
+      const max = parseInt(input.max) || 999;
+      let cur = parseInt(input.value) || 1;
+      if (cur < 1) cur = 1;
+      if (cur > max) {
+        cur = max;
+        if (typeof showToast === 'function') showToast(`Maximum available stock is ${max}`);
+      }
+      input.value = cur;
+    };
+
+    /* ── Multi-Variant Stepper Handlers ── */
+    window.derazoneToggleMultiBox = function() {
+      const body = document.getElementById('pd-multi-body');
+      const icon = document.getElementById('pd-multi-toggle-icon');
+      if (!body) return;
+      if (body.style.display === 'none') {
+        body.style.display = 'block';
+        if (icon) icon.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+      } else {
+        body.style.display = 'none';
+        if (icon) icon.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+      }
+    };
+
+    window.stepMultiQty = function(comboKey, delta, maxStock) {
+      const input = document.getElementById(`multi-qty-${encodeURIComponent(comboKey)}`);
+      if (!input) return;
+      let cur = parseInt(input.value) || 0;
+      cur += delta;
+      if (cur < 0) cur = 0;
+      if (maxStock > 0 && cur > maxStock) {
+        cur = maxStock;
+        if (typeof showToast === 'function') showToast(`Only ${maxStock} units available for ${comboKey}`);
+      }
+      input.value = cur;
+      updateMultiSubtotal();
+    };
+
+    window.validateMultiQty = function(comboKey, maxStock) {
+      const input = document.getElementById(`multi-qty-${encodeURIComponent(comboKey)}`);
+      if (!input) return;
+      let cur = parseInt(input.value) || 0;
+      if (cur < 0) cur = 0;
+      if (maxStock > 0 && cur > maxStock) {
+        cur = maxStock;
+        if (typeof showToast === 'function') showToast(`Only ${maxStock} units available for ${comboKey}`);
+      }
+      input.value = cur;
+      updateMultiSubtotal();
+    };
+
+    window.updateMultiSubtotal = function() {
+      const inputs = document.querySelectorAll('.pd-multi-table input[data-combo-key]');
+      let totalQty = 0;
+      let totalPrice = 0;
+      inputs.forEach(inp => {
+        const q = parseInt(inp.value) || 0;
+        const p = parseFloat(inp.dataset.price) || 0;
+        if (q > 0) {
+          totalQty += q;
+          totalPrice += (q * p);
+        }
+      });
+
+      const totalItemsEl = document.getElementById('pd-multi-total-items');
+      const totalPriceEl = document.getElementById('pd-multi-total-price');
+      const addBtn = document.getElementById('pd-multi-add-btn');
+      const buyBtn = document.getElementById('pd-multi-buy-btn');
+
+      if (totalItemsEl) totalItemsEl.textContent = `${totalQty} item${totalQty === 1 ? '' : 's'}`;
+      if (totalPriceEl) totalPriceEl.textContent = `PKR ${totalPrice.toLocaleString()}`;
+
+      const hasSelection = totalQty > 0;
+      if (addBtn) addBtn.disabled = !hasSelection;
+      if (buyBtn) buyBtn.disabled = !hasSelection;
+    };
+
+    window.addMultiVariantsToBag = function() {
+      const inputs = document.querySelectorAll('.pd-multi-table input[data-combo-key]');
+      const primaryImg = (product.images && product.images[0]) || product.image || '';
+      let addedCount = 0;
+
+      inputs.forEach(inp => {
+        const q = parseInt(inp.value) || 0;
+        if (q > 0) {
+          const comboKey = inp.dataset.comboKey;
+          const price = parseFloat(inp.dataset.price) || Number(product.price);
+          const maxStock = parseInt(inp.dataset.max) || null;
+          window.addToCart(product.name, price, emoji, comboKey, primaryImg, q, maxStock);
+          addedCount += q;
+          inp.value = 0;
+        }
+      });
+
+      if (addedCount > 0) {
+        updateMultiSubtotal();
+        if (typeof showToast === 'function') showToast(`Added ${addedCount} variant items to bag ✓`);
+      }
+    };
+
+    window.buyMultiVariantsNow = function() {
+      const inputs = document.querySelectorAll('.pd-multi-table input[data-combo-key]');
+      const primaryImg = (product.images && product.images[0]) || product.image || '';
+      const buyNowCart = [];
+
+      inputs.forEach(inp => {
+        const q = parseInt(inp.value) || 0;
+        if (q > 0) {
+          const comboKey = inp.dataset.comboKey;
+          const price = parseFloat(inp.dataset.price) || Number(product.price);
+          buyNowCart.push({
+            name: product.name,
+            price: price,
+            emoji: emoji,
+            variant: comboKey,
+            image: primaryImg,
+            qty: q
+          });
+        }
+      });
+
+      if (buyNowCart.length === 0) return;
+
+      const existingCart = localStorage.getItem('derazone_cart');
+      if (existingCart && existingCart !== '[]') {
+        localStorage.setItem('derazone_cart_stashed', existingCart);
+      }
+      localStorage.setItem('derazone_cart', JSON.stringify(buyNowCart));
+      window.location.href = 'checkout';
+    };
+
     /* ── Dynamic Stock & Option Calculator ── */
     function updateActiveStockState() {
       const size = root.querySelector('.size-opt.active')?.dataset.size;
@@ -871,7 +1402,40 @@
       const varOpt = root.querySelector('.variant-opt.active')?.dataset.variant;
 
       const availQty = findCombinationStock(color, varOpt, size);
+      const effPrice = findCombinationPrice(color, varOpt, size);
       const isOut = (product.inStock === false) || (availQty !== null && availQty <= 0);
+
+      // 1. Update Price display with variant-specific price if configured
+      const priceDisplay = document.getElementById('pd-price-display');
+      if (priceDisplay) {
+        const hasOld = product.priceOld && product.priceOld > effPrice;
+        priceDisplay.innerHTML = `
+          PKR ${Number(effPrice).toLocaleString()}
+          ${hasOld ? `<span class="product-price-old">PKR ${Number(product.priceOld).toLocaleString()}</span>` : ''}
+        `;
+      }
+
+      // 2. Clamp Quantity input & stock label
+      const qtyInput = document.getElementById('pd-qty-input');
+      const qtyStockLabel = document.getElementById('pd-qty-stock-label');
+      if (qtyInput) {
+        const maxLim = (availQty !== null && availQty > 0) ? availQty : 1;
+        qtyInput.max = maxLim;
+        let cur = parseInt(qtyInput.value) || 1;
+        if (cur > maxLim) cur = maxLim;
+        if (cur < 1) cur = 1;
+        qtyInput.value = cur;
+      }
+      if (qtyStockLabel) {
+        if (isOut) {
+          qtyStockLabel.textContent = '(Out of Stock)';
+          qtyStockLabel.style.color = '#ef4444';
+        } else {
+          qtyStockLabel.textContent = (availQty !== null) ? `(${availQty} available)` : '';
+          qtyStockLabel.style.color = '#64748b';
+        }
+      }
+
       const stockBox = document.getElementById('pd-stock-container');
       const addBtn = document.getElementById('pd-add-btn');
       const buyNowBtn = document.getElementById('pd-buynow-btn');
@@ -929,7 +1493,10 @@
         const color = root.querySelector('.color-opt.active')?.dataset.color;
         const varOpt = root.querySelector('.variant-opt.active')?.dataset.variant;
         const variant = getSelectedVariantCombo(color, varOpt, size);
-        window.addToCart(product.name, Number(product.price), emoji, variant, (product.images && product.images[0]) || product.image || '');
+        const effPrice = findCombinationPrice(color, varOpt, size);
+        const availQty = findCombinationStock(color, varOpt, size);
+        const qty = parseInt(document.getElementById('pd-qty-input')?.value) || 1;
+        window.addToCart(product.name, effPrice, emoji, variant, (product.images && product.images[0]) || product.image || '', qty, availQty);
       });
     }
 
@@ -942,7 +1509,9 @@
         const color = root.querySelector('.color-opt.active')?.dataset.color;
         const varOpt = root.querySelector('.variant-opt.active')?.dataset.variant;
         const variant = getSelectedVariantCombo(color, varOpt, size);
-        window.buyNow(product.name, Number(product.price), emoji, variant, (product.images && product.images[0]) || product.image || '');
+        const effPrice = findCombinationPrice(color, varOpt, size);
+        const qty = parseInt(document.getElementById('pd-qty-input')?.value) || 1;
+        window.buyNow(product.name, effPrice, emoji, variant, (product.images && product.images[0]) || product.image || '', qty);
       });
     }
 
@@ -954,10 +1523,12 @@
         const color = root.querySelector('.color-opt.active')?.dataset.color;
         const pdVariant = root.querySelector('.variant-opt.active')?.dataset.variant;
         const variant = getSelectedVariantCombo(color, pdVariant, size);
+        const effPrice = findCombinationPrice(color, pdVariant, size);
+        const qty = parseInt(document.getElementById('pd-qty-input')?.value) || 1;
         const waNum = window.DERAZONE_CONFIG?.whatsapp?.number || '923294551652';
         let msg = `Hello DERA ZONE, I want to order this product: ${product.name}`;
         if (variant && variant !== 'Standard') msg += ` (${variant})`;
-        msg += ` - PKR ${product.price}. Link: ${window.location.href}`;
+        msg += ` - Qty: ${qty} - Total: PKR ${(effPrice * qty).toLocaleString()}. Link: ${window.location.href}`;
         window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`, '_blank');
       });
     }

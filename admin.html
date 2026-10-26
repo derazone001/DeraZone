@@ -4675,6 +4675,7 @@ function openProductModal(product = null) {
   productColors = [...(product?.colors || [])];
   productVariants = [...(product?.variants || [])];
   productVariantStock = (product?.variantStock && typeof product?.variantStock === 'object') ? JSON.parse(JSON.stringify(product.variantStock)) : {};
+  productVariantPrices = (product?.variantPrices && typeof product?.variantPrices === 'object') ? JSON.parse(JSON.stringify(product.variantPrices)) : {};
   document.getElementById('p-sizes-text').value  = '';
   document.getElementById('p-colors-text').value = '';
   document.getElementById('p-variants-text').value = '';
@@ -4697,6 +4698,7 @@ let productSizes = [];
 let productColors = [];
 let productVariants = [];
 let productVariantStock = {};
+let productVariantPrices = {};
 
 function renderTagChips(field) {
   const wrap = document.getElementById(`p-${field}-chips`);
@@ -4842,8 +4844,17 @@ function renderVariantStockBreakdown() {
   const combos = generateVariantCombinations(productColors, productVariants, productSizes);
   if (combos.length === 0) {
     box.style.display = 'none';
-    syncTotalStockFromVariants();
+    syncTotalStockFromVariants([]);
     return;
+  }
+
+  // ── Prune stale keys so only currently active combinations exist in memory ──
+  const activeKeys = new Set(combos.map(c => c.key));
+  for (const k of Object.keys(productVariantStock)) {
+    if (!activeKeys.has(k)) delete productVariantStock[k];
+  }
+  for (const k of Object.keys(productVariantPrices)) {
+    if (!activeKeys.has(k)) delete productVariantPrices[k];
   }
 
   box.style.display = 'block';
@@ -4853,20 +4864,27 @@ function renderVariantStockBreakdown() {
   grid.innerHTML = combos.map(c => {
     const curVal = resolveExistingStockForCombo(c.key, c);
     productVariantStock[c.key] = curVal;
+    const curPrice = (productVariantPrices[c.key] !== undefined && Number(productVariantPrices[c.key]) > 0) ? productVariantPrices[c.key] : '';
     return `
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:200px;">
           ${c.label}
         </div>
-        <div style="display:flex;align-items:center;gap:6px;">
-          <label style="font-size:0.75rem;color:var(--muted);margin:0;font-weight:600;">Stock:</label>
-          <input type="number" min="0" value="${curVal}" data-opt-key="${esc(c.key)}" class="opt-qty-field" style="width:72px;padding:4px 8px;font-size:0.88rem;font-weight:700;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);text-align:center;" oninput="updateVariantStockField('${esc(c.key)}', this.value)" />
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:5px;">
+            <label style="font-size:0.75rem;color:var(--muted);margin:0;font-weight:600;">Price (PKR):</label>
+            <input type="number" min="0" placeholder="Default" value="${curPrice}" data-price-key="${esc(c.key)}" class="opt-price-field" style="width:88px;padding:4px 8px;font-size:0.85rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);text-align:center;" oninput="updateVariantPriceField('${esc(c.key)}', this.value)" title="Optional custom price for this variant. Leave empty to use main product sale price." />
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;">
+            <label style="font-size:0.75rem;color:var(--muted);margin:0;font-weight:600;">Stock:</label>
+            <input type="number" min="0" value="${curVal}" data-opt-key="${esc(c.key)}" class="opt-qty-field" style="width:72px;padding:4px 8px;font-size:0.88rem;font-weight:700;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);text-align:center;" oninput="updateVariantStockField('${esc(c.key)}', this.value)" />
+          </div>
         </div>
       </div>
     `;
   }).join('');
 
-  syncTotalStockFromVariants();
+  syncTotalStockFromVariants(combos);
 }
 
 function updateVariantStockField(key, val) {
@@ -4874,7 +4892,16 @@ function updateVariantStockField(key, val) {
   syncTotalStockFromVariants();
 }
 
-function syncTotalStockFromVariants() {
+function updateVariantPriceField(key, val) {
+  const num = parseFloat(val);
+  if (!isNaN(num) && num > 0) {
+    productVariantPrices[key] = num;
+  } else {
+    delete productVariantPrices[key];
+  }
+}
+
+function syncTotalStockFromVariants(activeCombos = null) {
   const hasOptions = (productColors.length > 0) || (productSizes.length > 0) || (productVariants.length > 0);
   const stockInput = document.getElementById('p-stock');
   const badge = document.getElementById('p-stock-badge');
@@ -4896,9 +4923,12 @@ function syncTotalStockFromVariants() {
     return;
   }
 
-  // When options/combinations exist: AUTO-CALCULATE sum of all combinations!
-  const vals = Object.values(productVariantStock);
-  const sum = vals.reduce((a, b) => a + Number(b || 0), 0);
+  const combos = activeCombos || generateVariantCombinations(productColors, productVariants, productSizes);
+  if (combos.length === 0) return;
+
+  // Strict sum of active combinations ONLY
+  const sum = combos.reduce((acc, c) => acc + Number(productVariantStock[c.key] || 0), 0);
+  const count = combos.length;
 
   if (stockInput) {
     stockInput.value = sum;
@@ -4909,10 +4939,10 @@ function syncTotalStockFromVariants() {
   }
   if (badge) {
     badge.style.display = 'inline-block';
-    badge.innerHTML = `<i class="fa-solid fa-lock" style="font-size:0.7rem;"></i> Auto-summed (${vals.length} combos)`;
+    badge.innerHTML = `<i class="fa-solid fa-lock" style="font-size:0.7rem;"></i> Auto-summed (${count} combos)`;
   }
   if (hint) {
-    hint.innerHTML = `<span style="color:var(--gold);font-weight:700;"><i class="fa-solid fa-calculator" style="margin-right:4px;"></i> Auto-calculated:</span> Sum of all <strong>${vals.length}</strong> combinations below = <strong>${sum} units</strong>. (To change, edit quantities in the table below or click "Set All Qty").`;
+    hint.innerHTML = `<span style="color:var(--gold);font-weight:700;"><i class="fa-solid fa-calculator" style="margin-right:4px;"></i> Auto-calculated:</span> Sum of all <strong>${count}</strong> combinations below = <strong>${sum} units</strong>. (To change, edit quantities in the table below or click "Set All Qty").`;
   }
   if (inStockSel) {
     inStockSel.value = sum > 0 ? 'true' : 'false';
@@ -4995,14 +5025,32 @@ async function saveProduct() {
   if (uncommittedVariants) addTag('variants', uncommittedVariants);
 
   const hasOptions = (productColors.length > 0) || (productSizes.length > 0) || (productVariants.length > 0);
+  const combos = hasOptions ? generateVariantCombinations(productColors, productVariants, productSizes) : [];
+
   if (hasOptions) {
     document.querySelectorAll('.opt-qty-field').forEach(inp => {
       const k = inp.dataset.optKey;
       if (k) productVariantStock[k] = Math.max(0, parseInt(inp.value) || 0);
     });
+    document.querySelectorAll('.opt-price-field').forEach(inp => {
+      const k = inp.dataset.priceKey;
+      const num = parseFloat(inp.value);
+      if (k && !isNaN(num) && num > 0) productVariantPrices[k] = num;
+      else if (k) delete productVariantPrices[k];
+    });
+
+    // Prune any stale keys before persisting
+    const activeKeys = new Set(combos.map(c => c.key));
+    for (const k of Object.keys(productVariantStock)) {
+      if (!activeKeys.has(k)) delete productVariantStock[k];
+    }
+    for (const k of Object.keys(productVariantPrices)) {
+      if (!activeKeys.has(k)) delete productVariantPrices[k];
+    }
   }
+
   const stockVal = hasOptions 
-    ? Object.values(productVariantStock).reduce((a, b) => a + Number(b || 0), 0)
+    ? combos.reduce((acc, c) => acc + Number(productVariantStock[c.key] || 0), 0)
     : Number(document.getElementById('p-stock').value || 0);
 
   const payload = {
@@ -5017,6 +5065,7 @@ async function saveProduct() {
     hotSelling:    false,
     stock:         stockVal,
     variantStock:  hasOptions ? productVariantStock : {},
+    variantPrices: hasOptions ? productVariantPrices : {},
     inStock:     (stockVal > 0) && (document.getElementById('p-instock').value !== 'false'),
     hidden:      document.getElementById('p-hidden').checked,
     description: document.getElementById('p-desc').value,

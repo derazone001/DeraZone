@@ -90,6 +90,11 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   window.changeQty = (idx, delta) => {
+    if (!cart[idx]) return;
+    if (delta > 0 && cart[idx].maxStock != null && cart[idx].qty >= cart[idx].maxStock) {
+      showToast(`Maximum available stock reached (${cart[idx].maxStock} units)`);
+      return;
+    }
     cart[idx].qty += delta;
     if (cart[idx].qty <= 0) cart.splice(idx, 1);
     saveCart(); updateCartUI();
@@ -104,11 +109,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  window.addToCart = (name, price, emoji, variant, image, qty = 1) => {
+  window.addToCart = (name, price, emoji, variant, image, qty = 1, maxStock = null) => {
     const quantity = Math.max(1, Number(qty) || 1);
     const existing = cart.find(i => i.name === name && i.variant === variant);
-    if (existing) existing.qty += quantity;
-    else cart.push({ name, price, emoji: emoji || '🛍️', variant: variant || 'Standard', image: image || null, qty: quantity });
+    const currentInBag = existing ? existing.qty : 0;
+    const requestedTotal = currentInBag + quantity;
+
+    if (maxStock !== null && maxStock !== undefined && Number(maxStock) > 0) {
+      const limit = Number(maxStock);
+      if (currentInBag >= limit) {
+        showToast(`Only ${limit} unit(s) available in stock. You already have ${currentInBag} in your bag.`);
+        openCart();
+        return;
+      }
+      if (requestedTotal > limit) {
+        const canAdd = limit - currentInBag;
+        if (existing) existing.qty = limit;
+        else cart.push({ name, price, emoji: emoji || '🛍️', variant: variant || 'Standard', image: image || null, qty: limit, maxStock: limit });
+        saveCart(); updateCartUI();
+        showToast(`Added ${canAdd} unit(s). Maximum stock limit (${limit}) reached.`);
+        openCart();
+        return;
+      }
+    }
+
+    if (existing) {
+      existing.qty = requestedTotal;
+      if (maxStock != null) existing.maxStock = Number(maxStock);
+    } else {
+      cart.push({ name, price, emoji: emoji || '🛍️', variant: variant || 'Standard', image: image || null, qty: quantity, maxStock: (maxStock != null ? Number(maxStock) : null) });
+    }
     saveCart(); updateCartUI();
     showToast('Added to bag ✓');
     openCart();
@@ -118,12 +148,13 @@ document.addEventListener('DOMContentLoaded', () => {
      Goes straight to checkout with just this single item. The
      customer's existing bag is stashed (not lost) so it can be
      restored if they leave checkout without completing the order. */
-  window.buyNow = (name, price, emoji, variant, image) => {
+  window.buyNow = (name, price, emoji, variant, image, qty = 1) => {
+    const quantity = Math.max(1, Number(qty) || 1);
     const existingCart = localStorage.getItem('derazone_cart');
     if (existingCart && existingCart !== '[]') {
       localStorage.setItem('derazone_cart_stashed', existingCart);
     }
-    const buyNowCart = [{ name, price, emoji: emoji || '🛍️', variant: variant || 'Standard', image: image || null, qty: 1 }];
+    const buyNowCart = [{ name, price, emoji: emoji || '🛍️', variant: variant || 'Standard', image: image || null, qty: quantity }];
     localStorage.setItem('derazone_cart', JSON.stringify(buyNowCart));
     window.location.href = 'checkout';
   };

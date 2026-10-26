@@ -94,7 +94,7 @@ function derazoneProductCardHTML(p) {
 
   const addAction = hasOptions 
     ? `derazoneOpenQuickSelect('${p.id}')` 
-    : `addToCart('${cleanName}', ${p.price}, '${cleanEmoji}', 'Standard', '${cleanImg}')`;
+    : `addToCart('${cleanName}', ${p.price}, '${cleanEmoji}', 'Standard', '${cleanImg}', 1, ${p.stock != null ? Number(p.stock) : 'null'})`;
 
   const isOutOfStock = (p.inStock === false) || (p.stock != null && Number(p.stock) <= 0);
   const cardBadgeHTML = isOutOfStock
@@ -454,7 +454,7 @@ async function derazoneRenderHomepageGrids() {
           const hasOptions = (pSizes.length > 0) || (pColors.length > 0) || (pVariants.length > 0);
           const addAction = hasOptions 
             ? `derazoneOpenQuickSelect('${p.id}')` 
-            : `addToCart('${cleanName}', ${p.price}, '${cleanEmoji}', 'Standard', '${cleanImg}')`;
+            : `addToCart('${cleanName}', ${p.price}, '${cleanEmoji}', 'Standard', '${cleanImg}', 1, ${p.stock != null ? Number(p.stock) : 'null'})`;
 
           const desc = p.description 
             ? (p.description.length > 260 ? p.description.slice(0, 260) + '...' : p.description) 
@@ -786,6 +786,34 @@ function findQuickCombinationStock(product, color, variant, size) {
   return (product.stock != null) ? Number(product.stock) : 999;
 }
 
+function findQuickCombinationPrice(product, color, variant, size) {
+  if (!product) return 0;
+  const vp = (product.variantPrices && typeof product.variantPrices === 'object') ? product.variantPrices : {};
+  const keys = Object.keys(vp);
+  if (keys.length === 0) return Number(product.price);
+
+  const c = color ? color.trim() : '';
+  const v = variant ? variant.trim() : '';
+  const s = size ? size.trim() : '';
+  const canonical = getSelectedVariantCombo(c, v, s);
+
+  if (vp[canonical] !== undefined && Number(vp[canonical]) > 0) return Number(vp[canonical]);
+
+  const ciKey = keys.find(k => k.trim().toLowerCase() === canonical.toLowerCase());
+  if (ciKey && Number(vp[ciKey]) > 0) return Number(vp[ciKey]);
+
+  const activeTokens = [c, v, s].filter(Boolean).map(t => t.toLowerCase());
+  if (activeTokens.length > 0) {
+    const matchedKey = keys.find(k => {
+      const kLower = k.toLowerCase();
+      return activeTokens.every(t => kLower.includes(t));
+    });
+    if (matchedKey && Number(vp[matchedKey]) > 0) return Number(vp[matchedKey]);
+  }
+
+  return Number(product.price);
+}
+
 function isQuickAttrEntirelySoldOut(product, attrVal) {
   if (!product) return false;
   if (product.inStock === false || product.inStock === 'false') return true;
@@ -856,9 +884,11 @@ function ensureQuickSelectModal() {
 
 window.stepQuickQty = function(delta) {
   const input = document.getElementById('qm-qty-input');
-  if (!input) return;
+  if (!input || !_activeQuickProduct) return;
+  const avail = findQuickCombinationStock(_activeQuickProduct, _selectedQuickColor, _selectedQuickVariant, _selectedQuickSize);
+  const maxLim = (avail !== null && avail > 0) ? avail : 99;
   let cur = parseInt(input.value) || 1;
-  cur = Math.max(1, Math.min(99, cur + delta));
+  cur = Math.max(1, Math.min(maxLim, cur + delta));
   input.value = cur;
 };
 
@@ -923,7 +953,29 @@ window.derazoneOpenQuickSelect = async function(productId) {
 
   const updateQuickModalStockState = () => {
     const avail = findQuickCombinationStock(product, _selectedQuickColor, _selectedQuickVariant, _selectedQuickSize);
+    const effPrice = findQuickCombinationPrice(product, _selectedQuickColor, _selectedQuickVariant, _selectedQuickSize);
     const isSoldOut = (product.inStock === false) || (avail !== null && avail <= 0);
+
+    // Update Price display dynamically
+    const priceWrap = document.getElementById('qm-price-wrap');
+    if (priceWrap) {
+      const hasOld = product.priceOld && product.priceOld > effPrice;
+      priceWrap.innerHTML = `
+        <span style="color:#7000ff;font-weight:800;font-size:1.15rem;">PKR ${Number(effPrice).toLocaleString()}</span>
+        ${hasOld ? `<span style="color:#94a3b8;text-decoration:line-through;font-size:0.9rem;">PKR ${Number(product.priceOld).toLocaleString()}</span>` : ''}
+      `;
+    }
+
+    // Clamp Qty input to avail
+    const qtyInput = document.getElementById('qm-qty-input');
+    if (qtyInput) {
+      const maxLim = (avail !== null && avail > 0) ? avail : 1;
+      let cur = parseInt(qtyInput.value) || 1;
+      if (cur > maxLim) cur = maxLim;
+      if (cur < 1) cur = 1;
+      qtyInput.value = cur;
+    }
+
     const addBtn = document.getElementById('qm-add-btn');
     if (addBtn) {
       if (isSoldOut) {
@@ -1038,10 +1090,11 @@ window.confirmQuickSelectAddToCart = function() {
   }
 
   const finalVariant = getSelectedVariantCombo(c, v, s);
+  const effPrice = findQuickCombinationPrice(p, c, v, s);
   const qty = parseInt(document.getElementById('qm-qty-input')?.value) || 1;
   const primaryImg = (p.images && p.images[0]) || p.image || '';
 
-  window.addToCart(p.name, Number(p.price), p.emoji || '🛍️', finalVariant, primaryImg, qty);
+  window.addToCart(p.name, effPrice, p.emoji || '🛍️', finalVariant, primaryImg, qty, avail);
   closeQuickSelectModal();
 };
 
