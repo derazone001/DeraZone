@@ -712,6 +712,94 @@ let _selectedQuickSize = null;
 let _selectedQuickColor = null;
 let _selectedQuickVariant = null;
 
+function getSelectedVariantCombo(color, variant, size) {
+  const c = color ? color.trim() : '';
+  const v = variant ? variant.trim() : '';
+  const s = size ? size.trim() : '';
+
+  if (c && v && s) return `Color ${c} Variant ${v} - Size ${s}`;
+  if (c && s) return `Color ${c} - Size ${s}`;
+  if (c && v) return `Color ${c} - Variant ${v}`;
+  if (v && s) return `Variant ${v} - Size ${s}`;
+  if (c) return c;
+  if (v) return v;
+  if (s) return s;
+  return 'Standard';
+}
+
+function findQuickCombinationStock(product, color, variant, size) {
+  if (!product) return 999;
+  if (product.inStock === false || product.inStock === 'false') {
+    return 0;
+  }
+  const vs = (product.variantStock && typeof product.variantStock === 'object') ? product.variantStock : {};
+  const hasVS = Object.keys(vs).length > 0;
+  if (!hasVS) {
+    return (product.stock != null) ? Number(product.stock) : (product.inStock !== false ? 999 : 0);
+  }
+  const keys = Object.keys(vs);
+  if (keys.length === 0) {
+    return (product.stock != null) ? Number(product.stock) : 999;
+  }
+
+  const totalVS = Object.values(vs).reduce((a, b) => a + Number(b || 0), 0);
+  if (totalVS <= 0) return 0;
+
+  const c = color ? color.trim() : '';
+  const v = variant ? variant.trim() : '';
+  const s = size ? size.trim() : '';
+  const canonical = getSelectedVariantCombo(c, v, s);
+
+  // 1. Direct key match
+  if (vs[canonical] !== undefined) return Number(vs[canonical]);
+
+  // Case-insensitive exact match
+  const ciKey = keys.find(k => k.trim().toLowerCase() === canonical.toLowerCase());
+  if (ciKey) return Number(vs[ciKey]);
+
+  // 2. Token-based matching (Color, Variant, Size components)
+  const activeTokens = [c, v, s].filter(Boolean).map(t => t.toLowerCase());
+  if (activeTokens.length > 0) {
+    const matchedKey = keys.find(k => {
+      const kLower = k.toLowerCase();
+      return activeTokens.every(t => kLower.includes(t));
+    });
+    if (matchedKey) return Number(vs[matchedKey]);
+
+    const slashKey = [c, v, s].filter(Boolean).join(' / ');
+    if (vs[slashKey] !== undefined) return Number(vs[slashKey]);
+
+    const hyphenKey = [c, v, s].filter(Boolean).join(' - ');
+    if (vs[hyphenKey] !== undefined) return Number(vs[hyphenKey]);
+
+    const emdashKey = [v, s, c].filter(Boolean).join(' — ');
+    if (vs[emdashKey] !== undefined) return Number(vs[emdashKey]);
+  }
+
+  // 3. Fallback to individual attribute stocks if saved flat
+  const flatStocks = [];
+  if (c && vs[c] !== undefined) flatStocks.push(Number(vs[c]));
+  if (v && vs[v] !== undefined) flatStocks.push(Number(vs[v]));
+  if (s && vs[s] !== undefined) flatStocks.push(Number(vs[s]));
+  if (flatStocks.length > 0) return Math.min(...flatStocks);
+
+  return (product.stock != null) ? Number(product.stock) : 999;
+}
+
+function isQuickAttrEntirelySoldOut(product, attrVal) {
+  if (!product) return false;
+  if (product.inStock === false || product.inStock === 'false') return true;
+  const vs = (product.variantStock && typeof product.variantStock === 'object') ? product.variantStock : {};
+  const hasVS = Object.keys(vs).length > 0;
+  if (!hasVS) return (product.stock != null && Number(product.stock) <= 0);
+  const keys = Object.keys(vs);
+  if (keys.length === 0) return false;
+  const valLower = attrVal.trim().toLowerCase();
+  const relevantKeys = keys.filter(k => k.toLowerCase().includes(valLower));
+  if (relevantKeys.length === 0) return false;
+  return relevantKeys.every(k => Number(vs[k]) <= 0);
+}
+
 function ensureQuickSelectModal() {
   let modal = document.getElementById('dz-quick-select-modal');
   if (!modal) {
@@ -833,93 +921,8 @@ window.derazoneOpenQuickSelect = async function(productId) {
   const pColors = Array.isArray(product.colors) ? product.colors : (typeof product.colors === 'string' && product.colors ? product.colors.split(',').map(c=>c.trim()).filter(Boolean) : []);
   const pVariants = Array.isArray(product.variants) ? product.variants : (typeof product.variants === 'string' && product.variants ? product.variants.split(',').map(v=>v.trim()).filter(Boolean) : []);
 
-  const vs = (product.variantStock && typeof product.variantStock === 'object') ? product.variantStock : {};
-  const hasVS = Object.keys(vs).length > 0;
-
-  const getSelectedVariantCombo = (color, variant, size) => {
-    const c = color ? color.trim() : '';
-    const v = variant ? variant.trim() : '';
-    const s = size ? size.trim() : '';
-
-    if (c && v && s) return `Color ${c} Variant ${v} - Size ${s}`;
-    if (c && s) return `Color ${c} - Size ${s}`;
-    if (c && v) return `Color ${c} - Variant ${v}`;
-    if (v && s) return `Variant ${v} - Size ${s}`;
-    if (c) return c;
-    if (v) return v;
-    if (s) return s;
-    return 'Standard';
-  };
-
-  const findQuickCombinationStock = (color, variant, size) => {
-    if (product.inStock === false || product.inStock === 'false') {
-      return 0;
-    }
-    if (!hasVS) {
-      return (product.stock != null) ? Number(product.stock) : (product.inStock !== false ? 999 : 0);
-    }
-    const keys = Object.keys(vs);
-    if (keys.length === 0) {
-      return (product.stock != null) ? Number(product.stock) : 999;
-    }
-
-    const totalVS = Object.values(vs).reduce((a, b) => a + Number(b || 0), 0);
-    if (totalVS <= 0) return 0;
-
-    const c = color ? color.trim() : '';
-    const v = variant ? variant.trim() : '';
-    const s = size ? size.trim() : '';
-    const canonical = getSelectedVariantCombo(c, v, s);
-
-    // 1. Direct key match
-    if (vs[canonical] !== undefined) return Number(vs[canonical]);
-
-    // Case-insensitive exact match
-    const ciKey = keys.find(k => k.trim().toLowerCase() === canonical.toLowerCase());
-    if (ciKey) return Number(vs[ciKey]);
-
-    // 2. Token-based matching (Color, Variant, Size components)
-    const activeTokens = [c, v, s].filter(Boolean).map(t => t.toLowerCase());
-    if (activeTokens.length > 0) {
-      const matchedKey = keys.find(k => {
-        const kLower = k.toLowerCase();
-        return activeTokens.every(t => kLower.includes(t));
-      });
-      if (matchedKey) return Number(vs[matchedKey]);
-
-      const slashKey = [c, v, s].filter(Boolean).join(' / ');
-      if (vs[slashKey] !== undefined) return Number(vs[slashKey]);
-
-      const hyphenKey = [c, v, s].filter(Boolean).join(' - ');
-      if (vs[hyphenKey] !== undefined) return Number(vs[hyphenKey]);
-
-      const emdashKey = [v, s, c].filter(Boolean).join(' — ');
-      if (vs[emdashKey] !== undefined) return Number(vs[emdashKey]);
-    }
-
-    // 3. Fallback to individual attribute stocks if saved flat
-    const flatStocks = [];
-    if (c && vs[c] !== undefined) flatStocks.push(Number(vs[c]));
-    if (v && vs[v] !== undefined) flatStocks.push(Number(vs[v]));
-    if (s && vs[s] !== undefined) flatStocks.push(Number(vs[s]));
-    if (flatStocks.length > 0) return Math.min(...flatStocks);
-
-    return (product.stock != null) ? Number(product.stock) : 999;
-  };
-
-  const isQuickAttrEntirelySoldOut = (attrVal) => {
-    if (product.inStock === false || product.inStock === 'false') return true;
-    if (!hasVS) return (product.stock != null && Number(product.stock) <= 0);
-    const keys = Object.keys(vs);
-    if (keys.length === 0) return false;
-    const valLower = attrVal.trim().toLowerCase();
-    const relevantKeys = keys.filter(k => k.toLowerCase().includes(valLower));
-    if (relevantKeys.length === 0) return false;
-    return relevantKeys.every(k => Number(vs[k]) <= 0);
-  };
-
   const updateQuickModalStockState = () => {
-    const avail = findQuickCombinationStock(_selectedQuickColor, _selectedQuickVariant, _selectedQuickSize);
+    const avail = findQuickCombinationStock(product, _selectedQuickColor, _selectedQuickVariant, _selectedQuickSize);
     const isSoldOut = (product.inStock === false) || (avail !== null && avail <= 0);
     const addBtn = document.getElementById('qm-add-btn');
     if (addBtn) {
@@ -946,7 +949,7 @@ window.derazoneOpenQuickSelect = async function(productId) {
     _selectedQuickSize = pSizes[0];
     if (sizeLabel) sizeLabel.textContent = _selectedQuickSize;
     sizesList.innerHTML = pSizes.map((s, idx) => {
-      const isSold = isQuickAttrEntirelySoldOut(s);
+      const isSold = isQuickAttrEntirelySoldOut(product, s);
       return `<div class="qm-pill ${idx === 0 ? 'active' : ''} ${isSold ? 'sold-out' : ''}" data-size="${s}" style="${isSold ? 'opacity:0.5;text-decoration:line-through;cursor:not-allowed;' : ''}">${s}${isSold ? ' (Sold Out)' : ''}</div>`;
     }).join('');
     sizesList.querySelectorAll('.qm-pill').forEach(btn => {
@@ -972,7 +975,7 @@ window.derazoneOpenQuickSelect = async function(productId) {
     if (colorLabel) colorLabel.textContent = _selectedQuickColor;
     colorsList.innerHTML = pColors.map((c, idx) => {
       const cName = typeof c === 'object' ? c.name : c;
-      const isSold = isQuickAttrEntirelySoldOut(cName);
+      const isSold = isQuickAttrEntirelySoldOut(product, cName);
       return `<div class="qm-pill ${idx === 0 ? 'active' : ''} ${isSold ? 'sold-out' : ''}" data-color="${cName}" style="${isSold ? 'opacity:0.5;text-decoration:line-through;cursor:not-allowed;' : ''}">${cName}${isSold ? ' (Sold Out)' : ''}</div>`;
     }).join('');
     colorsList.querySelectorAll('.qm-pill').forEach(btn => {
@@ -998,7 +1001,7 @@ window.derazoneOpenQuickSelect = async function(productId) {
     if (variantLabel) variantLabel.textContent = _selectedQuickVariant;
     variantsList.innerHTML = pVariants.map((v, idx) => {
       const vName = typeof v === 'object' ? v.name : v;
-      const isSold = isQuickAttrEntirelySoldOut(vName);
+      const isSold = isQuickAttrEntirelySoldOut(product, vName);
       return `<div class="qm-pill ${idx === 0 ? 'active' : ''} ${isSold ? 'sold-out' : ''}" data-variant="${vName}" style="${isSold ? 'opacity:0.5;text-decoration:line-through;cursor:not-allowed;' : ''}">${vName}${isSold ? ' (Sold Out)' : ''}</div>`;
     }).join('');
     variantsList.querySelectorAll('.qm-pill').forEach(btn => {
@@ -1028,21 +1031,13 @@ window.confirmQuickSelectAddToCart = function() {
   const v = _selectedQuickVariant ? _selectedQuickVariant.trim() : '';
   const s = _selectedQuickSize ? _selectedQuickSize.trim() : '';
 
-  const avail = findQuickCombinationStock(c, v, s);
+  const avail = findQuickCombinationStock(p, c, v, s);
   if (p.inStock === false || (avail !== null && avail <= 0)) {
     if (typeof showToast === 'function') showToast('Sorry, this option is currently Out of Stock.');
     return;
   }
 
-  let finalVariant = 'Standard';
-  if (c && v && s) finalVariant = `Color ${c} Variant ${v} - Size ${s}`;
-  else if (c && s) finalVariant = `Color ${c} - Size ${s}`;
-  else if (c && v) finalVariant = `Color ${c} - Variant ${v}`;
-  else if (v && s) finalVariant = `Variant ${v} - Size ${s}`;
-  else if (c) finalVariant = c;
-  else if (v) finalVariant = v;
-  else if (s) finalVariant = s;
-
+  const finalVariant = getSelectedVariantCombo(c, v, s);
   const qty = parseInt(document.getElementById('qm-qty-input')?.value) || 1;
   const primaryImg = (p.images && p.images[0]) || p.image || '';
 
