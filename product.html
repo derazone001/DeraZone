@@ -639,13 +639,19 @@
     }
 
     function findCombinationStock(color, variant, size) {
+      if (product.inStock === false || product.inStock === 'false') {
+        return 0;
+      }
       if (!hasVariantStock) {
-        return (product.stock != null) ? Number(product.stock) : (product.inStock !== false ? 999 : 0);
+        return (product.stock != null) ? Number(product.stock) : 999;
       }
       const keys = Object.keys(vs);
       if (keys.length === 0) {
         return (product.stock != null) ? Number(product.stock) : 999;
       }
+
+      const totalVS = Object.values(vs).reduce((a, b) => a + Number(b || 0), 0);
+      if (totalVS <= 0) return 0;
 
       const c = color ? color.trim() : '';
       const v = variant ? variant.trim() : '';
@@ -690,7 +696,8 @@
     }
 
     function isAttributeEntirelySoldOut(attrVal) {
-      if (!hasVariantStock) return false;
+      if (product.inStock === false || product.inStock === 'false') return true;
+      if (!hasVariantStock) return (product.stock != null && Number(product.stock) <= 0);
       const keys = Object.keys(vs);
       if (keys.length === 0) return false;
       const valLower = attrVal.trim().toLowerCase();

@@ -1448,8 +1448,10 @@ select.filter-sel{background:var(--bg);border:1px solid var(--border);border-rad
         <div class="form-group"><label>Featured on Homepage?</label>
           <select id="p-featured"><option value="false">No</option><option value="true">Yes</option></select>
         </div>
-        <div class="form-group"><label>Total Inventory (Stock) *</label>
+        <div class="form-group" id="p-stock-form-group">
+          <label>Total Inventory (Stock) * <span id="p-stock-badge" style="font-size:0.75rem;padding:2px 7px;border-radius:4px;background:rgba(112,0,255,0.1);color:#7000ff;font-weight:700;display:none;margin-left:6px;"><i class="fa-solid fa-lock"></i> Auto-calculated</span></label>
           <input id="p-stock" type="number" min="0" placeholder="e.g. 10"/>
+          <small id="p-stock-hint" style="display:block;font-size:0.72rem;color:var(--muted);margin-top:4px;">Available stock units.</small>
         </div>
         <div class="form-group"><label>Stock Status</label>
           <select id="p-instock"><option value="true">In Stock</option><option value="false">Out of Stock</option></select>
@@ -4833,12 +4835,14 @@ function renderVariantStockBreakdown() {
 
   if (!hasColors && !hasSizes && !hasVariants) {
     box.style.display = 'none';
+    syncTotalStockFromVariants();
     return;
   }
 
   const combos = generateVariantCombinations(productColors, productVariants, productSizes);
   if (combos.length === 0) {
     box.style.display = 'none';
+    syncTotalStockFromVariants();
     return;
   }
 
@@ -4872,14 +4876,46 @@ function updateVariantStockField(key, val) {
 
 function syncTotalStockFromVariants() {
   const hasOptions = (productColors.length > 0) || (productSizes.length > 0) || (productVariants.length > 0);
-  if (!hasOptions) return;
+  const stockInput = document.getElementById('p-stock');
+  const badge = document.getElementById('p-stock-badge');
+  const hint = document.getElementById('p-stock-hint');
+  const inStockSel = document.getElementById('p-instock');
+
+  if (!hasOptions) {
+    if (stockInput) {
+      stockInput.readOnly = false;
+      stockInput.style.background = '';
+      stockInput.style.cursor = '';
+      stockInput.title = 'Enter stock units for this standalone product.';
+    }
+    if (badge) badge.style.display = 'none';
+    if (hint) {
+      hint.style.color = 'var(--muted)';
+      hint.innerHTML = 'Enter available stock units for this standalone product.';
+    }
+    return;
+  }
+
+  // When options/combinations exist: AUTO-CALCULATE sum of all combinations!
   const vals = Object.values(productVariantStock);
-  if (vals.length > 0) {
-    const sum = vals.reduce((a, b) => a + Number(b || 0), 0);
-    const stockInput = document.getElementById('p-stock');
-    if (stockInput) stockInput.value = sum;
-    const inStockSel = document.getElementById('p-instock');
-    if (inStockSel) inStockSel.value = sum > 0 ? 'true' : 'false';
+  const sum = vals.reduce((a, b) => a + Number(b || 0), 0);
+
+  if (stockInput) {
+    stockInput.value = sum;
+    stockInput.readOnly = true;
+    stockInput.style.background = 'rgba(112,0,255,0.06)';
+    stockInput.style.cursor = 'not-allowed';
+    stockInput.title = 'Total stock is automatically calculated by summing all variant combination quantities below.';
+  }
+  if (badge) {
+    badge.style.display = 'inline-block';
+    badge.innerHTML = `<i class="fa-solid fa-lock" style="font-size:0.7rem;"></i> Auto-summed (${vals.length} combos)`;
+  }
+  if (hint) {
+    hint.innerHTML = `<span style="color:var(--gold);font-weight:700;"><i class="fa-solid fa-calculator" style="margin-right:4px;"></i> Auto-calculated:</span> Sum of all <strong>${vals.length}</strong> combinations below = <strong>${sum} units</strong>. (To change, edit quantities in the table below or click "Set All Qty").`;
+  }
+  if (inStockSel) {
+    inStockSel.value = sum > 0 ? 'true' : 'false';
   }
 }
 
@@ -4965,7 +5001,9 @@ async function saveProduct() {
       if (k) productVariantStock[k] = Math.max(0, parseInt(inp.value) || 0);
     });
   }
-  const stockVal = Number(document.getElementById('p-stock').value || 0);
+  const stockVal = hasOptions 
+    ? Object.values(productVariantStock).reduce((a, b) => a + Number(b || 0), 0)
+    : Number(document.getElementById('p-stock').value || 0);
 
   const payload = {
     name, brand: document.getElementById('p-brand').value, category: cat,

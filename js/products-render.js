@@ -96,15 +96,26 @@ function derazoneProductCardHTML(p) {
     ? `derazoneOpenQuickSelect('${p.id}')` 
     : `addToCart('${cleanName}', ${p.price}, '${cleanEmoji}', 'Standard', '${cleanImg}')`;
 
+  const isOutOfStock = (p.inStock === false) || (p.stock != null && Number(p.stock) <= 0);
+  const cardBadgeHTML = isOutOfStock
+    ? `<span class="product-badge sold-out" style="background:#ef4444;color:#fff;font-weight:800;font-size:0.7rem;letter-spacing:1px;position:absolute;top:10px;left:10px;padding:4px 8px;border-radius:6px;z-index:3;"><i class="fa-solid fa-circle-xmark"></i> SOLD OUT</span>`
+    : badgeHTML;
+
+  const cardActionBtn = isOutOfStock
+    ? `<button disabled class="btn-primary" style="flex:1;padding:10px 14px;font-size:0.8rem;border-radius:8px;background:#94a3b8;color:#fff;border:none;cursor:not-allowed;font-weight:700;opacity:0.8;">
+        <i class="fa-solid fa-circle-xmark"></i> Out of Stock
+       </button>`
+    : `<button onclick="${addAction}" class="btn-primary" style="flex:1;padding:10px 14px;font-size:0.8rem;border-radius:8px;background:#7000ff;color:#fff;border:none;cursor:pointer;font-weight:700;box-shadow:0 4px 12px rgba(112,0,255,0.3);">
+        <i class="fa-solid fa-bag-shopping"></i> Add to Bag
+       </button>`;
+
   return `
     <div class="product-card" data-cat="${normCat}" data-id="${p.id}" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.03);display:flex;flex-direction:column;transition:all 0.3s ease;">
       <div class="product-img-wrap" style="position:relative;aspect-ratio:1/1;width:100%;overflow:hidden;background:#f8fafc;display:flex;align-items:center;justify-content:center;">
-        ${badgeHTML}
+        ${cardBadgeHTML}
         ${imgContent}
         <div class="product-actions" style="position:absolute;bottom:10px;left:10px;right:10px;display:flex;gap:8px;z-index:2;">
-          <button onclick="${addAction}" class="btn-primary" style="flex:1;padding:10px 14px;font-size:0.8rem;border-radius:8px;background:#7000ff;color:#fff;border:none;cursor:pointer;font-weight:700;box-shadow:0 4px 12px rgba(112,0,255,0.3);">
-            <i class="fa-solid fa-bag-shopping"></i> Add to Bag
-          </button>
+          ${cardActionBtn}
         </div>
       </div>
       <div class="product-info" style="padding:16px;display:flex;flex-direction:column;flex:1;">
@@ -475,9 +486,13 @@ async function derazoneRenderHomepageGrids() {
                   <a href="product?id=${p.id}" class="spotlight-btn">
                     SHOP NOW <i class="fa-solid fa-arrow-right"></i>
                   </a>
-                  <button onclick="${addAction}" class="spotlight-btn-secondary">
-                    <i class="fa-solid fa-bag-shopping"></i> Add to Bag
-                  </button>
+                  ${(p.inStock === false || (p.stock != null && Number(p.stock) <= 0))
+                    ? `<button disabled class="spotlight-btn-secondary" style="opacity:0.65;cursor:not-allowed;background:#94a3b8;color:#fff;border:none;">
+                        <i class="fa-solid fa-circle-xmark"></i> Out of Stock
+                       </button>`
+                    : `<button onclick="${addAction}" class="spotlight-btn-secondary">
+                        <i class="fa-solid fa-bag-shopping"></i> Add to Bag
+                       </button>`}
                 </div>
               </div>
             </div>
@@ -837,6 +852,9 @@ window.derazoneOpenQuickSelect = async function(productId) {
   };
 
   const findQuickCombinationStock = (color, variant, size) => {
+    if (product.inStock === false || product.inStock === 'false') {
+      return 0;
+    }
     if (!hasVS) {
       return (product.stock != null) ? Number(product.stock) : (product.inStock !== false ? 999 : 0);
     }
@@ -844,6 +862,9 @@ window.derazoneOpenQuickSelect = async function(productId) {
     if (keys.length === 0) {
       return (product.stock != null) ? Number(product.stock) : 999;
     }
+
+    const totalVS = Object.values(vs).reduce((a, b) => a + Number(b || 0), 0);
+    if (totalVS <= 0) return 0;
 
     const c = color ? color.trim() : '';
     const v = variant ? variant.trim() : '';
@@ -887,7 +908,8 @@ window.derazoneOpenQuickSelect = async function(productId) {
   };
 
   const isQuickAttrEntirelySoldOut = (attrVal) => {
-    if (!hasVS) return false;
+    if (product.inStock === false || product.inStock === 'false') return true;
+    if (!hasVS) return (product.stock != null && Number(product.stock) <= 0);
     const keys = Object.keys(vs);
     if (keys.length === 0) return false;
     const valLower = attrVal.trim().toLowerCase();
@@ -1005,6 +1027,12 @@ window.confirmQuickSelectAddToCart = function() {
   const c = _selectedQuickColor ? _selectedQuickColor.trim() : '';
   const v = _selectedQuickVariant ? _selectedQuickVariant.trim() : '';
   const s = _selectedQuickSize ? _selectedQuickSize.trim() : '';
+
+  const avail = findQuickCombinationStock(c, v, s);
+  if (p.inStock === false || (avail !== null && avail <= 0)) {
+    if (typeof showToast === 'function') showToast('Sorry, this option is currently Out of Stock.');
+    return;
+  }
 
   let finalVariant = 'Standard';
   if (c && v && s) finalVariant = `Color ${c} Variant ${v} - Size ${s}`;

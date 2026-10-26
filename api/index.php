@@ -452,22 +452,45 @@ function check_items_stock_availability($store, $items) {
             }
 
             if ($match) {
-                if (isset($p['inStock']) && $p['inStock'] === false) {
+                // 1. Check general product inStock flag
+                if (isset($p['inStock']) && ($p['inStock'] === false || $p['inStock'] === 'false')) {
                     return "Sorry, '{$p['name']}' is currently Out of Stock.";
                 }
 
-                if (!empty($p['variantStock']) && is_array($p['variantStock']) && !empty($variant) && strcasecmp($variant, 'Standard') !== 0) {
-                    $matchedKey = find_product_variant_stock_key($p['variantStock'], $variant);
-                    if ($matchedKey !== null) {
-                        $available = intval($p['variantStock'][$matchedKey] ?? 0);
-                        if ($available <= 0) {
-                            return "Sorry, '{$p['name']} ({$matchedKey})' is Out of Stock.";
+                $hasVS = !empty($p['variantStock']) && is_array($p['variantStock']);
+
+                // 2. If product has variant stock defined
+                if ($hasVS) {
+                    $totalVS = 0;
+                    foreach ($p['variantStock'] as $vq) {
+                        $totalVS += intval($vq);
+                    }
+                    if ($totalVS <= 0) {
+                        return "Sorry, '{$p['name']}' is currently Out of Stock.";
+                    }
+
+                    if (!empty($variant) && strcasecmp($variant, 'Standard') !== 0) {
+                        $matchedKey = find_product_variant_stock_key($p['variantStock'], $variant);
+                        if ($matchedKey !== null) {
+                            $available = intval($p['variantStock'][$matchedKey] ?? 0);
+                            if ($available <= 0) {
+                                return "Sorry, '{$p['name']} ({$matchedKey})' is Out of Stock.";
+                            }
+                            if ($qty > $available) {
+                                return "Sorry, only {$available} unit(s) of '{$p['name']} ({$matchedKey})' available in stock.";
+                            }
+                        } else {
+                            if (isset($p['stock']) && intval($p['stock']) <= 0) {
+                                return "Sorry, '{$p['name']}' is Out of Stock.";
+                            }
                         }
-                        if ($qty > $available) {
-                            return "Sorry, only {$available} unit(s) of '{$p['name']} ({$matchedKey})' available in stock.";
+                    } else {
+                        if (isset($p['stock']) && intval($p['stock']) <= 0) {
+                            return "Sorry, '{$p['name']}' is Out of Stock.";
                         }
                     }
                 } elseif (isset($p['stock'])) {
+                    // 3. Standalone product stock check
                     $available = intval($p['stock']);
                     if ($available <= 0) {
                         return "Sorry, '{$p['name']}' is Out of Stock.";
